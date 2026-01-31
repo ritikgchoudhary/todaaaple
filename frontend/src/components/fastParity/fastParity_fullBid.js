@@ -1,0 +1,78 @@
+import React,  { useEffect, useState }from 'react';
+import {Typography, Grid,Dialog,Container,CircularProgress} from '@material-ui/core/';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import BidHistory from './fastParity_BidHistory.jsx';
+import axios from 'axios';
+import * as api from "../../api/auth.js";
+import { useHistory } from 'react-router-dom';
+
+
+
+const FastParityFullBidHistory = () => {
+    const history = useHistory();
+    const URL =  api.url;
+    const [bidHistory, setHistory] = useState();
+    const [loader, setLoader] = React.useState(false);
+
+  useEffect(() => {
+    
+    const loggedInUser =  localStorage.getItem("user");
+    if (loggedInUser) {
+    const foundUser = JSON.parse(loggedInUser);
+    const AuthStr = 'Bearer '.concat(foundUser.token);
+    setLoader(true); 
+    axios.get(`${URL}/fastParity_getFullBidHistory/${foundUser.result.id}`, { headers: { Authorization: AuthStr } })
+      .then(response => {
+         setLoader(false);
+          setHistory(response.data);
+    })
+      .catch((error) => {
+        setLoader(false);
+    });
+
+     
+    }else{
+      window.location.replace("/login");
+
+    }
+    
+  },[]); 
+    
+   
+    return (
+        <div style={{paddingBottom: '80px'}}>
+           <Dialog
+          open={loader}
+          PaperProps={{
+            style: {
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+            },
+          }}
+        >
+          <Container  align="center" style={{backgroundColor: 'black', opacity: '0.6',height: '100px',paddingTop: "10px"}}>
+          <CircularProgress style={{color: 'white',}} />
+           <Typography style={{paddingTop: '10px', color: "white" }}>Please Wait!</Typography>
+          </Container>
+          
+          
+        </Dialog>
+
+            <Grid container direction="row" justify="" alignItems="center" style={{paddingLeft: '20px',paddingTop: '15px',paddingBottom: '15px',paddingRight: '20px', backgroundColor: 'white'}}>
+                <Grid item xs={4}>  
+                
+                <ArrowBackIosIcon style={{fontSize:'20px'}} onClick={history.goBack} />
+               
+                 </Grid>
+                 <Grid item xs={4}>                    
+                <Typography align="center" >{'Fast Parity'} Bid History</Typography>
+                 </Grid>
+            </Grid>
+            <BidHistory bidHistory = {bidHistory}/>
+            
+            
+        </div>
+    )
+}
+
+export default FastParityFullBidHistory ; 
