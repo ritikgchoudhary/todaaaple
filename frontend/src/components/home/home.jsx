@@ -78,16 +78,16 @@ const useStyles = makeStyles((theme) => ({
     borderBottom: "1px solid #f0f2f5",
   },
   downloadBtn: {
-    background: "linear-gradient(45deg, #fcc25e, #ffa500)",
+    background: "#f1a340",
     color: "#fff",
     borderRadius: "25px",
     textTransform: "none",
-    fontWeight: "bold",
-    fontSize: '12px',
-    padding: "6px 20px",
-    boxShadow: '0 4px 12px rgba(252, 194, 94, 0.3)',
+    fontWeight: "900",
+    fontSize: '13px',
+    padding: "6px 22px",
+    boxShadow: 'none',
     '&:hover': {
-      background: "linear-gradient(45deg, #ffa500, #fcc25e)",
+      background: "#e09230",
     }
   },
   authBar: {
@@ -102,25 +102,25 @@ const useStyles = makeStyles((theme) => ({
     objectFit: 'contain',
   },
   btnRegister: {
-    background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+    background: "#ff5967",
     color: "#fff",
     borderRadius: "25px",
-    marginRight: "8px",
+    marginRight: "10px",
     textTransform: "none",
-    padding: "6px 20px",
+    padding: "8px 22px",
     fontWeight: '800',
     fontSize: '14px',
-    boxShadow: '0 4px 10px rgba(255, 95, 109, 0.3)',
+    boxShadow: 'none',
   },
   btnLogin: {
-    background: "linear-gradient(to right, #2193b0, #6dd5ed)",
+    background: "#1aabff",
     color: "#fff",
     borderRadius: "25px",
     textTransform: "none",
-    padding: "6px 20px",
+    padding: "8px 22px",
     fontWeight: '800',
     fontSize: '14px',
-    boxShadow: '0 4px 10px rgba(33, 147, 176, 0.3)',
+    boxShadow: 'none',
   },
   heroBanner: {
     width: "100%",
@@ -267,51 +267,51 @@ const useStyles = makeStyles((theme) => ({
     listStyle: "none",
     padding: 0,
     margin: 0,
-    gap: "4px",
+    gap: "0px", // Removed gap completely to be controlled by padding/margin
   },
   typeItem: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    minWidth: "75px",
-    height: "82px",
+    minWidth: "68px",
+    height: "78px",
     backgroundColor: "#fff",
-    borderRadius: "14px",
+    borderRadius: "12px",
     border: "1px solid #f0f2f5",
     cursor: "pointer",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+    margin: "0 3px",
     "&:first-child": {
-      marginLeft: "12px",
+      marginLeft: "6px",
     },
     "&:last-child": {
       marginRight: "30px",
     },
     "& img": {
-      width: "35px",
-      height: "35px",
-      marginBottom: "4px",
+      width: "28px",
+      height: "28px",
+      marginBottom: "2px",
       objectFit: "contain",
       transition: "transform 0.3s ease",
     },
     "& span": {
-      fontSize: "10.5px",
+      fontSize: "9.5px",
       fontWeight: "800",
-      color: "#444",
+      color: "#666",
       textAlign: "center",
-      lineHeight: 1.1,
+      lineHeight: 1,
     },
     "&.active": {
-      background: "linear-gradient(to bottom, #8e9eab, #eef2f3)",
-      borderColor: "#8e9eab",
-      transform: "translateY(-2px)",
-      boxShadow: "0 6px 15px rgba(142, 158, 171, 0.4)",
+      backgroundColor: "#ebf5ff",
+      borderColor: "#7ebfff",
+      boxShadow: "0 4px 12px rgba(126, 191, 255, 0.2)",
       "& span": {
-        color: "#333",
+        color: "#1a73e8",
       },
       "& img": {
-        transform: "scale(1.1)",
+        transform: "scale(1.05)",
       }
     },
     "&:hover": {
@@ -415,9 +415,9 @@ const useStyles = makeStyles((theme) => ({
   gtWrapper: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '12px',
-    padding: '0 15px',
-    marginBottom: '30px',
+    gap: '8px',
+    padding: '0 10px',
+    marginBottom: '20px',
   },
   gameItem: {
     width: '100%',
@@ -425,37 +425,28 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '20px',
     position: 'relative',
     overflow: 'hidden',
-    background: 'linear-gradient(135deg, #f0f7ff 0%, #e1effe 100%)',
+    background: '#fff',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     display: 'flex',
     flexDirection: 'column',
-    padding: '15px',
-    border: '1px solid #fff',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+    padding: '20px',
+    border: '1px solid #f0f3f8',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
     '&:active': {
-      transform: 'scale(0.96)',
+      transform: 'scale(0.98)',
     },
-    '&::after': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundImage: 'radial-gradient(circle at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 40%)',
-      zIndex: 1,
-    }
   },
   featuredItem: {
     gridColumn: '1 / span 2',
-    height: '180px',
-    padding: '25px',
+    height: '200px',
+    background: 'linear-gradient(to right, #fff 50%, #e7f3ff 100%)',
+    padding: '30px',
     '& $gameItemName': {
-      fontSize: '22px',
+      fontSize: '24px',
     },
     '& $gameItemLogo': {
-      width: '100px',
+      width: '110px',
     }
   },
   gameItemName: {
@@ -489,9 +480,9 @@ const useStyles = makeStyles((theme) => ({
   casinoWrapper: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
-    padding: '0 15px',
-    marginBottom: '30px',
+    gap: '10px',
+    padding: '0 12px',
+    marginBottom: '20px',
   },
   casinoItem: {
     width: '100%',
@@ -564,8 +555,8 @@ const useStyles = makeStyles((theme) => ({
     padding: "0 15px",
     display: "grid",
     gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "12px",
-    marginBottom: "20px",
+    gap: '8px',
+    marginBottom: '15px',
   },
   gameCard: {
     backgroundColor: "#fff",
@@ -810,7 +801,16 @@ const Home = () => {
   return (
     <div className={classes.root}>
       <div className={classes.mainContainer}>
-        {/* Hero / Brand Section */}
+        <div className={classes.topBar}>
+          <Box display="flex" alignItems="center">
+            <CloseIcon style={{ fontSize: 24, color: '#333', marginRight: '15px', cursor: 'pointer' }} />
+            <img src={LOGO_URL} alt="Deltin" style={{ height: '30px', marginRight: '10px' }} />
+            <Typography style={{ fontWeight: 900, fontSize: '16px', color: '#1a1a1a' }}>DELTIN7 APP</Typography>
+          </Box>
+          <Button variant="contained" className={classes.downloadBtn}>Download</Button>
+        </div>
+
+        {/* Logo / Auth Bar */}
         <div className={classes.authBar}>
           <img src={LOGO_URL} alt="Deltin Sport" className={classes.logo} />
           {!isAuth ? (
@@ -818,7 +818,6 @@ const Home = () => {
               <Button
                 variant="contained"
                 className={classes.btnRegister}
-                startIcon={<RegisterIcon style={{ transform: 'rotate(180deg)', fontSize: 18 }} />}
                 onClick={() => history.push('/login')}
               >
                 Register
@@ -826,7 +825,6 @@ const Home = () => {
               <Button
                 variant="contained"
                 className={classes.btnLogin}
-                startIcon={<LoginIcon style={{ fontSize: 18 }} />}
                 onClick={() => history.push('/login')}
               >
                 Log-in
