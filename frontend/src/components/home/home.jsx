@@ -267,15 +267,15 @@ const useStyles = makeStyles((theme) => ({
     listStyle: "none",
     padding: 0,
     margin: 0,
-    gap: "10px",
+    gap: "4px",
   },
   typeItem: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    minWidth: "85px",
-    height: "85px",
+    minWidth: "75px",
+    height: "82px",
     backgroundColor: "#fff",
     borderRadius: "14px",
     border: "1px solid #f0f2f5",
@@ -283,7 +283,7 @@ const useStyles = makeStyles((theme) => ({
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
     "&:first-child": {
-      marginLeft: "30px", // Preserving the requested space
+      marginLeft: "12px",
     },
     "&:last-child": {
       marginRight: "30px",
@@ -886,21 +886,19 @@ const Home = () => {
         {/* Categories Menu Section */}
         <div className={classes.gameTypeWrapper}>
           <div className={`${classes.typeWrapper} rightSideBlurMask`}>
-            <div className={classes.tabScrollRoot}>
-              <ul className={classes.tabScrollRoot}>
-                {categories.map((cat) => (
-                  <li key={cat.id} className="component-tab-scroll-items">
-                    <div
-                      className={`${classes.typeItem} ${selectedCategory === cat.id ? 'active' : ''} ${cat.id === 'cockfight' ? classes.cockfightCard : ''}`}
-                      onClick={() => setSelectedCategory(cat.id)}
-                    >
-                      <img src={cat.icon} alt={cat.label} />
-                      <span>{cat.label}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className={classes.tabScrollRoot}>
+              {categories.map((cat) => (
+                <li key={cat.id}>
+                  <div
+                    className={`${classes.typeItem} ${selectedCategory === cat.id ? 'active' : ''} ${cat.id === 'cockfight' ? classes.cockfightCard : ''}`}
+                    onClick={() => setSelectedCategory(cat.id)}
+                  >
+                    <img src={cat.icon} alt={cat.label} />
+                    <span>{cat.label}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
