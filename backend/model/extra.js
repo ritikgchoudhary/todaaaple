@@ -34,10 +34,31 @@ const ExtraScheme = mongoose.Schema({
     },
     ip: {
         type: Array
+    },
+    rechargeEnabled: {
+        type: Boolean,
+        default: true
+    },
+    gatewayOrder: {
+        type: Array,
+        default: ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"]
+    },
+    gatewayEnabled: {
+        type: Object,
+        default: () => ({ auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true })
+    },
+    carouselImages: {
+        type: [String],
+        default: []
+    },
+    siteLogoUrl: {
+        type: String,
+        default: ""
+    },
+    apkDownloadUrl: {
+        type: String,
+        default: ""
     }
-  
-  
- 
 });
 
 export default mongoose.model('Extra', ExtraScheme);

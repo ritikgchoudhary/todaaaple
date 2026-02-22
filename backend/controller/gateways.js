@@ -21,6 +21,7 @@ import sha256 from "sha256";
 import dateFormat from "dateformat";
 import md5 from "md5";
 import Joi from "joi";
+import { creditCommission } from "./commission.js";
 var seospay = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOGQwNzcyMWIwZTE5NjQ5MTJlNmQzNjBjZmM3MzhkYmU3MTgzMTEyZTA0Y2UzMzgzODFkYWRjMjQwMmRmMWRhODg5ZTc0YWFhNjAwZWUxMmIiLCJpYXQiOjE3MTU2ODEzNTkuMjY0Njg4MDE0OTg0MTMwODU5Mzc1LCJuYmYiOjE3MTU2ODEzNTkuMjY0NjkyMDY4MDk5OTc1NTg1OTM3NSwiZXhwIjoxNzE2Mjg2MTU5LjI2MjM4MTA3NjgxMjc0NDE0MDYyNSwic3ViIjoiMzciLCJzY29wZXMiOltdfQ.AUkEk-FdzkDDxLyAjnvsRWxVoZ3DrjKAcLwfW4VbhO7LgZ20uZ7vf8pQ3QNXHYUuMM_SEYfwCsda_Jl6koKRSnqMNSImQQufankHrr5qLEGlaIk4PLoMQj4dSrI5IjbLuVrudQc4loTWNeEcN3jxdapa7svx9uD9YZg6BcF2OHZ4z8thFSaUvkXfganbpKplNPEhTvPCm1MS6H1gaJjep5vdC6QOvk2U6yLJpdKnmrQ3Nc4IlsIAIrDJtfx4X3a1xEMIEjoxl0jkVOox5Id2n8V9_sRo7LHjQLQ9OcW5qJHXYBNysKByqQBA7fuil-tr8dDfIZVzSQ54QPCRMBDd0b7j6TpViwQxnR1ksgOGBR9G9KNUGBWWyCWujilG8jNZ_sJPCDsL0VdWCxhHUbtvo3E4HCWsIHOAhiGeR_yaFNSsVaDC4mELgdDKrLOUR7Pc2mzYxgpt-eFvoAjFboPNpzIsiZ7nQFAAlCMNdX7-i2fFABl9Fh2e2IGPn9psAXD3xBY3XwGX9rcICUuka8pE0gSkbhQQEvFORiLGu216ahgw5wXl-DEvqswdqWfFkUGvxrEZjqgHOvZaIJP5Xlz5nUs0UwOvdPM45KE_PvMajR-Ddc_G5y-EaM4WQ4TRaHIon3wbuemKYXsQ6SFllm3V-u31akW8yMHC1AHU23Ah5hw"
 var token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbElkIjoiZ3M3NDM0MEBnbWFpbC5jb20iLCJwYXNzd29yZCI6Im16aTl6cjY3aWJ5ZHA1azN0Y2t6IiwiaWF0IjoxNjk2NTA0NDk3LCJleHAiOjE2OTY2NzcyOTd9.U3iNorsmGO26VMeX-yFQ0FHCjVbGIWGrV3nzcD7HqrE";
@@ -31,39 +32,39 @@ var KSLtoken =
 var planetC =
   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMyIiwibmFtZSI6IjRTQU5FIEdBTUlORyBQUklWQVRFIExJTUlURUQiLCJ1c2VybmFtZSI6IjRzYW5lcGx0MjMxMiIsIm1vYmlsZSI6Ijk5ODE1ODM5NjEiLCJjcmVhdGVkX2F0IjoiMjAyMy0xMi0yMyAxODozMToxNiIsInRpbWUiOjE3MDM1OTM1MTJ9.UDBPgBNzSMnPUfB-1sNDqLME9CfwqtUlvrvTbZTY0jM";
 
-  const razorpay = new Razorpay({
-    key_id: 'rzp_live_fJzOc7KpYoTdkk',
-    key_secret: 'Y9tTG0rE2sryUoDbxokaWhzU',
-  });
-  
-  export const createUPIintent = async (req, res) => {
-    const token = process.env.paygicToken;
-    const userId = req.params.id;
-    const amount = req.body.amount;
-    const customer_name = req.body.customer_name;
-    const customer_email = req.body.customer_email;
-    const customer_mobile = req.body.customer_mobile;
-    const id = Math.random().toString(16).slice(2);
-    try {
-      const options = {
-        method: "POST",
-        url: "https://server.paygic.in/api/v2/createPaymentRequest",
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-          "token": `${token}`,
-        },
-        data: {
-          "mid": "CHOUHANKRI", //Example - PAYGIC
-          "amount": amount,//Example - 200
-          "merchantReferenceId": id,//Example- bd79da4cc3ff1
-          "customer_name": customer_name,
-          "customer_email": customer_email,
-          "customer_mobile": customer_mobile
-        },
-      };
+const razorpay = new Razorpay({
+  key_id: 'rzp_live_fJzOc7KpYoTdkk',
+  key_secret: 'Y9tTG0rE2sryUoDbxokaWhzU',
+});
 
-      axios
+export const createUPIintent = async (req, res) => {
+  const token = process.env.paygicToken;
+  const userId = req.params.id;
+  const amount = req.body.amount;
+  const customer_name = req.body.customer_name;
+  const customer_email = req.body.customer_email;
+  const customer_mobile = req.body.customer_mobile;
+  const id = Math.random().toString(16).slice(2);
+  try {
+    const options = {
+      method: "POST",
+      url: "https://server.paygic.in/api/v2/createPaymentRequest",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        "token": `${token}`,
+      },
+      data: {
+        "mid": "CHOUHANKRI", //Example - PAYGIC
+        "amount": amount,//Example - 200
+        "merchantReferenceId": id,//Example- bd79da4cc3ff1
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "customer_mobile": customer_mobile
+      },
+    };
+
+    axios
       .request(options)
       .then(async function (response) {
         const lastTrans = await Trans.findOne().sort({ number: -1 });
@@ -77,10 +78,10 @@ var planetC =
           amount: amount,
           status: "created",
         });
-        
-        if(response.data.status){
+
+        if (response.data.status) {
           res.status(200).send(response.data.data);
-        }else{
+        } else {
           console.log(response.data)
           res.status(400).send(response.data);
         }
@@ -92,13 +93,13 @@ var planetC =
 
 
 
-    } catch (error) {
-      console.log(error)
-      return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
+  } catch (error) {
+    console.log(error)
+    return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
 
-     }
+  }
 }
-export const paygicUPICallback = async (req,res) => {
+export const paygicUPICallback = async (req, res) => {
   const data = req.body;
   const clientId = data.data.merchantReferenceId;
 
@@ -125,76 +126,726 @@ export const paygicUPICallback = async (req,res) => {
   const todayProfit = `${day}/${month}/${year}`;
 
   if (data.status) {
-    const paygicStatus = await axios.post(`https://server.paygic.in/api/v2/checkPaymentStatus`,{
+    const paygicStatus = await axios.post(`https://server.paygic.in/api/v2/checkPaymentStatus`, {
       "mid": "CHOUHANKRI", //Example - PAYGIC
       "merchantReferenceId": clientId,//Example- bd79da4cc3ff1
-    },{
+    }, {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
         "token": `${process.env.paygicToken}`,
       },
     }
-  );
-  
-  if(paygicStatus.data.txnStatus === "SUCCESS"){
-    
-    try {
+    );
 
-          
-     
-      const tempTran = await Trans.findOne({
-        id: clientId,
-        status: "created",
-      });
-      if (tempTran) {
-        console.log("**************** WebHooked Paygic *********************");
-        const lastTransId = await Trans.findOne(
-          { id: clientId },
-          { number: 1, userId: 1,amount: 1}
-        );
-        var amount = lastTransId.amount;
-        const updatedDoc = await Trans.findOneAndUpdate(
-          { id: clientId, status: 'created' },
-          {status: 'success',expired: true,$inc: {__v: 1}},
-          { new: true, runValidators: true }
-        );
-      
-        if(updatedDoc){
-          const user = await User.findOne({ id: lastTransId.userId });
-        var firstRecharge = 0;
-        await daily.updateOne(
-          { id: newDate },
-          { $inc: { count: +1, amount: amount } },
-          { upsert: true }
-        );
+    if (paygicStatus.data.txnStatus === "SUCCESS") {
 
-        if (!user.firstRecharge) {
-          firstRecharge = amount;
-          var bonusAmount = amount;
-               
-          const bonus = (amount * 10) / 100;
-          bonusAmount = amount + bonus;
-          await User.updateOne(
-            { id: user.upLine[0] },
-            {
-              $inc: { balance: +100 },
-              $push: {
-                walletHistory: {
-                  amount: 100,
-                  date: Date.now(),
-                  credit: true,
-                  note: `Referal Reward User: ${user.id}`,
-                },
-              },
-            }
+      try {
+
+
+
+        const tempTran = await Trans.findOne({
+          id: clientId,
+          status: "created",
+        });
+        if (tempTran) {
+          console.log("**************** WebHooked Paygic *********************");
+          const lastTransId = await Trans.findOne(
+            { id: clientId },
+            { number: 1, userId: 1, amount: 1 }
           );
-          const filedName = `todayProfit.${todayProfit}.referral`;
+          var amount = lastTransId.amount;
+          const updatedDoc = await Trans.findOneAndUpdate(
+            { id: clientId, status: 'created' },
+            { status: 'success', expired: true, $inc: { __v: 1 } },
+            { new: true, runValidators: true }
+          );
+
+          if (updatedDoc) {
+            const user = await User.findOne({ id: lastTransId.userId });
+            var firstRecharge = 0;
+            await daily.updateOne(
+              { id: newDate },
+              { $inc: { count: +1, amount: amount } },
+              { upsert: true }
+            );
+
+            if (!user.firstRecharge) {
+              firstRecharge = amount;
+              var bonusAmount = amount;
+
+              const bonus = (amount * 10) / 100;
+              bonusAmount = amount + bonus;
+              await User.updateOne(
+                { id: user.upLine[0] },
+                {
+                  $inc: { balance: +100 },
+                  $push: {
+                    walletHistory: {
+                      amount: 100,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Referal Reward User: ${user.id}`,
+                    },
+                  },
+                }
+              );
+              const filedName = `todayProfit.${todayProfit}.referral`;
+              await offerBonus.updateOne(
+                { userId: user.upLine[0] },
+                {
+                  userId: user.upLine[0],
+                  $inc: { amount: +100, [filedName]: +100, totalReferral: +100 },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: 100,
+                      note: `Referal Reward User: ${user.id}`,
+                      date: Date.now(),
+                    },
+                  },
+                },
+                { upsert: true }
+              );
+
+
+
+
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +bonusAmount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: bonusAmount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: bonusAmount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
+                  },
+                }
+              );
+
+              // const level0profit = (amount * 3) /100;
+              //     const level1profit = (amount * 0) /100;
+              //     const level2profit = (amount * 0) /100;
+
+
+              // user.upLine.forEach(async (element,index) => {
+              //   if(index === 0){
+              //   const fieldName = `todayProfit.${todayProfit}.level${index}`;
+              //   const totallevel = `totalLevel${index}`;
+              //   await User.updateOne(
+              //     { id: element },
+              //     {
+              //       $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
+
+              //     }
+              //   );
+              //   await offerBonus.updateOne(
+              //     { userId: element },
+              //     {
+              //       userId: element,
+              //       $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
+              //       $push: {
+              //         history: {
+              //           credit: "wallet",
+              //           amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
+              //           note: `Recharge bonus: ${user.id}`,
+              //           date: Date.now(),
+              //         },
+              //       },
+              //     },
+              //     {upsert: true}
+              //   );
+              //   }
+              // });
+            } else {
+              var bonus;
+              var bonusAmount = amount;
+              if (amount > 200) {
+                bonus = (amount * 3) / 100;
+                bonusAmount = amount + bonus;
+              }
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +bonusAmount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: bonusAmount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: bonusAmount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
+                  },
+                }
+              );
+              const level0profit = (amount * 3) / 100;
+              const level1profit = (amount * 0) / 100;
+              const level2profit = (amount * 0) / 100;
+
+              user.upLine.forEach(async (element, index) => {
+                if (index === 0) {
+                  const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                  const totallevel = `totalLevel${index}`;
+                  await User.updateOne(
+                    { id: element },
+                    {
+                      $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                    }
+                  );
+                  await offerBonus.updateOne(
+                    { userId: element },
+                    {
+                      userId: element,
+                      $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                      $push: {
+                        history: {
+                          credit: "wallet",
+                          amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                          note: `Recharge bonus: ${user.id}`,
+                          date: Date.now(),
+                        },
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+              });
+
+            }
+            const userDate = new Date(user.date);
+            const userDateLocal = (userDate / 1000 + 19800) * 1000;
+            const newuserDate = new Date(userDateLocal);
+            const abhiDate = new Date();
+            const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+            const newabhirDate = new Date(abhiDateLocal);
+            const day = newabhirDate.getDate();
+            const month = newabhirDate.getMonth() + 1;
+            const year = newabhirDate.getFullYear();
+            const dayMonth = `${day}/${month}/${year}`;
+
+            const userday = newuserDate.getDate();
+            const usermonth = newuserDate.getMonth() + 1;
+            const userdayMonth = `${userday}/${usermonth}/${year}`;
+            const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone3recharge = `newlevel3.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone4recharge = `newlevel4.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone5recharge = `newlevel5.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone6recharge = `newlevel6.${dayMonth}.${user.phone}.todayRecharge`;
+
+
+            const phone0recharge = `level0.${user.phone}.totalRecharge`;
+            const phone1recharge = `level1.${user.phone}.totalRecharge`;
+            const phone2recharge = `level2.${user.phone}.totalRecharge`;
+            const phone3recharge = `level3.${user.phone}.totalRecharge`;
+            const phone4recharge = `level4.${user.phone}.totalRecharge`;
+            const phone5recharge = `level5.${user.phone}.totalRecharge`;
+            const phone6recharge = `level6.${user.phone}.totalRecharge`;
+
+            const phone0first = `level0.${user.phone}.firstRecharge`;
+            const phone1first = `level1.${user.phone}.firstRecharge`;
+            const phone2first = `level2.${user.phone}.firstRecharge`;
+            const phone3first = `level3.${user.phone}.firstRecharge`;
+            const phone4first = `level4.${user.phone}.firstRecharge`;
+            const phone5first = `level5.${user.phone}.firstRecharge`;
+            const phone6first = `level6.${user.phone}.firstRecharge`;
+
+            if (dayMonth === userdayMonth) {
+              if (user.upLine !== null) {
+                // Level 0
+                if (user.upLine[0]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[0] },
+                    {
+                      userId: user.upLine[0],
+                      $inc: {
+                        [newphone0recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                // Level 1
+                if (user.upLine[1]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[1] },
+                    {
+                      userId: user.upLine[1],
+                      $inc: {
+                        [newphone1recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                // Level 2
+                if (user.upLine[2]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[2] },
+                    {
+                      userId: user.upLine[2],
+                      $inc: {
+                        [newphone2recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                // Level 3
+                if (user.upLine[3]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[3] },
+                    {
+                      userId: user.upLine[3],
+                      $inc: {
+                        [newphone3recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                // Level 4
+                if (user.upLine[4]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[4] },
+                    {
+                      userId: user.upLine[4],
+                      $inc: {
+                        [newphone4recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                // Level 5
+                if (user.upLine[5]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[5] },
+                    {
+                      userId: user.upLine[5],
+                      $inc: {
+                        [newphone5recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                // Level 6
+                if (user.upLine[6]?.length > 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[6] },
+                    {
+                      userId: user.upLine[6],
+                      $inc: {
+                        [newphone6recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+              }
+            }
+
+            if (user.upLine !== null) {
+              // Level 0
+              if (user.upLine[0]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[0] },
+                  {
+                    userId: user.upLine[0],
+                    $inc: {
+                      [phone0first]: firstRecharge,
+                      [phone0recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+
+              // Level 1
+              if (user.upLine[1]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[1] },
+                  {
+                    userId: user.upLine[1],
+                    $inc: {
+                      [phone1first]: firstRecharge,
+                      [phone1recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+
+              // Level 2
+              if (user.upLine[2]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[2] },
+                  {
+                    userId: user.upLine[2],
+                    $inc: {
+                      [phone2first]: firstRecharge,
+                      [phone2recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+
+              // Level 3
+              if (user.upLine[3]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[3] },
+                  {
+                    userId: user.upLine[3],
+                    $inc: {
+                      [phone3first]: firstRecharge,
+                      [phone3recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+
+              // Level 4
+              if (user.upLine[4]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[4] },
+                  {
+                    userId: user.upLine[4],
+                    $inc: {
+                      [phone4first]: firstRecharge,
+                      [phone4recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+
+              // Level 5
+              if (user.upLine[5]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[5] },
+                  {
+                    userId: user.upLine[5],
+                    $inc: {
+                      [phone5first]: firstRecharge,
+                      [phone5recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+
+              // Level 6
+              if (user.upLine[6]?.length > 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[6] },
+                  {
+                    userId: user.upLine[6],
+                    $inc: {
+                      [phone6first]: firstRecharge,
+                      [phone6recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+            }
+
+            res.status(200).send("done");
+
+          } else {
+            res.status(200).send('done');
+          }
+        } else {
+          res.status(200).send("done");
+        }
+
+      } catch (error) {
+        console.log(error.message);
+        res.status(200).send("done");
+      }
+    } else {
+
+      res.status(200).send("done");
+    }
+
+  } else {
+    res.status(200).send("done");
+  }
+
+}
+
+export const createAirpayOrder = async (req, res) => {
+  const userId = req.params.id;
+  const amount = req.body.amount;
+  const customer_name = req.body.customer_name;
+  const customer_email = req.body.customer_email;
+  const customer_mobile = req.body.customer_mobile;
+  const id = Math.random().toString(16).slice(2);
+  const secret = process.env.airpay;
+  const username = process.env.airpayUsername;
+  const password = process.env.airpayPass;
+  try {
+
+
+    const alldata = customer_email + customer_name + " " + " " + " " + " " + " " + `${amount}` + id;
+    const udata = username + ':|:' + password;
+    const privatekey = sha256(secret + '@' + udata);
+    const keySha256 = sha256(username + "~:~" + password);
+    var now = new Date();
+    const aldata = alldata + dateFormat(now, 'yyyy-mm-dd');
+    const checksum = sha256(keySha256 + '@' + aldata); //md5(aldata+privatekey);
+
+    const lastTrans = await Trans.findOne().sort({ number: -1 });
+    const newIncreament = lastTrans.number + 1;
+    await Trans.create({
+      id: id,
+      number: newIncreament,
+      date: Date.now(),
+      userId,
+      gateway: "Airpay",
+      amount: amount,
+      status: "created",
+    });
+
+
+
+    return res.status(200).send({ privatekey: privatekey, checksum: checksum, data: { id, amount } })
+  } catch (error) {
+    console.log(error)
+    return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
+
+  }
+}
+
+export const createCryptoUpayOrder = async (req, res) => {
+  const userId = req.params.id;
+  const amount = parseFloat(req.body.amount).toFixed(4);
+  const id = Math.random().toString(16).slice(2);
+  const secret = process.env.UPAY_APP_SECRET;
+  const app = process.env.UPAY_APP_ID;
+  try {
+
+    function generateSignature(params, appSecret) {
+      const sortedParams = Object.keys(params).sort().map(key => `${key}=${params[key]}`);
+      const stringToSign = sortedParams.join('&') + `&appSecret=${appSecret}`;
+      const md5Hash = crypto.createHash('md5').update(stringToSign).digest('hex');
+      const signature = md5Hash.toUpperCase();
+
+      return signature;
+    }
+    const params = {
+      appId: app,
+      chainType: '1',
+      merchantOrderNo: id,
+      fiatAmount: `${amount}`,
+      fiatCurrency: "USD",
+      notifyUrl: "https://vgaserver3-559391633514.asia-south1.run.app/cryptoUpayCallback"
+    };
+    const appSecret = secret;
+
+    const signature = generateSignature(params, appSecret);
+
+    const options = {
+      method: "POST",
+      url: `${process.env.UPAY_API_URL}/v1/api/open/order/apply`,
+      headers: {
+
+        "Content-Type": "application/json",
+
+      },
+      data: {
+        "appId": app,
+        "merchantOrderNo": id,
+        "chainType": "1",
+        "fiatAmount": `${amount}`,
+        "fiatCurrency": "USD",
+        "notifyUrl": "https://vgaserver3-559391633514.asia-south1.run.app/cryptoUpayCallback",
+        "redirectUrl": `https://toddapple.live/rechargeHistory`,
+        "signature": signature
+      },
+    };
+
+    axios
+      .request(options)
+      .then(async function (response) {
+        if (response.data.code === '1') {
+          const lastTrans = await Trans.findOne().sort({ number: -1 });
+          const newIncreament = lastTrans.number + 1;
+          await Trans.create({
+            id: id,
+            number: newIncreament,
+            date: Date.now(),
+            userId,
+            gateway: "Upay",
+            amount: amount * parseInt(process.env.USD_RATE),
+            status: "created",
+          });
+          return res.status(200).send({ url: response.data.data.payUrl })
+        } else {
+
+          return res.status(400).send(response.data.msg)
+        }
+
+      }).catch(function (error) {
+
+        return res.status(400).send(error)
+      });
+
+
+
+
+
+
+  } catch (error) {
+    return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
+
+  }
+}
+export const verifyCryptoSign = async (req, res) => {
+
+  function verifySignature(data, signature, appSecret) {
+    const sortedParams = Object.keys(data).sort().map(key => `${key}=${data[key]}`);
+    const stringToSign = sortedParams.join('&') + `&appSecret=${appSecret}`;
+    const calculatedSignature = crypto.createHash('md5').update(stringToSign).digest('hex').toUpperCase();
+    return calculatedSignature === signature;
+  }
+
+  try {
+    // Extract signature and all other data
+    const { signature: receivedSignature, ...callbackData } = req.body;
+    const appSecret = process.env.UPAY_APP_SECRET;
+
+    // Use the verified working parameter combination for UPay callback signature
+    const receivedData = {
+      appId: callbackData.appId,
+      orderNo: callbackData.orderNo,
+      merchantOrderNo: callbackData.merchantOrderNo,
+      chainType: callbackData.chainType,
+      crypto: callbackData.crypto,
+      actualCrypto: callbackData.actualCrypto,
+      poundage: callbackData.poundage,
+      actualPoundage: callbackData.actualPoundage,
+      status: callbackData.status,
+      createdAt: callbackData.createdAt,
+      completedAt: callbackData.completedAt
+    };
+
+    // Remove empty/undefined values
+    Object.keys(receivedData).forEach(key => {
+      if (receivedData[key] === undefined || receivedData[key] === null || receivedData[key] === '') {
+        delete receivedData[key];
+      }
+    });
+
+    const isValid = verifySignature(receivedData, receivedSignature, appSecret);
+
+    if (isValid) {
+      // Process the successful payment
+      if (callbackData.status === "1") {
+        // Payment completed successfully
+        const date = new Date();
+        const localDate = (date / 1000 + 19800) * 1000;
+        const newDatefor = new Date(localDate);
+        const day = newDatefor.getDate();
+        const month = newDatefor.getMonth() + 1;
+        const year = newDatefor.getFullYear();
+
+        var daySorted;
+        var monthSorted;
+        if (day < 10) {
+          daySorted = `0${day}`;
+        } else {
+          daySorted = `${day}`;
+        }
+        if (month < 10) {
+          monthSorted = `0${month}`;
+        } else {
+          monthSorted = `${month}`;
+        }
+        const newDate = `${daySorted}-${monthSorted}-${year}`;
+        const todayProfit = `${day}/${month}/${year}`;
+        const clientId = callbackData.merchantOrderNo;
+
+        try {
+
+
+
+          const tempTran = await Trans.findOne({
+            id: clientId,
+            status: "created",
+          });
+          if (tempTran) {
+            console.log("**************** WebHooked Upay *********************");
+            const lastTransId = await Trans.findOne(
+              { id: clientId },
+              { number: 1, userId: 1, amount: 1 }
+            );
+            var amount = lastTransId.amount;
+            const updatedDoc = await Trans.findOneAndUpdate(
+              { id: clientId, status: 'created' },
+              { status: 'success', expired: true, $inc: { __v: 1 } },
+              { new: true, runValidators: true }
+            );
+
+            if (updatedDoc) {
+              const user = await User.findOne({ id: lastTransId.userId });
+              var firstRecharge = 0;
+              await daily.updateOne(
+                { id: newDate },
+                { $inc: { count: +1, amount: amount } },
+                { upsert: true }
+              );
+
+              if (!user.firstRecharge) {
+                firstRecharge = amount;
+                var bonusAmount = amount;
+
+                const bonus = (amount * 10) / 100;
+                bonusAmount = amount + bonus;
+                await User.updateOne(
+                  { id: user.upLine[0] },
+                  {
+                    $inc: { balance: +100 },
+                    $push: {
+                      walletHistory: {
+                        amount: 100,
+                        date: Date.now(),
+                        credit: true,
+                        note: `Referal Reward User: ${user.id}`,
+                      },
+                    },
+                  }
+                );
+                const filedName = `todayProfit.${todayProfit}.referral`;
                 await offerBonus.updateOne(
                   { userId: user.upLine[0] },
                   {
                     userId: user.upLine[0],
-                    $inc: { amount: +100, [filedName]: +100, totalReferral: +100},
+                    $inc: { amount: +100, [filedName]: +100, totalReferral: +100 },
                     $push: {
                       history: {
                         credit: "wallet",
@@ -204,12 +855,12 @@ export const paygicUPICallback = async (req,res) => {
                       },
                     },
                   },
-                  {upsert: true}
+                  { upsert: true }
                 );
-                
-      
-              
-                
+
+
+
+
                 await User.updateOne(
                   { id: user.id },
                   {
@@ -219,6 +870,7 @@ export const paygicUPICallback = async (req,res) => {
                         amount: bonusAmount,
                         date: Date.now(),
                         status: "Success",
+                        usdt: receivedData.crypto
                       },
                       walletHistory: {
                         amount: bonusAmount,
@@ -229,12 +881,12 @@ export const paygicUPICallback = async (req,res) => {
                     },
                   }
                 );
-                 
+
                 // const level0profit = (amount * 3) /100;
                 //     const level1profit = (amount * 0) /100;
                 //     const level2profit = (amount * 0) /100;
-      
-                
+
+
                 // user.upLine.forEach(async (element,index) => {
                 //   if(index === 0){
                 //   const fieldName = `todayProfit.${todayProfit}.level${index}`;
@@ -243,7 +895,7 @@ export const paygicUPICallback = async (req,res) => {
                 //     { id: element },
                 //     {
                 //       $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                      
+
                 //     }
                 //   );
                 //   await offerBonus.updateOne(
@@ -264,759 +916,209 @@ export const paygicUPICallback = async (req,res) => {
                 //   );
                 //   }
                 // });
-              }else{
+              } else {
                 var bonus;
-          var bonusAmount = amount;
-                          if (amount > 200) {
-                             bonus = (amount * 3) / 100;
-                            bonusAmount = amount + bonus;
-                          }
-          await User.updateOne(
-            { id: user.id },
-            {
-              firstRecharge: true, $inc: { balance: +bonusAmount },
-              $push: {
-                rechargeHistory: {
-                  amount: bonusAmount,
-                  date: Date.now(),
-                  status: "Success",
-                },
-                walletHistory: {
-                  amount: bonusAmount,
-                  date: Date.now(),
-                  credit: true,
-                  note: `Add money ID: ${lastTransId.number}`,
-                },
-              },
-            }
-          );
-          const level0profit = (amount * 3) /100;
-                    const level1profit = (amount * 0) /100;
-                    const level2profit = (amount * 0) /100;
-
-          user.upLine.forEach(async (element,index) => {
-            if(index === 0){
-            const fieldName = `todayProfit.${todayProfit}.level${index}`;
-            const totallevel = `totalLevel${index}`;
-            await User.updateOne(
-              { id: element },
-              {
-                $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                
-              }
-            );
-            await offerBonus.updateOne(
-              { userId: element },
-              {
-                userId: element,
-                $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                    note: `Recharge bonus: ${user.id}`,
-                    date: Date.now(),
-                  },
-                },
-              },
-              {upsert: true}
-            );
-          }
-          });
-          
-        }
-        const userDate = new Date(user.date);
-        const userDateLocal = (userDate / 1000 + 19800) * 1000;
-        const newuserDate = new Date(userDateLocal);
-        const abhiDate = new Date();
-        const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-        const newabhirDate = new Date(abhiDateLocal);
-        const day = newabhirDate.getDate();
-        const month = newabhirDate.getMonth() + 1;
-        const year = newabhirDate.getFullYear();
-        const dayMonth = `${day}/${month}/${year}`;
-
-        const userday = newuserDate.getDate();
-        const usermonth = newuserDate.getMonth() + 1;
-        const userdayMonth = `${userday}/${usermonth}/${year}`;
-        const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone3recharge = `newlevel3.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone4recharge = `newlevel4.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone5recharge = `newlevel5.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone6recharge = `newlevel6.${dayMonth}.${user.phone}.todayRecharge`;
-       
-
-        const phone0recharge = `level0.${user.phone}.totalRecharge`;
-        const phone1recharge = `level1.${user.phone}.totalRecharge`;
-        const phone2recharge = `level2.${user.phone}.totalRecharge`;
-        const phone3recharge = `level3.${user.phone}.totalRecharge`;
-        const phone4recharge = `level4.${user.phone}.totalRecharge`;
-        const phone5recharge = `level5.${user.phone}.totalRecharge`;
-        const phone6recharge = `level6.${user.phone}.totalRecharge`;
-
-        const phone0first = `level0.${user.phone}.firstRecharge`;
-        const phone1first = `level1.${user.phone}.firstRecharge`;
-        const phone2first = `level2.${user.phone}.firstRecharge`;
-        const phone3first = `level3.${user.phone}.firstRecharge`;
-        const phone4first = `level4.${user.phone}.firstRecharge`;
-        const phone5first = `level5.${user.phone}.firstRecharge`;
-        const phone6first = `level6.${user.phone}.firstRecharge`;
-
-        if (dayMonth === userdayMonth) {
-          if (user.upLine !== null) {
-            // Level 0
-            if (user.upLine[0]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[0] },
-                {
-                  userId: user.upLine[0],
-                  $inc: {
-                    [newphone0recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            
-            // Level 1
-            if (user.upLine[1]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[1] },
-                {
-                  userId: user.upLine[1],
-                  $inc: {
-                    [newphone1recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            
-            // Level 2
-            if (user.upLine[2]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[2] },
-                {
-                  userId: user.upLine[2],
-                  $inc: {
-                    [newphone2recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            
-            // Level 3
-            if (user.upLine[3]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[3] },
-                {
-                  userId: user.upLine[3],
-                  $inc: {
-                    [newphone3recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            
-            // Level 4
-            if (user.upLine[4]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[4] },
-                {
-                  userId: user.upLine[4],
-                  $inc: {
-                    [newphone4recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            
-            // Level 5
-            if (user.upLine[5]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[5] },
-                {
-                  userId: user.upLine[5],
-                  $inc: {
-                    [newphone5recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            
-            // Level 6
-            if (user.upLine[6]?.length > 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[6] },
-                {
-                  userId: user.upLine[6],
-                  $inc: {
-                    [newphone6recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-          }
-        }
-
-        if (user.upLine !== null) {
-          // Level 0
-          if (user.upLine[0]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[0] },
-              {
-                userId: user.upLine[0],
-                $inc: {
-                  [phone0first]: firstRecharge,
-                  [phone0recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          
-          // Level 1
-          if (user.upLine[1]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[1] },
-              {
-                userId: user.upLine[1],
-                $inc: {
-                  [phone1first]: firstRecharge,
-                  [phone1recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          
-          // Level 2
-          if (user.upLine[2]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[2] },
-              {
-                userId: user.upLine[2],
-                $inc: {
-                  [phone2first]: firstRecharge,
-                  [phone2recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          
-          // Level 3
-          if (user.upLine[3]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[3] },
-              {
-                userId: user.upLine[3],
-                $inc: {
-                  [phone3first]: firstRecharge,
-                  [phone3recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          
-          // Level 4
-          if (user.upLine[4]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[4] },
-              {
-                userId: user.upLine[4],
-                $inc: {
-                  [phone4first]: firstRecharge,
-                  [phone4recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          
-          // Level 5
-          if (user.upLine[5]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[5] },
-              {
-                userId: user.upLine[5],
-                $inc: {
-                  [phone5first]: firstRecharge,
-                  [phone5recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          
-          // Level 6
-          if (user.upLine[6]?.length > 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[6] },
-              {
-                userId: user.upLine[6],
-                $inc: {
-                  [phone6first]: firstRecharge,
-                  [phone6recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-        }
-
-        res.status(200).send("done");
-
-        }else{
-          res.status(200).send('done');
-        }
-      } else {
-        res.status(200).send("done");
-        }
-   
-      } catch (error) {
-        console.log(error.message);
-        res.status(200).send("done");
-      }
-    }else{
-      
-        res.status(200).send("done");
-    }
-    
-  } else {
-    res.status(200).send("done");
-  }
-  
-}
-
-export const createAirpayOrder = async (req, res) => {
-  const userId = req.params.id;
-  const amount = req.body.amount;
-  const customer_name = req.body.customer_name;
-  const customer_email = req.body.customer_email;
-  const customer_mobile = req.body.customer_mobile;
-  const id = Math.random().toString(16).slice(2);
-  const secret = process.env.airpay;
-  const username = process.env.airpayUsername;
-  const password = process.env.airpayPass;
-  try {
-
-      
-      const alldata   = customer_email+customer_name+" "+" "+" "+" "+" "+`${amount}`+id;
-      const udata = username+':|:'+password;
-      const privatekey = sha256(secret+'@'+udata);
-      const keySha256 = sha256(username+"~:~"+password);
-      var now = new Date();
-      const aldata = alldata+dateFormat(now,'yyyy-mm-dd');
-      const checksum = sha256(keySha256+'@'+aldata); //md5(aldata+privatekey);
-
-      const lastTrans = await Trans.findOne().sort({ number: -1 });
-      const newIncreament = lastTrans.number + 1;
-      await Trans.create({
-        id: id,
-        number: newIncreament,
-        date: Date.now(),
-        userId,
-        gateway: "Airpay",
-        amount: amount,
-        status: "created",
-      });
-      
-     
-
-      return res.status(200).send({privatekey : privatekey,checksum:checksum,data: {id, amount}})
-  } catch (error) {
-    console.log(error)
-    return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
-
-   }
-}
-
-export const createCryptoUpayOrder = async (req, res) => {
-  const userId = req.params.id;
-  const amount = parseFloat(req.body.amount).toFixed(4);
-  const id = Math.random().toString(16).slice(2);
-  const secret = process.env.UPAY_APP_SECRET;
-  const app = process.env.UPAY_APP_ID;
-  try {
-
-    function generateSignature(params, appSecret) {
-      const sortedParams = Object.keys(params).sort().map(key => `${key}=${params[key]}`);
-      const stringToSign = sortedParams.join('&') + `&appSecret=${appSecret}`;
-      const md5Hash = crypto.createHash('md5').update(stringToSign).digest('hex');
-      const signature = md5Hash.toUpperCase();
-    
-      return signature;
-    }
-    const params = {
-      appId: app,
-      chainType: '1',
-      merchantOrderNo: id,
-      fiatAmount: `${amount}`,
-      fiatCurrency: "USD",
-      notifyUrl: "https://vgaserver3-559391633514.asia-south1.run.app/cryptoUpayCallback"
-    };
-    const appSecret = secret;
-    
-          const signature = generateSignature(params, appSecret);
-    
-    const options = {
-      method: "POST",
-      url: `${process.env.UPAY_API_URL}/v1/api/open/order/apply`,
-      headers: {
-        
-        "Content-Type": "application/json",
-        
-      },
-      data: {
-        "appId": app,
-        "merchantOrderNo": id,
-        "chainType": "1",
-        "fiatAmount": `${amount}`,
-        "fiatCurrency": "USD",
-        "notifyUrl": "https://vgaserver3-559391633514.asia-south1.run.app/cryptoUpayCallback",
-        "redirectUrl": `https://toddapple.live/rechargeHistory`,
-        "signature": signature
-      },
-    };
-
-    axios
-    .request(options)
-    .then(async function (response) {
-      if(response.data.code === '1'){
-        const lastTrans = await Trans.findOne().sort({ number: -1 });
-        const newIncreament = lastTrans.number + 1;
-        await Trans.create({
-          id: id,
-          number: newIncreament,
-          date: Date.now(),
-          userId,
-          gateway: "Upay",
-          amount: amount * parseInt(process.env.USD_RATE),
-          status: "created",
-        });
-        return res.status(200).send({url:response.data.data.payUrl})
-      }else{
-       
-        return res.status(400).send(response.data.msg)
-      }
- 
-    }).catch(function (error) {
-      
-      return res.status(400).send(error)
-    });
-
-     
-      
-     
-
-      
-  } catch (error) {
-    return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
-
-   }
-}
-export const verifyCryptoSign = async(req,res) => {
-  
-  function verifySignature(data, signature, appSecret) {
-    const sortedParams = Object.keys(data).sort().map(key => `${key}=${data[key]}`);
-    const stringToSign = sortedParams.join('&') + `&appSecret=${appSecret}`;
-          const calculatedSignature = crypto.createHash('md5').update(stringToSign).digest('hex').toUpperCase();
-      return calculatedSignature === signature;
-  }
-  
-  try {
-    // Extract signature and all other data
-    const { signature: receivedSignature, ...callbackData } = req.body;
-    const appSecret = process.env.UPAY_APP_SECRET;
-    
-    // Use the verified working parameter combination for UPay callback signature
-    const receivedData = {
-      appId: callbackData.appId,
-      orderNo: callbackData.orderNo,
-      merchantOrderNo: callbackData.merchantOrderNo,
-      chainType: callbackData.chainType,
-      crypto: callbackData.crypto,
-      actualCrypto: callbackData.actualCrypto,
-      poundage: callbackData.poundage,
-      actualPoundage: callbackData.actualPoundage,
-      status: callbackData.status,
-      createdAt: callbackData.createdAt,
-      completedAt: callbackData.completedAt
-    };
-    
-    // Remove empty/undefined values
-    Object.keys(receivedData).forEach(key => {
-      if (receivedData[key] === undefined || receivedData[key] === null || receivedData[key] === '') {
-        delete receivedData[key];
-      }
-    });
-    
-    const isValid = verifySignature(receivedData, receivedSignature, appSecret);
-    
-    if (isValid) {
-      // Process the successful payment
-      if (callbackData.status === "1") {
-        // Payment completed successfully
-        const date = new Date();
-        const localDate = (date / 1000 + 19800) * 1000;
-        const newDatefor = new Date(localDate);
-        const day = newDatefor.getDate();
-        const month = newDatefor.getMonth() + 1;
-        const year = newDatefor.getFullYear();
-      
-        var daySorted;
-        var monthSorted;
-        if (day < 10) {
-          daySorted = `0${day}`;
-        } else {
-          daySorted = `${day}`;
-        }
-        if (month < 10) {
-          monthSorted = `0${month}`;
-        } else {
-          monthSorted = `${month}`;
-        }
-        const newDate = `${daySorted}-${monthSorted}-${year}`;
-        const todayProfit = `${day}/${month}/${year}`;
-        const clientId = callbackData.merchantOrderNo;
-        
-        try {
-
-          
-     
-          const tempTran = await Trans.findOne({
-            id: clientId,
-            status: "created",
-          });
-          if (tempTran) {
-            console.log("**************** WebHooked Upay *********************");
-            const lastTransId = await Trans.findOne(
-              { id: clientId },
-              { number: 1, userId: 1,amount: 1}
-            );
-            var amount = lastTransId.amount;
-            const updatedDoc = await Trans.findOneAndUpdate(
-              { id: clientId, status: 'created' },
-              {status: 'success',expired: true,$inc: {__v: 1}},
-              { new: true, runValidators: true }
-            );
-          
-            if(updatedDoc){
-              const user = await User.findOne({ id: lastTransId.userId });
-            var firstRecharge = 0;
-            await daily.updateOne(
-              { id: newDate },
-              { $inc: { count: +1, amount: amount } },
-              { upsert: true }
-            );
-    
-            if (!user.firstRecharge) {
-              firstRecharge = amount;
-              var bonusAmount = amount;
-                   
-              const bonus = (amount * 10) / 100;
-              bonusAmount = amount + bonus;
-              await User.updateOne(
-                { id: user.upLine[0] },
-                {
-                  $inc: { balance: +100 },
-                  $push: {
-                    walletHistory: {
-                      amount: 100,
-                      date: Date.now(),
-                      credit: true,
-                      note: `Referal Reward User: ${user.id}`,
-                    },
-                  },
+                var bonusAmount = amount;
+                if (amount > 200) {
+                  bonus = (amount * 3) / 100;
+                  bonusAmount = amount + bonus;
                 }
-              );
-              const filedName = `todayProfit.${todayProfit}.referral`;
-                    await offerBonus.updateOne(
-                      { userId: user.upLine[0] },
+                await User.updateOne(
+                  { id: user.id },
+                  {
+                    firstRecharge: true, $inc: { balance: +bonusAmount },
+                    $push: {
+                      rechargeHistory: {
+                        amount: bonusAmount,
+                        date: Date.now(),
+                        status: "Success",
+                        usdt: receivedData.crypto
+                      },
+                      walletHistory: {
+                        amount: bonusAmount,
+                        date: Date.now(),
+                        credit: true,
+                        note: `Add money ID: ${lastTransId.number}`,
+                      },
+                    },
+                  }
+                );
+                const level0profit = (amount * 3) / 100;
+                const level1profit = (amount * 0) / 100;
+                const level2profit = (amount * 0) / 100;
+
+                user.upLine.forEach(async (element, index) => {
+                  if (index === 0) {
+                    const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                    const totallevel = `totalLevel${index}`;
+                    await User.updateOne(
+                      { id: element },
                       {
-                        userId: user.upLine[0],
-                        $inc: { amount: +100, [filedName]: +100, totalReferral: +100},
+                        $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                      }
+                    );
+                    await offerBonus.updateOne(
+                      { userId: element },
+                      {
+                        userId: element,
+                        $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
                         $push: {
                           history: {
                             credit: "wallet",
-                            amount: 100,
-                            note: `Referal Reward User: ${user.id}`,
+                            amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                            note: `Recharge bonus: ${user.id}`,
                             date: Date.now(),
                           },
                         },
                       },
-                      {upsert: true}
+                      { upsert: true }
                     );
-                    
-          
-                  
-                    
-                    await User.updateOne(
-                      { id: user.id },
-                      {
-                        firstRecharge: true, $inc: { balance: +bonusAmount },
-                        $push: {
-                          rechargeHistory: {
-                            amount: bonusAmount,
-                            date: Date.now(),
-                            status: "Success",
-                            usdt: receivedData.crypto
-                          },
-                          walletHistory: {
-                            amount: bonusAmount,
-                            date: Date.now(),
-                            credit: true,
-                            note: `Add money ID: ${lastTransId.number}`,
-                          },
-                        },
-                      }
-                    );
-                     
-                    // const level0profit = (amount * 3) /100;
-                    //     const level1profit = (amount * 0) /100;
-                    //     const level2profit = (amount * 0) /100;
-          
-                    
-                    // user.upLine.forEach(async (element,index) => {
-                    //   if(index === 0){
-                    //   const fieldName = `todayProfit.${todayProfit}.level${index}`;
-                    //   const totallevel = `totalLevel${index}`;
-                    //   await User.updateOne(
-                    //     { id: element },
-                    //     {
-                    //       $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                          
-                    //     }
-                    //   );
-                    //   await offerBonus.updateOne(
-                    //     { userId: element },
-                    //     {
-                    //       userId: element,
-                    //       $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                    //       $push: {
-                    //         history: {
-                    //           credit: "wallet",
-                    //           amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                    //           note: `Recharge bonus: ${user.id}`,
-                    //           date: Date.now(),
-                    //         },
-                    //       },
-                    //     },
-                    //     {upsert: true}
-                    //   );
-                    //   }
-                    // });
-                  }else{
-                    var bonus;
-              var bonusAmount = amount;
-                              if (amount > 200) {
-                                 bonus = (amount * 3) / 100;
-                                bonusAmount = amount + bonus;
-                              }
-              await User.updateOne(
-                { id: user.id },
-                {
-                  firstRecharge: true, $inc: { balance: +bonusAmount },
-                  $push: {
-                    rechargeHistory: {
-                      amount: bonusAmount,
-                      date: Date.now(),
-                      status: "Success",
-                      usdt: receivedData.crypto
-                    },
-                    walletHistory: {
-                      amount: bonusAmount,
-                      date: Date.now(),
-                      credit: true,
-                      note: `Add money ID: ${lastTransId.number}`,
-                    },
-                  },
-                }
-              );
-              const level0profit = (amount * 3) /100;
-                        const level1profit = (amount * 0) /100;
-                        const level2profit = (amount * 0) /100;
-    
-              user.upLine.forEach(async (element,index) => {
-                if(index === 0){
-                const fieldName = `todayProfit.${todayProfit}.level${index}`;
-                const totallevel = `totalLevel${index}`;
-                await User.updateOne(
-                  { id: element },
-                  {
-                    $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                    
                   }
-                );
-                await offerBonus.updateOne(
-                  { userId: element },
-                  {
-                    userId: element,
-                    $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                    $push: {
-                      history: {
-                        credit: "wallet",
-                        amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                        note: `Recharge bonus: ${user.id}`,
-                        date: Date.now(),
-                      },
-                    },
-                  },
-                  {upsert: true}
-                );
+                });
+
               }
-              });
-              
-            }
-            const userDate = new Date(user.date);
-            const userDateLocal = (userDate / 1000 + 19800) * 1000;
-            const newuserDate = new Date(userDateLocal);
-            const abhiDate = new Date();
-            const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-            const newabhirDate = new Date(abhiDateLocal);
-            const day = newabhirDate.getDate();
-            const month = newabhirDate.getMonth() + 1;
-            const year = newabhirDate.getFullYear();
-            const dayMonth = `${day}/${month}/${year}`;
-    
-            const userday = newuserDate.getDate();
-            const usermonth = newuserDate.getMonth() + 1;
-            const userdayMonth = `${userday}/${usermonth}/${year}`;
-            const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-            const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-            const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-            const newphone3recharge = `newlevel3.${dayMonth}.${user.phone}.todayRecharge`;
-            const newphone4recharge = `newlevel4.${dayMonth}.${user.phone}.todayRecharge`;
-            const newphone5recharge = `newlevel5.${dayMonth}.${user.phone}.todayRecharge`;
-            const newphone6recharge = `newlevel6.${dayMonth}.${user.phone}.todayRecharge`;
-           
-    
-            const phone0recharge = `level0.${user.phone}.totalRecharge`;
-            const phone1recharge = `level1.${user.phone}.totalRecharge`;
-            const phone2recharge = `level2.${user.phone}.totalRecharge`;
-            const phone3recharge = `level3.${user.phone}.totalRecharge`;
-            const phone4recharge = `level4.${user.phone}.totalRecharge`;
-            const phone5recharge = `level5.${user.phone}.totalRecharge`;
-            const phone6recharge = `level6.${user.phone}.totalRecharge`;
-    
-            const phone0first = `level0.${user.phone}.firstRecharge`;
-            const phone1first = `level1.${user.phone}.firstRecharge`;
-            const phone2first = `level2.${user.phone}.firstRecharge`;
-            const phone3first = `level3.${user.phone}.firstRecharge`;
-            const phone4first = `level4.${user.phone}.firstRecharge`;
-            const phone5first = `level5.${user.phone}.firstRecharge`;
-            const phone6first = `level6.${user.phone}.firstRecharge`;
-    
-            if (dayMonth === userdayMonth) {
+              const userDate = new Date(user.date);
+              const userDateLocal = (userDate / 1000 + 19800) * 1000;
+              const newuserDate = new Date(userDateLocal);
+              const abhiDate = new Date();
+              const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+              const newabhirDate = new Date(abhiDateLocal);
+              const day = newabhirDate.getDate();
+              const month = newabhirDate.getMonth() + 1;
+              const year = newabhirDate.getFullYear();
+              const dayMonth = `${day}/${month}/${year}`;
+
+              const userday = newuserDate.getDate();
+              const usermonth = newuserDate.getMonth() + 1;
+              const userdayMonth = `${userday}/${usermonth}/${year}`;
+              const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+              const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+              const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+              const newphone3recharge = `newlevel3.${dayMonth}.${user.phone}.todayRecharge`;
+              const newphone4recharge = `newlevel4.${dayMonth}.${user.phone}.todayRecharge`;
+              const newphone5recharge = `newlevel5.${dayMonth}.${user.phone}.todayRecharge`;
+              const newphone6recharge = `newlevel6.${dayMonth}.${user.phone}.todayRecharge`;
+
+
+              const phone0recharge = `level0.${user.phone}.totalRecharge`;
+              const phone1recharge = `level1.${user.phone}.totalRecharge`;
+              const phone2recharge = `level2.${user.phone}.totalRecharge`;
+              const phone3recharge = `level3.${user.phone}.totalRecharge`;
+              const phone4recharge = `level4.${user.phone}.totalRecharge`;
+              const phone5recharge = `level5.${user.phone}.totalRecharge`;
+              const phone6recharge = `level6.${user.phone}.totalRecharge`;
+
+              const phone0first = `level0.${user.phone}.firstRecharge`;
+              const phone1first = `level1.${user.phone}.firstRecharge`;
+              const phone2first = `level2.${user.phone}.firstRecharge`;
+              const phone3first = `level3.${user.phone}.firstRecharge`;
+              const phone4first = `level4.${user.phone}.firstRecharge`;
+              const phone5first = `level5.${user.phone}.firstRecharge`;
+              const phone6first = `level6.${user.phone}.firstRecharge`;
+
+              if (dayMonth === userdayMonth) {
+                if (user.upLine !== null) {
+                  // Level 0
+                  if (user.upLine[0]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[0] },
+                      {
+                        userId: user.upLine[0],
+                        $inc: {
+                          [newphone0recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  // Level 1
+                  if (user.upLine[1]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] },
+                      {
+                        userId: user.upLine[1],
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  // Level 2
+                  if (user.upLine[2]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[2] },
+                      {
+                        userId: user.upLine[2],
+                        $inc: {
+                          [newphone2recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  // Level 3
+                  if (user.upLine[3]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[3] },
+                      {
+                        userId: user.upLine[3],
+                        $inc: {
+                          [newphone3recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  // Level 4
+                  if (user.upLine[4]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[4] },
+                      {
+                        userId: user.upLine[4],
+                        $inc: {
+                          [newphone4recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  // Level 5
+                  if (user.upLine[5]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[5] },
+                      {
+                        userId: user.upLine[5],
+                        $inc: {
+                          [newphone5recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  // Level 6
+                  if (user.upLine[6]?.length > 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[6] },
+                      {
+                        userId: user.upLine[6],
+                        $inc: {
+                          [newphone6recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
+              }
+
               if (user.upLine !== null) {
                 // Level 0
                 if (user.upLine[0]?.length > 0) {
@@ -1025,13 +1127,14 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[0],
                       $inc: {
-                        [newphone0recharge]: amount,
+                        [phone0first]: firstRecharge,
+                        [phone0recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-                
+
                 // Level 1
                 if (user.upLine[1]?.length > 0) {
                   await promotion.updateOne(
@@ -1039,13 +1142,14 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[1],
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-                
+
                 // Level 2
                 if (user.upLine[2]?.length > 0) {
                   await promotion.updateOne(
@@ -1053,13 +1157,14 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[2],
                       $inc: {
-                        [newphone2recharge]: amount,
+                        [phone2first]: firstRecharge,
+                        [phone2recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-                
+
                 // Level 3
                 if (user.upLine[3]?.length > 0) {
                   await promotion.updateOne(
@@ -1067,13 +1172,14 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[3],
                       $inc: {
-                        [newphone3recharge]: amount,
+                        [phone3first]: firstRecharge,
+                        [phone3recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-                
+
                 // Level 4
                 if (user.upLine[4]?.length > 0) {
                   await promotion.updateOne(
@@ -1081,13 +1187,14 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[4],
                       $inc: {
-                        [newphone4recharge]: amount,
+                        [phone4first]: firstRecharge,
+                        [phone4recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-                
+
                 // Level 5
                 if (user.upLine[5]?.length > 0) {
                   await promotion.updateOne(
@@ -1095,13 +1202,14 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[5],
                       $inc: {
-                        [newphone5recharge]: amount,
+                        [phone5first]: firstRecharge,
+                        [phone5recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-                
+
                 // Level 6
                 if (user.upLine[6]?.length > 0) {
                   await promotion.updateOne(
@@ -1109,137 +1217,30 @@ export const verifyCryptoSign = async(req,res) => {
                     {
                       userId: user.upLine[6],
                       $inc: {
-                        [newphone6recharge]: amount,
+                        [phone6first]: firstRecharge,
+                        [phone6recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
               }
-            }
-    
-            if (user.upLine !== null) {
-              // Level 0
-              if (user.upLine[0]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[0] },
-                  {
-                    userId: user.upLine[0],
-                    $inc: {
-                      [phone0first]: firstRecharge,
-                      [phone0recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-              
-              // Level 1
-              if (user.upLine[1]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] },
-                  {
-                    userId: user.upLine[1],
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-              
-              // Level 2
-              if (user.upLine[2]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[2] },
-                  {
-                    userId: user.upLine[2],
-                    $inc: {
-                      [phone2first]: firstRecharge,
-                      [phone2recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-              
-              // Level 3
-              if (user.upLine[3]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[3] },
-                  {
-                    userId: user.upLine[3],
-                    $inc: {
-                      [phone3first]: firstRecharge,
-                      [phone3recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-              
-              // Level 4
-              if (user.upLine[4]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[4] },
-                  {
-                    userId: user.upLine[4],
-                    $inc: {
-                      [phone4first]: firstRecharge,
-                      [phone4recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-              
-              // Level 5
-              if (user.upLine[5]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[5] },
-                  {
-                    userId: user.upLine[5],
-                    $inc: {
-                      [phone5first]: firstRecharge,
-                      [phone5recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-              
-              // Level 6
-              if (user.upLine[6]?.length > 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[6] },
-                  {
-                    userId: user.upLine[6],
-                    $inc: {
-                      [phone6first]: firstRecharge,
-                      [phone6recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-    
-            res.status(200).send("done");
-    
-            }else{
+
+              res.status(200).send("done");
+
+            } else {
               res.status(200).send('done');
             }
           } else {
             res.status(200).send("done");
-            }
-       
-          } catch (error) {
-            console.log(error.message);
-            res.status(200).send("done");
           }
-        
-       // return res.status(200).send("SUCCESS");
+
+        } catch (error) {
+          console.log(error.message);
+          res.status(200).send("done");
+        }
+
+        // return res.status(200).send("SUCCESS");
       } else {
         console.log('Payment not completed, status:', callbackData.status);
         return res.status(200).send("PENDING");
@@ -1248,7 +1249,7 @@ export const verifyCryptoSign = async(req,res) => {
       console.log('Invalid signature verification');
       return res.status(400).send("INVALID_SIGNATURE");
     }
-    
+
   } catch (error) {
     console.error('Error in verifyCryptoSign:', error);
     return res.status(500).send("ERROR");
@@ -1258,7 +1259,7 @@ export const verifyCryptoSign = async(req,res) => {
 
 
 
-export const paycialCreateOrder = async(req, res) => {
+export const paycialCreateOrder = async (req, res) => {
   const token = process.env.paycial_client;
   const userId = req.params.id;
   const amount = req.body.amount;
@@ -1273,43 +1274,43 @@ export const paycialCreateOrder = async(req, res) => {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
-        
+
       },
-      data: { 
+      data: {
         "clientId": token,
         "amount": amount,
         "orderId": id,
-        "redirectUrl":"https://winkaro.online/rechargeHistory",
-        "initiated":"api" 
+        "redirectUrl": "https://winkaro.online/rechargeHistory",
+        "initiated": "api"
       }
     };
 
     axios
-    .request(options)
-    .then(async function (response) {
-      const lastTrans = await Trans.findOne().sort({ number: -1 });
-      const newIncreament = lastTrans.number + 1;
-      await Trans.create({
-        id: id,
-        number: newIncreament,
-        date: Date.now(),
-        userId,
-        gateway: "Paycial",
-        amount: amount,
-        status: "created",
+      .request(options)
+      .then(async function (response) {
+        const lastTrans = await Trans.findOne().sort({ number: -1 });
+        const newIncreament = lastTrans.number + 1;
+        await Trans.create({
+          id: id,
+          number: newIncreament,
+          date: Date.now(),
+          userId,
+          gateway: "Paycial",
+          amount: amount,
+          status: "created",
+        });
+
+        if (response.data.status) {
+          res.status(200).send(response.data.data);
+        } else {
+          console.log(response.data)
+          res.status(400).send("error");
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+        return next(new ErrorResponse(error.message, 400));
       });
-      
-      if(response.data.status){
-        res.status(200).send(response.data.data);
-      }else{
-        console.log(response.data)
-        res.status(400).send("error");
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-      return next(new ErrorResponse(error.message, 400));
-    });
 
 
 
@@ -1317,10 +1318,10 @@ export const paycialCreateOrder = async(req, res) => {
     console.log(error)
     return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
 
-   }
+  }
 }
 
-export const paycialCallback = async(req, res) => {
+export const paycialCallback = async (req, res) => {
   const data = req.body;
   const decryptData = (encryptionKey, encryptedObj) => {
     const keyBuffer = Buffer.from(encryptionKey, 'hex');
@@ -1334,11 +1335,11 @@ export const paycialCallback = async(req, res) => {
 
     return JSON.parse(decrypted);
 
-};
+  };
 
-   const callbackData = decryptData(process.env.paycial,data);
-   if(callbackData.status === "approved"){
-    
+  const callbackData = decryptData(process.env.paycial, data);
+  if (callbackData.status === "approved") {
+
     const clientId = callbackData.orderId;
 
     const date = new Date();
@@ -1347,7 +1348,7 @@ export const paycialCallback = async(req, res) => {
     const day = newDatefor.getDate();
     const month = newDatefor.getMonth() + 1;
     const year = newDatefor.getFullYear();
-  
+
     var daySorted;
     var monthSorted;
     if (day < 10) {
@@ -1364,9 +1365,9 @@ export const paycialCallback = async(req, res) => {
     const todayProfit = `${day}/${month}/${year}`;
 
     try {
-  
-            
-       
+
+
+
       const tempTran = await Trans.findOne({
         id: clientId,
         status: "created",
@@ -1375,204 +1376,261 @@ export const paycialCallback = async(req, res) => {
         console.log("**************** WebHooked Paycial *********************");
         const lastTransId = await Trans.findOne(
           { id: clientId },
-          { number: 1, userId: 1,amount: 1}
+          { number: 1, userId: 1, amount: 1 }
         );
         var amount = callbackData.amount;
         const updatedDoc = await Trans.findOneAndUpdate(
           { id: clientId, status: 'created' },
-          {status: 'success',expired: true,$inc: {__v: 1}},
+          { status: 'success', expired: true, $inc: { __v: 1 } },
           { new: true, runValidators: true }
         );
-      
-        if(updatedDoc){
+
+        if (updatedDoc) {
           const user = await User.findOne({ id: lastTransId.userId });
-        var firstRecharge = 0;
-        await daily.updateOne(
-          { id: newDate },
-          { $inc: { count: +1, amount: amount } },
-          { upsert: true }
-        );
-
-        if (!user.firstRecharge) {
-          firstRecharge = amount;
-          await User.updateOne(
-            { id: user.upLine[0] },
-            {
-              $inc: { balance: +151 },
-              $push: {
-                walletHistory: {
-                  amount: 151,
-                  date: Date.now(),
-                  credit: true,
-                  note: `Referal Reward User: ${user.id}`,
-                },
-              },
-            }
+          var firstRecharge = 0;
+          await daily.updateOne(
+            { id: newDate },
+            { $inc: { count: +1, amount: amount } },
+            { upsert: true }
           );
-          const filedName = `todayProfit.${todayProfit}.referral`;
-          await offerBonus.updateOne(
-            { userId: user.upLine[0] },
-            {
-              userId: user.upLine[0],
-              $inc: { amount: +151, [filedName]: +151, totalReferral: +151},
-              $push: {
-                history: {
-                  credit: "wallet",
-                  amount: 151,
-                  note: `Referal Reward User: ${user.id}`,
-                  date: Date.now(),
-                },
-              },
-            },
-            {upsert: true}
-          );
-          
 
-          var bonusAmount = amount;
-          if (amount > 4999) {
-            const bonus = (amount * 10) / 100;
-            bonusAmount = amount + bonus;
-          }
-          await User.updateOne(
-            { id: user.id },
-            {
-              firstRecharge: true, $inc: { balance: +bonusAmount },
-              $push: {
-                rechargeHistory: {
-                  amount: bonusAmount,
-                  date: Date.now(),
-                  status: "Success",
-                },
-                walletHistory: {
-                  amount: bonusAmount,
-                  date: Date.now(),
-                  credit: true,
-                  note: `Add money ID: ${lastTransId.number}`,
-                },
-              },
-            }
-          );
-           
-          const level0profit = (amount * 9) /100;
-                    const level1profit = (amount * 4) /100;
-                    const level2profit = (amount * 3) /100;
-
-          
-          user.upLine.forEach(async (element,index) => {
-            const fieldName = `todayProfit.${todayProfit}.level${index}`;
-            const totallevel = `totalLevel${index}`;
+          if (!user.firstRecharge) {
+            firstRecharge = amount;
             await User.updateOne(
-              { id: element },
+              { id: user.upLine[0] },
               {
-                $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                
+                $inc: { balance: +151 },
+                $push: {
+                  walletHistory: {
+                    amount: 151,
+                    date: Date.now(),
+                    credit: true,
+                    note: `Referal Reward User: ${user.id}`,
+                  },
+                },
               }
             );
+            const filedName = `todayProfit.${todayProfit}.referral`;
             await offerBonus.updateOne(
-              { userId: element },
+              { userId: user.upLine[0] },
               {
-                userId: element,
-                $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
+                userId: user.upLine[0],
+                $inc: { amount: +151, [filedName]: +151, totalReferral: +151 },
                 $push: {
                   history: {
                     credit: "wallet",
-                    amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                    note: `Recharge bonus: ${user.id}`,
+                    amount: 151,
+                    note: `Referal Reward User: ${user.id}`,
                     date: Date.now(),
                   },
                 },
               },
-              {upsert: true}
+              { upsert: true }
             );
-          });
-        }else{
-          var bonus;
-    var bonusAmount = amount;
+
+
+            var bonusAmount = amount;
+            if (amount > 4999) {
+              const bonus = (amount * 10) / 100;
+              bonusAmount = amount + bonus;
+            }
+            await User.updateOne(
+              { id: user.id },
+              {
+                firstRecharge: true, $inc: { balance: +bonusAmount },
+                $push: {
+                  rechargeHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    status: "Success",
+                  },
+                  walletHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    credit: true,
+                    note: `Add money ID: ${lastTransId.number}`,
+                  },
+                },
+              }
+            );
+
+            const level0profit = (amount * 9) / 100;
+            const level1profit = (amount * 4) / 100;
+            const level2profit = (amount * 3) / 100;
+
+
+            user.upLine.forEach(async (element, index) => {
+              const fieldName = `todayProfit.${todayProfit}.level${index}`;
+              const totallevel = `totalLevel${index}`;
+              await User.updateOne(
+                { id: element },
+                {
+                  $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                }
+              );
+              await offerBonus.updateOne(
+                { userId: element },
+                {
+                  userId: element,
+                  $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                      note: `Recharge bonus: ${user.id}`,
+                      date: Date.now(),
+                    },
+                  },
+                },
+                { upsert: true }
+              );
+            });
+          } else {
+            var bonus;
+            var bonusAmount = amount;
             // if (amount > 200) {
             //    bonus = (amount * 5) / 100;
             //   bonusAmount = amount + bonus;
             // }
-    await User.updateOne(
-      { id: user.id },
-      {
-        firstRecharge: true, $inc: { balance: +bonusAmount },
-        $push: {
-          rechargeHistory: {
-            amount: bonusAmount,
-            date: Date.now(),
-            status: "Success",
-          },
-          walletHistory: {
-            amount: bonusAmount,
-            date: Date.now(),
-            credit: true,
-            note: `Add money ID: ${lastTransId.number}`,
-          },
-        },
-      }
-    );
-    const level0profit = (amount * 9) /100;
-                    const level1profit = (amount * 4) /100;
-                    const level2profit = (amount * 3) /100;
+            await User.updateOne(
+              { id: user.id },
+              {
+                firstRecharge: true, $inc: { balance: +bonusAmount },
+                $push: {
+                  rechargeHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    status: "Success",
+                  },
+                  walletHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    credit: true,
+                    note: `Add money ID: ${lastTransId.number}`,
+                  },
+                },
+              }
+            );
+            const level0profit = (amount * 9) / 100;
+            const level1profit = (amount * 4) / 100;
+            const level2profit = (amount * 3) / 100;
 
-    user.upLine.forEach(async (element,index) => {
-      const fieldName = `todayProfit.${todayProfit}.level${index}`;
-      const totallevel = `totalLevel${index}`;
-      await User.updateOne(
-        { id: element },
-        {
-          $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-          
-        }
-      );
-      await offerBonus.updateOne(
-        { userId: element },
-        {
-          userId: element,
-          $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-          $push: {
-            history: {
-              credit: "wallet",
-              amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-              note: `Recharge bonus: ${user.id}`,
-              date: Date.now(),
-            },
-          },
-        },
-        {upsert: true}
-      );
-    });
-          
-        }
-        const userDate = new Date(user.date);
-        const userDateLocal = (userDate / 1000 + 19800) * 1000;
-        const newuserDate = new Date(userDateLocal);
-        const abhiDate = new Date();
-        const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-        const newabhirDate = new Date(abhiDateLocal);
-        const day = newabhirDate.getDate();
-        const month = newabhirDate.getMonth() + 1;
-        const year = newabhirDate.getFullYear();
+            user.upLine.forEach(async (element, index) => {
+              const fieldName = `todayProfit.${todayProfit}.level${index}`;
+              const totallevel = `totalLevel${index}`;
+              await User.updateOne(
+                { id: element },
+                {
+                  $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
 
-        const dayMonth = `${day}/${month}/${year}`;
-        const userday = newuserDate.getDate();
-        const usermonth = newuserDate.getMonth() + 1;
-        const useryear = newuserDate.getFullYear();
+                }
+              );
+              await offerBonus.updateOne(
+                { userId: element },
+                {
+                  userId: element,
+                  $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                      note: `Recharge bonus: ${user.id}`,
+                      date: Date.now(),
+                    },
+                  },
+                },
+                { upsert: true }
+              );
+            });
 
-        const userdayMonth = `${userday}/${usermonth}/${useryear}`;
-        const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-        const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+          }
+          const userDate = new Date(user.date);
+          const userDateLocal = (userDate / 1000 + 19800) * 1000;
+          const newuserDate = new Date(userDateLocal);
+          const abhiDate = new Date();
+          const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+          const newabhirDate = new Date(abhiDateLocal);
+          const day = newabhirDate.getDate();
+          const month = newabhirDate.getMonth() + 1;
+          const year = newabhirDate.getFullYear();
 
-        const phone0recharge = `level0.${user.phone}.totalRecharge`;
-        const phone1recharge = `level1.${user.phone}.totalRecharge`;
-        const phone2recharge = `level2.${user.phone}.totalRecharge`;
+          const dayMonth = `${day}/${month}/${year}`;
+          const userday = newuserDate.getDate();
+          const usermonth = newuserDate.getMonth() + 1;
+          const useryear = newuserDate.getFullYear();
 
-        const phone0first = `level0.${user.phone}.firstRecharge`;
-        const phone1first = `level1.${user.phone}.firstRecharge`;
-        const phone2first = `level2.${user.phone}.firstRecharge`;
+          const userdayMonth = `${userday}/${usermonth}/${useryear}`;
+          const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+          const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+          const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
 
-        if (dayMonth === userdayMonth) {
+          const phone0recharge = `level0.${user.phone}.totalRecharge`;
+          const phone1recharge = `level1.${user.phone}.totalRecharge`;
+          const phone2recharge = `level2.${user.phone}.totalRecharge`;
+
+          const phone0first = `level0.${user.phone}.firstRecharge`;
+          const phone1first = `level1.${user.phone}.firstRecharge`;
+          const phone2first = `level2.${user.phone}.firstRecharge`;
+
+          if (dayMonth === userdayMonth) {
+            if (user.upLine !== null) {
+              if (user.upLine[0].length !== 0) {
+                await promotion.updateOne(
+                  { userId: user.upLine[0] ?? 1 },
+                  {
+                    userId: user.upLine[0] ?? 1,
+                    $inc: {
+                      [newphone0recharge]: amount,
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+              if (user.upLine.length === 2) {
+                if (user.upLine[1].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[1] ?? 1 },
+                    {
+                      userId: user.upLine[1] ?? 1,
+                      $inc: {
+                        [newphone1recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+              }
+              if (user.upLine.length === 3) {
+                if (user.upLine[1].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[1] ?? 1 },
+                    {
+                      userId: user.upLine[1] ?? 1,
+                      $inc: {
+                        [newphone1recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+
+                if (user.upLine[2].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[2] ?? 1 },
+                    {
+                      userId: user.upLine[2] ?? 1,
+                      $inc: {
+                        [newphone2recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+              }
+            }
+          }
+
           if (user.upLine !== null) {
             if (user.upLine[0].length !== 0) {
               await promotion.updateOne(
@@ -1580,7 +1638,8 @@ export const paycialCallback = async(req, res) => {
                 {
                   userId: user.upLine[0] ?? 1,
                   $inc: {
-                    [newphone0recharge]: amount,
+                    [phone0first]: firstRecharge,
+                    [phone0recharge]: amount,
                   },
                 },
                 { upsert: true }
@@ -1593,7 +1652,8 @@ export const paycialCallback = async(req, res) => {
                   {
                     userId: user.upLine[1] ?? 1,
                     $inc: {
-                      [newphone1recharge]: amount,
+                      [phone1first]: firstRecharge,
+                      [phone1recharge]: amount,
                     },
                   },
                   { upsert: true }
@@ -1607,7 +1667,8 @@ export const paycialCallback = async(req, res) => {
                   {
                     userId: user.upLine[1] ?? 1,
                     $inc: {
-                      [newphone1recharge]: amount,
+                      [phone1first]: firstRecharge,
+                      [phone1recharge]: amount,
                     },
                   },
                   { upsert: true }
@@ -1620,7 +1681,8 @@ export const paycialCallback = async(req, res) => {
                   {
                     userId: user.upLine[2] ?? 1,
                     $inc: {
-                      [newphone2recharge]: amount,
+                      [phone2first]: firstRecharge,
+                      [phone2recharge]: amount,
                     },
                   },
                   { upsert: true }
@@ -1628,92 +1690,31 @@ export const paycialCallback = async(req, res) => {
               }
             }
           }
-        }
 
-        if (user.upLine !== null) {
-          if (user.upLine[0].length !== 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[0] ?? 1 },
-              {
-                userId: user.upLine[0] ?? 1,
-                $inc: {
-                  [phone0first]: firstRecharge,
-                  [phone0recharge]: amount,
-                },
-              },
-              { upsert: true }
-            );
-          }
-          if (user.upLine.length === 2) {
-            if (user.upLine[1].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[1] ?? 1 },
-                {
-                  userId: user.upLine[1] ?? 1,
-                  $inc: {
-                    [phone1first]: firstRecharge,
-                    [phone1recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-          }
-          if (user.upLine.length === 3) {
-            if (user.upLine[1].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[1] ?? 1 },
-                {
-                  userId: user.upLine[1] ?? 1,
-                  $inc: {
-                    [phone1first]: firstRecharge,
-                    [phone1recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
+          res.status(200).send("done");
 
-            if (user.upLine[2].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[2] ?? 1 },
-                {
-                  userId: user.upLine[2] ?? 1,
-                  $inc: {
-                    [phone2first]: firstRecharge,
-                    [phone2recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-          }
-        }
-
-        res.status(200).send("done");
-
-        }else{
+        } else {
           res.status(200).send('done');
         }
       } else {
         res.status(200).send("done");
-        }
-   
-      } catch (error) {
-        console.log(error.message);
-        res.status(200).send("done");
       }
-      
-   }else{
+
+    } catch (error) {
+      console.log(error.message);
+      res.status(200).send("done");
+    }
+
+  } else {
     res.status(200).send("Done")
 
-   }
+  }
 
-  
+
 }
-export const cashfreeCreateOrder = async (req,res,next) => {
-    
-  
+export const cashfreeCreateOrder = async (req, res, next) => {
+
+
   const userId = req.params.id;
   const amount = req.body.amount;
   const customer_name = req.body.customer_name;
@@ -1730,18 +1731,18 @@ export const cashfreeCreateOrder = async (req,res,next) => {
         "x-client-secret": process.env.cashfree_secret,
         "Content-Type": "application/json",
         "x-api-version": "2023-08-01"
-        
+
       },
-      data: { 
+      data: {
         "order_id": id,
-       
+
         "order_amount": amount,
         "order_currency": "INR",
         "customer_details": {
           "customer_id": userId,
           "customer_phone": customer_mobile
         },
-        "order_meta": { 
+        "order_meta": {
           "return_url": `https://winkaro.online/reachargeHistory`
         }
         // "redirectUrl":"https://winkaro.online/rechargeHistory",
@@ -1750,30 +1751,30 @@ export const cashfreeCreateOrder = async (req,res,next) => {
     };
 
     axios
-    .request(options)
-    .then(async function (response) {
-      
-      const lastTrans = await Trans.findOne().sort({ number: -1 });
-      const newIncreament = lastTrans.number + 1;
-      await Trans.create({
-        id: id,
-        number: newIncreament,
-        date: Date.now(),
-        userId,
-        gateway: "Cashfree",
-        amount: amount,
-        status: "created",
+      .request(options)
+      .then(async function (response) {
+
+        const lastTrans = await Trans.findOne().sort({ number: -1 });
+        const newIncreament = lastTrans.number + 1;
+        await Trans.create({
+          id: id,
+          number: newIncreament,
+          date: Date.now(),
+          userId,
+          gateway: "Cashfree",
+          amount: amount,
+          status: "created",
+        });
+
+        res.status(200).send(response.data);
+
+
+
+      })
+      .catch(function (error) {
+        console.log(error);
+        return next(new ErrorResponse(error.message, 400));
       });
-     
-      res.status(200).send(response.data);
-      
-      
-      
-    })
-    .catch(function (error) {
-      console.log(error);
-      return next(new ErrorResponse(error.message, 400));
-    });
 
 
 
@@ -1781,538 +1782,538 @@ export const cashfreeCreateOrder = async (req,res,next) => {
     console.log(error)
     return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
 
-   }
+  }
 
 }
-export const cashfreeVerify = async (req,res) => {
-  
+export const cashfreeVerify = async (req, res) => {
+
   const data = req.body;
-  
+
   try {
-    
+
     const order_id = data.data.order.order_id;
     const cf_payment_id = data.data.payment.cf_payment_id;
-    if(data.data.payment.payment_status === "SUCCESS"){
+    if (data.data.payment.payment_status === "SUCCESS") {
       const options = {
         method: "GET",
         url: `https://api.cashfree.com/pg/orders/${order_id}`,
         headers: {
           accept: "application/json",
           "x-client-id": process.env.cashfree_id,
-          "x-client-secret":process.env.cashfree_secret,
+          "x-client-secret": process.env.cashfree_secret,
           "Content-Type": "application/json",
           "x-api-version": "2023-08-01"
-          
+
         },
-        
+
       };
-  
+
       axios
-      .request(options)
-      .then(async function (response) {
-  
-        if(response.data.order_status == "PAID"){
-          const clientId = order_id;
-  
-          const date = new Date();
-          const localDate = (date / 1000 + 19800) * 1000;
-          const newDatefor = new Date(localDate);
-          const day = newDatefor.getDate();
-          const month = newDatefor.getMonth() + 1;
-          const year = newDatefor.getFullYear();
-        
-          var daySorted;
-          var monthSorted;
-          if (day < 10) {
-            daySorted = `0${day}`;
-          } else {
-            daySorted = `${day}`;
-          }
-          if (month < 10) {
-            monthSorted = `0${month}`;
-          } else {
-            monthSorted = `${month}`;
-          }
-          const newDate = `${daySorted}-${monthSorted}-${year}`;
-          const todayProfit = `${day}/${month}/${year}`;
+        .request(options)
+        .then(async function (response) {
 
-          try {
-        
-                  
-             
-            const tempTran = await Trans.findOne({
-              id: clientId,
-              status: "created",
-            });
-            if (tempTran) {
-              const lastTransId = await Trans.findOne(
-                { id: clientId },
-                { number: 1, userId: 1,amount: 1}
-              );
-              var amount = lastTransId.amount;
-              const updatedDoc = await Trans.findOneAndUpdate(
-                { id: clientId, status: 'created' },
-                {status: 'success',expired: true,$inc: {__v: 1}},
-                { new: true, runValidators: true }
-              );
-            
-              if(updatedDoc){
-                const user = await User.findOne({ id: lastTransId.userId });
-              var firstRecharge = 0;
-              await daily.updateOne(
-                { id: newDate },
-                { $inc: { count: +1, amount: amount } },
-                { upsert: true }
-              );
-      
-              if (!user.firstRecharge) {
-                firstRecharge = amount;
-                await User.updateOne(
-                  { id: user.upLine[0] },
-                  {
-                    $inc: { balance: +151 },
-                    $push: {
-                      walletHistory: {
-                        amount: 151,
-                        date: Date.now(),
-                        credit: true,
-                        note: `Referal Reward User: ${user.id}`,
-                      },
-                    },
-                  }
-                );
-                const filedName = `todayProfit.${todayProfit}.referral`;
-                await offerBonus.updateOne(
-                  { userId: user.upLine[0] },
-                  {
-                    userId: user.upLine[0],
-                    $inc: { amount: +151, [filedName]: +151, totalReferral: +151},
-                    $push: {
-                      history: {
-                        credit: "wallet",
-                        amount: 151,
-                        note: `Referal Reward User: ${user.id}`,
-                        date: Date.now(),
-                      },
-                    },
-                  },
-                  {upsert: true}
-                );
-                
-      
-                var bonusAmount = amount;
-                if (amount > 4999) {
-                  const bonus = (amount * 10) / 100;
-                  bonusAmount = amount + bonus;
-                }
-                await User.updateOne(
-                  { id: user.id },
-                  {
-                    firstRecharge: true, $inc: { balance: +bonusAmount },
-                    $push: {
-                      rechargeHistory: {
-                        amount: bonusAmount,
-                        date: Date.now(),
-                        status: "Success",
-                      },
-                      walletHistory: {
-                        amount: bonusAmount,
-                        date: Date.now(),
-                        credit: true,
-                        note: `Add money ID: ${lastTransId.number}`,
-                      },
-                    },
-                  }
-                );
-                 
-                const level0profit = (amount * 9) /100;
-                    const level1profit = (amount * 4) /100;
-                    const level2profit = (amount * 3) /100;
-      
-                
-                user.upLine.forEach(async (element,index) => {
-                  const fieldName = `todayProfit.${todayProfit}.level${index}`;
-                  const totallevel = `totalLevel${index}`;
-                  await User.updateOne(
-                    { id: element },
-                    {
-                      $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                      
-                    }
-                  );
-                  await offerBonus.updateOne(
-                    { userId: element },
-                    {
-                      userId: element,
-                      $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                      $push: {
-                        history: {
-                          credit: "wallet",
-                          amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                          note: `Recharge bonus: ${user.id}`,
-                          date: Date.now(),
-                        },
-                      },
-                    },
-                    {upsert: true}
-                  );
-                });
-              }else{
-                var bonus;
-          var bonusAmount = amount;
-                  // if (amount > 200) {
-                  //    bonus = (amount * 5) / 100;
-                  //   bonusAmount = amount + bonus;
-                  // }
-          await User.updateOne(
-            { id: user.id },
-            {
-              firstRecharge: true, $inc: { balance: +bonusAmount },
-              $push: {
-                rechargeHistory: {
-                  amount: bonusAmount,
-                  date: Date.now(),
-                  status: "Success",
-                },
-                walletHistory: {
-                  amount: bonusAmount,
-                  date: Date.now(),
-                  credit: true,
-                  note: `Add money ID: ${lastTransId.number}`,
-                },
-              },
+          if (response.data.order_status == "PAID") {
+            const clientId = order_id;
+
+            const date = new Date();
+            const localDate = (date / 1000 + 19800) * 1000;
+            const newDatefor = new Date(localDate);
+            const day = newDatefor.getDate();
+            const month = newDatefor.getMonth() + 1;
+            const year = newDatefor.getFullYear();
+
+            var daySorted;
+            var monthSorted;
+            if (day < 10) {
+              daySorted = `0${day}`;
+            } else {
+              daySorted = `${day}`;
             }
-          );
-          const level0profit = (amount * 9) /100;
-                    const level1profit = (amount * 4) /100;
-                    const level2profit = (amount * 3) /100;
+            if (month < 10) {
+              monthSorted = `0${month}`;
+            } else {
+              monthSorted = `${month}`;
+            }
+            const newDate = `${daySorted}-${monthSorted}-${year}`;
+            const todayProfit = `${day}/${month}/${year}`;
 
-          user.upLine.forEach(async (element,index) => {
-            const fieldName = `todayProfit.${todayProfit}.level${index}`;
-            const totallevel = `totalLevel${index}`;
-            await User.updateOne(
-              { id: element },
-              {
-                $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                
-              }
-            );
-            await offerBonus.updateOne(
-              { userId: element },
-              {
-                userId: element,
-                $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                    note: `Recharge bonus: ${user.id}`,
-                    date: Date.now(),
-                  },
-                },
-              },
-              {upsert: true}
-            );
-          });
-                
-              }
-              const userDate = new Date(user.date);
-              const userDateLocal = (userDate / 1000 + 19800) * 1000;
-              const newuserDate = new Date(userDateLocal);
-              const abhiDate = new Date();
-              const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-              const newabhirDate = new Date(abhiDateLocal);
-              const day = newabhirDate.getDate();
-              const month = newabhirDate.getMonth() + 1;
-              const year = newabhirDate.getFullYear();
-      
-              const dayMonth = `${day}/${month}/${year}`;
-              const userday = newuserDate.getDate();
-              const usermonth = newuserDate.getMonth() + 1;
-              const useryear = newuserDate.getFullYear();
-      
-              const userdayMonth = `${userday}/${usermonth}/${useryear}`;
-              const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-              const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-              const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-      
-              const phone0recharge = `level0.${user.phone}.totalRecharge`;
-              const phone1recharge = `level1.${user.phone}.totalRecharge`;
-              const phone2recharge = `level2.${user.phone}.totalRecharge`;
-      
-              const phone0first = `level0.${user.phone}.firstRecharge`;
-              const phone1first = `level1.${user.phone}.firstRecharge`;
-              const phone2first = `level2.${user.phone}.firstRecharge`;
-      
-              if (dayMonth === userdayMonth) {
-                if (user.upLine !== null) {
-                  if (user.upLine[0].length !== 0) {
-                    await promotion.updateOne(
-                      { userId: user.upLine[0] ?? 1 },
-                      {
-                        userId: user.upLine[0] ?? 1,
-                        $inc: {
-                          [newphone0recharge]: amount,
-                        },
-                      },
-                      { upsert: true }
-                    );
-                  }
-                  if (user.upLine.length === 2) {
-                    if (user.upLine[1].length !== 0) {
-                      await promotion.updateOne(
-                        { userId: user.upLine[1] ?? 1 },
-                        {
-                          userId: user.upLine[1] ?? 1,
-                          $inc: {
-                            [newphone1recharge]: amount,
-                          },
-                        },
-                        { upsert: true }
-                      );
-                    }
-                  }
-                  if (user.upLine.length === 3) {
-                    if (user.upLine[1].length !== 0) {
-                      await promotion.updateOne(
-                        { userId: user.upLine[1] ?? 1 },
-                        {
-                          userId: user.upLine[1] ?? 1,
-                          $inc: {
-                            [newphone1recharge]: amount,
-                          },
-                        },
-                        { upsert: true }
-                      );
-                    }
-      
-                    if (user.upLine[2].length !== 0) {
-                      await promotion.updateOne(
-                        { userId: user.upLine[2] ?? 1 },
-                        {
-                          userId: user.upLine[2] ?? 1,
-                          $inc: {
-                            [newphone2recharge]: amount,
-                          },
-                        },
-                        { upsert: true }
-                      );
-                    }
-                  }
-                }
-              }
-      
-              if (user.upLine !== null) {
-                if (user.upLine[0].length !== 0) {
-                  await promotion.updateOne(
-                    { userId: user.upLine[0] ?? 1 },
-                    {
-                      userId: user.upLine[0] ?? 1,
-                      $inc: {
-                        [phone0first]: firstRecharge,
-                        [phone0recharge]: amount,
-                      },
-                    },
+            try {
+
+
+
+              const tempTran = await Trans.findOne({
+                id: clientId,
+                status: "created",
+              });
+              if (tempTran) {
+                const lastTransId = await Trans.findOne(
+                  { id: clientId },
+                  { number: 1, userId: 1, amount: 1 }
+                );
+                var amount = lastTransId.amount;
+                const updatedDoc = await Trans.findOneAndUpdate(
+                  { id: clientId, status: 'created' },
+                  { status: 'success', expired: true, $inc: { __v: 1 } },
+                  { new: true, runValidators: true }
+                );
+
+                if (updatedDoc) {
+                  const user = await User.findOne({ id: lastTransId.userId });
+                  var firstRecharge = 0;
+                  await daily.updateOne(
+                    { id: newDate },
+                    { $inc: { count: +1, amount: amount } },
                     { upsert: true }
                   );
-                }
-                if (user.upLine.length === 2) {
-                  if (user.upLine[1].length !== 0) {
-                    await promotion.updateOne(
-                      { userId: user.upLine[1] ?? 1 },
+
+                  if (!user.firstRecharge) {
+                    firstRecharge = amount;
+                    await User.updateOne(
+                      { id: user.upLine[0] },
                       {
-                        userId: user.upLine[1] ?? 1,
-                        $inc: {
-                          [phone1first]: firstRecharge,
-                          [phone1recharge]: amount,
+                        $inc: { balance: +151 },
+                        $push: {
+                          walletHistory: {
+                            amount: 151,
+                            date: Date.now(),
+                            credit: true,
+                            note: `Referal Reward User: ${user.id}`,
+                          },
+                        },
+                      }
+                    );
+                    const filedName = `todayProfit.${todayProfit}.referral`;
+                    await offerBonus.updateOne(
+                      { userId: user.upLine[0] },
+                      {
+                        userId: user.upLine[0],
+                        $inc: { amount: +151, [filedName]: +151, totalReferral: +151 },
+                        $push: {
+                          history: {
+                            credit: "wallet",
+                            amount: 151,
+                            note: `Referal Reward User: ${user.id}`,
+                            date: Date.now(),
+                          },
                         },
                       },
                       { upsert: true }
                     );
-                  }
-                }
-                if (user.upLine.length === 3) {
-                  if (user.upLine[1].length !== 0) {
-                    await promotion.updateOne(
-                      { userId: user.upLine[1] ?? 1 },
+
+
+                    var bonusAmount = amount;
+                    if (amount > 4999) {
+                      const bonus = (amount * 10) / 100;
+                      bonusAmount = amount + bonus;
+                    }
+                    await User.updateOne(
+                      { id: user.id },
                       {
-                        userId: user.upLine[1] ?? 1,
-                        $inc: {
-                          [phone1first]: firstRecharge,
-                          [phone1recharge]: amount,
+                        firstRecharge: true, $inc: { balance: +bonusAmount },
+                        $push: {
+                          rechargeHistory: {
+                            amount: bonusAmount,
+                            date: Date.now(),
+                            status: "Success",
+                          },
+                          walletHistory: {
+                            amount: bonusAmount,
+                            date: Date.now(),
+                            credit: true,
+                            note: `Add money ID: ${lastTransId.number}`,
+                          },
                         },
-                      },
-                      { upsert: true }
+                      }
                     );
-                  }
-      
-                  if (user.upLine[2].length !== 0) {
-                    await promotion.updateOne(
-                      { userId: user.upLine[2] ?? 1 },
+
+                    const level0profit = (amount * 9) / 100;
+                    const level1profit = (amount * 4) / 100;
+                    const level2profit = (amount * 3) / 100;
+
+
+                    user.upLine.forEach(async (element, index) => {
+                      const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                      const totallevel = `totalLevel${index}`;
+                      await User.updateOne(
+                        { id: element },
+                        {
+                          $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                        }
+                      );
+                      await offerBonus.updateOne(
+                        { userId: element },
+                        {
+                          userId: element,
+                          $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                          $push: {
+                            history: {
+                              credit: "wallet",
+                              amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                              note: `Recharge bonus: ${user.id}`,
+                              date: Date.now(),
+                            },
+                          },
+                        },
+                        { upsert: true }
+                      );
+                    });
+                  } else {
+                    var bonus;
+                    var bonusAmount = amount;
+                    // if (amount > 200) {
+                    //    bonus = (amount * 5) / 100;
+                    //   bonusAmount = amount + bonus;
+                    // }
+                    await User.updateOne(
+                      { id: user.id },
                       {
-                        userId: user.upLine[2] ?? 1,
-                        $inc: {
-                          [phone2first]: firstRecharge,
-                          [phone2recharge]: amount,
+                        firstRecharge: true, $inc: { balance: +bonusAmount },
+                        $push: {
+                          rechargeHistory: {
+                            amount: bonusAmount,
+                            date: Date.now(),
+                            status: "Success",
+                          },
+                          walletHistory: {
+                            amount: bonusAmount,
+                            date: Date.now(),
+                            credit: true,
+                            note: `Add money ID: ${lastTransId.number}`,
+                          },
                         },
-                      },
-                      { upsert: true }
+                      }
                     );
+                    const level0profit = (amount * 9) / 100;
+                    const level1profit = (amount * 4) / 100;
+                    const level2profit = (amount * 3) / 100;
+
+                    user.upLine.forEach(async (element, index) => {
+                      const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                      const totallevel = `totalLevel${index}`;
+                      await User.updateOne(
+                        { id: element },
+                        {
+                          $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                        }
+                      );
+                      await offerBonus.updateOne(
+                        { userId: element },
+                        {
+                          userId: element,
+                          $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                          $push: {
+                            history: {
+                              credit: "wallet",
+                              amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                              note: `Recharge bonus: ${user.id}`,
+                              date: Date.now(),
+                            },
+                          },
+                        },
+                        { upsert: true }
+                      );
+                    });
+
                   }
+                  const userDate = new Date(user.date);
+                  const userDateLocal = (userDate / 1000 + 19800) * 1000;
+                  const newuserDate = new Date(userDateLocal);
+                  const abhiDate = new Date();
+                  const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+                  const newabhirDate = new Date(abhiDateLocal);
+                  const day = newabhirDate.getDate();
+                  const month = newabhirDate.getMonth() + 1;
+                  const year = newabhirDate.getFullYear();
+
+                  const dayMonth = `${day}/${month}/${year}`;
+                  const userday = newuserDate.getDate();
+                  const usermonth = newuserDate.getMonth() + 1;
+                  const useryear = newuserDate.getFullYear();
+
+                  const userdayMonth = `${userday}/${usermonth}/${useryear}`;
+                  const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+                  const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+                  const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+
+                  const phone0recharge = `level0.${user.phone}.totalRecharge`;
+                  const phone1recharge = `level1.${user.phone}.totalRecharge`;
+                  const phone2recharge = `level2.${user.phone}.totalRecharge`;
+
+                  const phone0first = `level0.${user.phone}.firstRecharge`;
+                  const phone1first = `level1.${user.phone}.firstRecharge`;
+                  const phone2first = `level2.${user.phone}.firstRecharge`;
+
+                  if (dayMonth === userdayMonth) {
+                    if (user.upLine !== null) {
+                      if (user.upLine[0].length !== 0) {
+                        await promotion.updateOne(
+                          { userId: user.upLine[0] ?? 1 },
+                          {
+                            userId: user.upLine[0] ?? 1,
+                            $inc: {
+                              [newphone0recharge]: amount,
+                            },
+                          },
+                          { upsert: true }
+                        );
+                      }
+                      if (user.upLine.length === 2) {
+                        if (user.upLine[1].length !== 0) {
+                          await promotion.updateOne(
+                            { userId: user.upLine[1] ?? 1 },
+                            {
+                              userId: user.upLine[1] ?? 1,
+                              $inc: {
+                                [newphone1recharge]: amount,
+                              },
+                            },
+                            { upsert: true }
+                          );
+                        }
+                      }
+                      if (user.upLine.length === 3) {
+                        if (user.upLine[1].length !== 0) {
+                          await promotion.updateOne(
+                            { userId: user.upLine[1] ?? 1 },
+                            {
+                              userId: user.upLine[1] ?? 1,
+                              $inc: {
+                                [newphone1recharge]: amount,
+                              },
+                            },
+                            { upsert: true }
+                          );
+                        }
+
+                        if (user.upLine[2].length !== 0) {
+                          await promotion.updateOne(
+                            { userId: user.upLine[2] ?? 1 },
+                            {
+                              userId: user.upLine[2] ?? 1,
+                              $inc: {
+                                [newphone2recharge]: amount,
+                              },
+                            },
+                            { upsert: true }
+                          );
+                        }
+                      }
+                    }
+                  }
+
+                  if (user.upLine !== null) {
+                    if (user.upLine[0].length !== 0) {
+                      await promotion.updateOne(
+                        { userId: user.upLine[0] ?? 1 },
+                        {
+                          userId: user.upLine[0] ?? 1,
+                          $inc: {
+                            [phone0first]: firstRecharge,
+                            [phone0recharge]: amount,
+                          },
+                        },
+                        { upsert: true }
+                      );
+                    }
+                    if (user.upLine.length === 2) {
+                      if (user.upLine[1].length !== 0) {
+                        await promotion.updateOne(
+                          { userId: user.upLine[1] ?? 1 },
+                          {
+                            userId: user.upLine[1] ?? 1,
+                            $inc: {
+                              [phone1first]: firstRecharge,
+                              [phone1recharge]: amount,
+                            },
+                          },
+                          { upsert: true }
+                        );
+                      }
+                    }
+                    if (user.upLine.length === 3) {
+                      if (user.upLine[1].length !== 0) {
+                        await promotion.updateOne(
+                          { userId: user.upLine[1] ?? 1 },
+                          {
+                            userId: user.upLine[1] ?? 1,
+                            $inc: {
+                              [phone1first]: firstRecharge,
+                              [phone1recharge]: amount,
+                            },
+                          },
+                          { upsert: true }
+                        );
+                      }
+
+                      if (user.upLine[2].length !== 0) {
+                        await promotion.updateOne(
+                          { userId: user.upLine[2] ?? 1 },
+                          {
+                            userId: user.upLine[2] ?? 1,
+                            $inc: {
+                              [phone2first]: firstRecharge,
+                              [phone2recharge]: amount,
+                            },
+                          },
+                          { upsert: true }
+                        );
+                      }
+                    }
+                  }
+
+                  res.status(200).json({ status: 'ok' });
+
+                } else {
+                  res.status(200).send('done');
                 }
+              } else {
+                res.status(200).send("done");
               }
-      
-              res.status(200).json({ status: 'ok' });
-      
-              }else{
-                res.status(200).send('done');
-              }
-            } else {
-              res.status(200).send("done");
-              }
-         
+
             } catch (error) {
               console.log(error.message);
               res.status(200).send("done");
             }
-        }
-  
-      }).catch(function (error){
-  
-      })
+          }
+
+        }).catch(function (error) {
+
+        })
     }
 
-    
-  
-
-      
-      
 
 
-      //console.log("Payment verification successful");
-   
+
+
+
+
+
+    //console.log("Payment verification successful");
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: 'error', message: 'Error verifying payment' });
   }
 
 }
-export const razorpayCreateOrder = async (req,res) => {
-    
-    try {
-      const { amount, currency, receipt, notes } = req.body;
-      const userId = req.params.id;
-      const options = {
-        amount: amount * 100, // Convert amount to paise
-        currency: "INR",
-        receipt,
-        notes,
-      };
-  
-      const order = await razorpay.orders.create(options);
-      
-      // Read current orders, add new order, and write back to the file
-      // const orders = readData();
-      // orders.push({
-      //   order_id: order.id,
-      //   amount: order.amount,
-      //   currency: order.currency,
-      //   receipt: order.receipt,
-      //   status: 'created',
-      // });
-      // writeData(orders);
-      const lastTrans = await Trans.findOne().sort({ number: -1 });
-        const newIncreament = lastTrans.number + 1;
-      await Trans.create({
-        id: order.id,
-        number: newIncreament,
-        date: Date.now(),
-        userId,
-        gateway: "Razorpay",
-        amount: amount,
-        status: "created",
-      });
-      
-      res.json(order); // Send order details to frontend, including order ID
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error creating order');
-    }
+export const razorpayCreateOrder = async (req, res) => {
+
+  try {
+    const { amount, currency, receipt, notes } = req.body;
+    const userId = req.params.id;
+    const options = {
+      amount: amount * 100, // Convert amount to paise
+      currency: "INR",
+      receipt,
+      notes,
+    };
+
+    const order = await razorpay.orders.create(options);
+
+    // Read current orders, add new order, and write back to the file
+    // const orders = readData();
+    // orders.push({
+    //   order_id: order.id,
+    //   amount: order.amount,
+    //   currency: order.currency,
+    //   receipt: order.receipt,
+    //   status: 'created',
+    // });
+    // writeData(orders);
+    const lastTrans = await Trans.findOne().sort({ number: -1 });
+    const newIncreament = lastTrans.number + 1;
+    await Trans.create({
+      id: order.id,
+      number: newIncreament,
+      date: Date.now(),
+      userId,
+      gateway: "Razorpay",
+      amount: amount,
+      status: "created",
+    });
+
+    res.json(order); // Send order details to frontend, including order ID
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error creating order');
+  }
 }
-export const razorpayVerify = async (req,res) => {
-  
-   
-  
-    try {
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-  
-      const secret = process.env.razLive;
-      const body = razorpay_order_id + '|' + razorpay_payment_id;
+export const razorpayVerify = async (req, res) => {
 
-      const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
-      if (isValidSignature) {
-        // Update the order with payment details
 
-        // const orders = readData();
-        // const order = orders.find(o => o.order_id === razorpay_order_id);
-        // if (order) {
-        //   order.status = 'paid';
-        //   order.payment_id = razorpay_payment_id;
-        //   writeData(orders);
-        // }
-        const clientId = razorpay_order_id;
 
-        const date = new Date();
-        const localDate = (date / 1000 + 19800) * 1000;
-        const newDatefor = new Date(localDate);
-        const day = newDatefor.getDate();
-        const month = newDatefor.getMonth() + 1;
-        const year = newDatefor.getFullYear();
-      
-        var daySorted;
-        var monthSorted;
-        if (day < 10) {
-          daySorted = `0${day}`;
-        } else {
-          daySorted = `${day}`;
-        }
-        if (month < 10) {
-          monthSorted = `0${month}`;
-        } else {
-          monthSorted = `${month}`;
-        }
-        const newDate = `${daySorted}-${monthSorted}-${year}`;
-        const todayProfit = `${day}/${month}/${year}`;
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-        try {
-      
-                
-           
-          const tempTran = await Trans.findOne({
-            id: clientId,
-            status: "created",
-          });
-          if (tempTran) {
-            const lastTransId = await Trans.findOne(
-              { id: clientId },
-              { number: 1, userId: 1,amount: 1}
-            );
-            var amount = lastTransId.amount;
-            const updatedDoc = await Trans.findOneAndUpdate(
-              { id: clientId, status: 'created' },
-              {status: 'success',expired: true,$inc: {__v: 1}},
-              { new: true, runValidators: true }
-            );
-          
-            if(updatedDoc){
-              const user = await User.findOne({ id: lastTransId.userId });
+    const secret = process.env.razLive;
+    const body = razorpay_order_id + '|' + razorpay_payment_id;
+
+    const isValidSignature = validateWebhookSignature(body, razorpay_signature, secret);
+    if (isValidSignature) {
+      // Update the order with payment details
+
+      // const orders = readData();
+      // const order = orders.find(o => o.order_id === razorpay_order_id);
+      // if (order) {
+      //   order.status = 'paid';
+      //   order.payment_id = razorpay_payment_id;
+      //   writeData(orders);
+      // }
+      const clientId = razorpay_order_id;
+
+      const date = new Date();
+      const localDate = (date / 1000 + 19800) * 1000;
+      const newDatefor = new Date(localDate);
+      const day = newDatefor.getDate();
+      const month = newDatefor.getMonth() + 1;
+      const year = newDatefor.getFullYear();
+
+      var daySorted;
+      var monthSorted;
+      if (day < 10) {
+        daySorted = `0${day}`;
+      } else {
+        daySorted = `${day}`;
+      }
+      if (month < 10) {
+        monthSorted = `0${month}`;
+      } else {
+        monthSorted = `${month}`;
+      }
+      const newDate = `${daySorted}-${monthSorted}-${year}`;
+      const todayProfit = `${day}/${month}/${year}`;
+
+      try {
+
+
+
+        const tempTran = await Trans.findOne({
+          id: clientId,
+          status: "created",
+        });
+        if (tempTran) {
+          const lastTransId = await Trans.findOne(
+            { id: clientId },
+            { number: 1, userId: 1, amount: 1 }
+          );
+          var amount = lastTransId.amount;
+          const updatedDoc = await Trans.findOneAndUpdate(
+            { id: clientId, status: 'created' },
+            { status: 'success', expired: true, $inc: { __v: 1 } },
+            { new: true, runValidators: true }
+          );
+
+          if (updatedDoc) {
+            const user = await User.findOne({ id: lastTransId.userId });
             var firstRecharge = 0;
             await daily.updateOne(
               { id: newDate },
               { $inc: { count: +1, amount: amount } },
               { upsert: true }
             );
-    
+
             if (!user.firstRecharge) {
               firstRecharge = amount;
               await User.updateOne(
@@ -2334,7 +2335,7 @@ export const razorpayVerify = async (req,res) => {
                 { userId: user.upLine[0] },
                 {
                   userId: user.upLine[0],
-                  $inc: { amount: +151, [filedName]: +151, totalReferral: +151},
+                  $inc: { amount: +151, [filedName]: +151, totalReferral: +151 },
                   $push: {
                     history: {
                       credit: "wallet",
@@ -2344,10 +2345,10 @@ export const razorpayVerify = async (req,res) => {
                     },
                   },
                 },
-                {upsert: true}
+                { upsert: true }
               );
-              
-    
+
+
               var bonusAmount = amount;
               if (amount > 4999) {
                 const bonus = (amount * 10) / 100;
@@ -2372,46 +2373,46 @@ export const razorpayVerify = async (req,res) => {
                   },
                 }
               );
-               
-              const level0profit = (amount * 9) /100;
-                    const level1profit = (amount * 4) /100;
-                    const level2profit = (amount * 3) /100;
-    
-              
-              user.upLine.forEach(async (element,index) => {
+
+              const level0profit = (amount * 9) / 100;
+              const level1profit = (amount * 4) / 100;
+              const level2profit = (amount * 3) / 100;
+
+
+              user.upLine.forEach(async (element, index) => {
                 const fieldName = `todayProfit.${todayProfit}.level${index}`;
                 const totallevel = `totalLevel${index}`;
                 await User.updateOne(
                   { id: element },
                   {
-                    $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                    
+                    $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
                   }
                 );
                 await offerBonus.updateOne(
                   { userId: element },
                   {
                     userId: element,
-                    $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
+                    $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
                     $push: {
                       history: {
                         credit: "wallet",
-                        amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
+                        amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
                         note: `Recharge bonus: ${user.id}`,
                         date: Date.now(),
                       },
                     },
                   },
-                  {upsert: true}
+                  { upsert: true }
                 );
               });
-            }else{
+            } else {
               var bonus;
               var bonusAmount = amount;
-                      // if (amount > 200) {
-                      //    bonus = (amount * 5) / 100;
-                      //   bonusAmount = amount + bonus;
-                      // }
+              // if (amount > 200) {
+              //    bonus = (amount * 5) / 100;
+              //   bonusAmount = amount + bonus;
+              // }
               await User.updateOne(
                 { id: user.id },
                 {
@@ -2431,38 +2432,38 @@ export const razorpayVerify = async (req,res) => {
                   },
                 }
               );
-              const level0profit = (amount * 9) /100;
-                    const level1profit = (amount * 4) /100;
-                    const level2profit = (amount * 3) /100;
-    
-              user.upLine.forEach(async (element,index) => {
+              const level0profit = (amount * 9) / 100;
+              const level1profit = (amount * 4) / 100;
+              const level2profit = (amount * 3) / 100;
+
+              user.upLine.forEach(async (element, index) => {
                 const fieldName = `todayProfit.${todayProfit}.level${index}`;
                 const totallevel = `totalLevel${index}`;
                 await User.updateOne(
                   { id: element },
                   {
-                    $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                    
+                    $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
                   }
                 );
                 await offerBonus.updateOne(
                   { userId: element },
                   {
                     userId: element,
-                    $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
+                    $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
                     $push: {
                       history: {
                         credit: "wallet",
-                        amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
+                        amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
                         note: `Recharge bonus: ${user.id}`,
                         date: Date.now(),
                       },
                     },
                   },
-                  {upsert: true}
+                  { upsert: true }
                 );
               });
-              
+
             }
             const userDate = new Date(user.date);
             const userDateLocal = (userDate / 1000 + 19800) * 1000;
@@ -2473,25 +2474,25 @@ export const razorpayVerify = async (req,res) => {
             const day = newabhirDate.getDate();
             const month = newabhirDate.getMonth() + 1;
             const year = newabhirDate.getFullYear();
-    
+
             const dayMonth = `${day}/${month}/${year}`;
             const userday = newuserDate.getDate();
             const usermonth = newuserDate.getMonth() + 1;
             const useryear = newuserDate.getFullYear();
-    
+
             const userdayMonth = `${userday}/${usermonth}/${useryear}`;
             const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
             const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
             const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-    
+
             const phone0recharge = `level0.${user.phone}.totalRecharge`;
             const phone1recharge = `level1.${user.phone}.totalRecharge`;
             const phone2recharge = `level2.${user.phone}.totalRecharge`;
-    
+
             const phone0first = `level0.${user.phone}.firstRecharge`;
             const phone1first = `level1.${user.phone}.firstRecharge`;
             const phone2first = `level2.${user.phone}.firstRecharge`;
-    
+
             if (dayMonth === userdayMonth) {
               if (user.upLine !== null) {
                 if (user.upLine[0].length !== 0) {
@@ -2533,7 +2534,7 @@ export const razorpayVerify = async (req,res) => {
                       { upsert: true }
                     );
                   }
-    
+
                   if (user.upLine[2].length !== 0) {
                     await promotion.updateOne(
                       { userId: user.upLine[2] ?? 1 },
@@ -2549,7 +2550,7 @@ export const razorpayVerify = async (req,res) => {
                 }
               }
             }
-    
+
             if (user.upLine !== null) {
               if (user.upLine[0].length !== 0) {
                 await promotion.updateOne(
@@ -2593,7 +2594,7 @@ export const razorpayVerify = async (req,res) => {
                     { upsert: true }
                   );
                 }
-    
+
                 if (user.upLine[2].length !== 0) {
                   await promotion.updateOne(
                     { userId: user.upLine[2] ?? 1 },
@@ -2609,36 +2610,36 @@ export const razorpayVerify = async (req,res) => {
                 }
               }
             }
-    
-            res.status(200).json({ status: 'ok' });
-    
-            }else{
-              res.status(200).send('done');
-            }
-          } else {
-            res.status(200).send("done");
-            }
-       
-          } catch (error) {
-            console.log(error.message);
-            res.status(200).send("done");
-          }
 
-        //console.log("Payment verification successful");
-      } else {
-        res.status(400).json({ status: 'verification_failed' });
-        console.log("Payment verification failed");
+            res.status(200).json({ status: 'ok' });
+
+          } else {
+            res.status(200).send('done');
+          }
+        } else {
+          res.status(200).send("done");
+        }
+
+      } catch (error) {
+        console.log(error.message);
+        res.status(200).send("done");
       }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ status: 'error', message: 'Error verifying payment' });
+
+      //console.log("Payment verification successful");
+    } else {
+      res.status(400).json({ status: 'verification_failed' });
+      console.log("Payment verification failed");
     }
-  
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: 'error', message: 'Error verifying payment' });
+  }
+
 }
 export const phonepePGEcom = async (req, res, next) => {
-  
+
   const amount = parseInt(req.body.totalPrice);
-  
+
   const id = Math.random().toString(16).slice(2);
   const index = 1;
   const key = process.env.phonepe;
@@ -2680,8 +2681,8 @@ export const phonepePGEcom = async (req, res, next) => {
     .then(async function (response) {
       const lastTrans = await Trans.findOne().sort({ number: -1 });
       const newIncreament = lastTrans.number + 1;
-      
-      
+
+
       res.status(200).send(response.data.data.instrumentResponse.redirectInfo);
     })
     .catch(function (error) {
@@ -2691,7 +2692,7 @@ export const phonepePGEcom = async (req, res, next) => {
 };
 
 
-  export const phonepePG = async (req, res, next) => {
+export const phonepePG = async (req, res, next) => {
   const userId = req.body.userId;
   const amount = parseInt(req.body.amount) ?? 200;
   const phone = req.body.phone;
@@ -2859,7 +2860,7 @@ export const checkPhonePeStatus = async (req, res) => {
                         },
                       },
                     },
-                    {upsert: true}
+                    { upsert: true }
                   );
                   if (amount > 4999) {
                     const bonus = (amount * 10) / 100;
@@ -2884,10 +2885,10 @@ export const checkPhonePeStatus = async (req, res) => {
                       },
                     }
                   );
-                }else{
+                } else {
                   var bonus;
                   if (amount > 4999) {
-                     bonus = (amount * 10) / 100;
+                    bonus = (amount * 10) / 100;
                     amount = amount + bonus;
                   }
                   await User.updateOne(
@@ -2913,7 +2914,7 @@ export const checkPhonePeStatus = async (req, res) => {
                   //   { id: user.upLine[0] },
                   //   {
                   //     $inc: { balance: bonus },
-                      
+
                   //   }
                   // );
                   // await offerBonus.updateOne(
@@ -2933,8 +2934,8 @@ export const checkPhonePeStatus = async (req, res) => {
                   //   {upsert: true}
                   // );
                 }
-               
-                
+
+
 
                 const userDate = new Date(user.date);
                 const userDateLocal = (userDate / 1000 + 19800) * 1000;
@@ -2946,13 +2947,13 @@ export const checkPhonePeStatus = async (req, res) => {
                 const month = newabhirDate.getMonth() + 1;
                 const year = newabhirDate.getFullYear();
 
-                  const dayMonth = `${day}/${month}/${year}`;
+                const dayMonth = `${day}/${month}/${year}`;
 
-                  const userday = newuserDate.getDate();
-                  const usermonth = newuserDate.getMonth() + 1;
-                  const useryear = newuserDate.getFullYear();
+                const userday = newuserDate.getDate();
+                const usermonth = newuserDate.getMonth() + 1;
+                const useryear = newuserDate.getFullYear();
 
-                  const userdayMonth = `${userday}/${usermonth}/${useryear}`;
+                const userdayMonth = `${userday}/${usermonth}/${useryear}`;
                 const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
                 const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
                 const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
@@ -3197,7 +3198,7 @@ export const processphonepePG = async (req, res) => {
                       { userId: user.upLine[0] },
                       {
                         userId: user.upLine[0],
-                        $inc: { amount: +151, [filedName]: +151, totalReferral: +151},
+                        $inc: { amount: +151, [filedName]: +151, totalReferral: +151 },
                         $push: {
                           history: {
                             credit: "wallet",
@@ -3207,15 +3208,15 @@ export const processphonepePG = async (req, res) => {
                           },
                         },
                       },
-                      {upsert: true}
+                      { upsert: true }
                     );
-                    
-          
+
+
                     var bonusAmount = amount;
-                   
-                      const bonus = (amount * 10) / 100;
-                      bonusAmount = amount + bonus;
-                    
+
+                    const bonus = (amount * 10) / 100;
+                    bonusAmount = amount + bonus;
+
                     await User.updateOne(
                       { id: user.id },
                       {
@@ -3235,47 +3236,47 @@ export const processphonepePG = async (req, res) => {
                         },
                       }
                     );
-                     
-                    const level0profit = (amount * 3) /100;
-                    const level1profit = (amount * 0) /100;
-                    const level2profit = (amount * 0) /100;
-          
-                    
-                    user.upLine.forEach(async (element,index) => {
-                      if(index === 0){
-                      const fieldName = `todayProfit.${todayProfit}.level${index}`;
-                      const totallevel = `totalLevel${index}`;
-                      await User.updateOne(
-                        { id: element },
-                        {
-                          $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                          
-                        }
-                      );
-                      await offerBonus.updateOne(
-                        { userId: element },
-                        {
-                          userId: element,
-                          $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                          $push: {
-                            history: {
-                              credit: "wallet",
-                              amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                              note: `Recharge bonus: ${user.id}`,
-                              date: Date.now(),
+
+                    const level0profit = (amount * 3) / 100;
+                    const level1profit = (amount * 0) / 100;
+                    const level2profit = (amount * 0) / 100;
+
+
+                    user.upLine.forEach(async (element, index) => {
+                      if (index === 0) {
+                        const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                        const totallevel = `totalLevel${index}`;
+                        await User.updateOne(
+                          { id: element },
+                          {
+                            $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                          }
+                        );
+                        await offerBonus.updateOne(
+                          { userId: element },
+                          {
+                            userId: element,
+                            $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                            $push: {
+                              history: {
+                                credit: "wallet",
+                                amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                                note: `Recharge bonus: ${user.id}`,
+                                date: Date.now(),
+                              },
                             },
                           },
-                        },
-                        {upsert: true}
-                      );
-                    }
+                          { upsert: true }
+                        );
+                      }
                     });
-                  }else{
+                  } else {
                     var bonusAmount = amount;
                     var bonus;
                     if (amount > 200) {
-                       bonus = (amount * 3) / 100;
-                       bonusAmount = amount + bonus;
+                      bonus = (amount * 3) / 100;
+                      bonusAmount = amount + bonus;
                     }
                     await User.updateOne(
                       { id: user.id },
@@ -3296,44 +3297,44 @@ export const processphonepePG = async (req, res) => {
                         },
                       }
                     );
-                    const level0profit = (amount * 3) /100;
-                    const level1profit = (amount * 0) /100;
-                    const level2profit = (amount * 0) /100;
-          
-                    user.upLine.forEach(async (element,index) => {
-                      if(index === 0){
-                      const fieldName = `todayProfit.${todayProfit}.level${index}`;
-                      const totallevel = `totalLevel${index}`;
-                      await User.updateOne(
-                        { id: element },
-                        {
-                          $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                          
-                        }
-                      );
-                      await offerBonus.updateOne(
-                        { userId: element },
-                        {
-                          userId: element,
-                          $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-                          $push: {
-                            history: {
-                              credit: "wallet",
-                              amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                              note: `Recharge bonus: ${user.id}`,
-                              date: Date.now(),
+                    const level0profit = (amount * 3) / 100;
+                    const level1profit = (amount * 0) / 100;
+                    const level2profit = (amount * 0) / 100;
+
+                    user.upLine.forEach(async (element, index) => {
+                      if (index === 0) {
+                        const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                        const totallevel = `totalLevel${index}`;
+                        await User.updateOne(
+                          { id: element },
+                          {
+                            $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                          }
+                        );
+                        await offerBonus.updateOne(
+                          { userId: element },
+                          {
+                            userId: element,
+                            $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                            $push: {
+                              history: {
+                                credit: "wallet",
+                                amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                                note: `Recharge bonus: ${user.id}`,
+                                date: Date.now(),
+                              },
                             },
                           },
-                        },
-                        {upsert: true}
-                      );
-                    }
+                          { upsert: true }
+                        );
+                      }
                     });
                     // await User.updateOne(
                     //   { id: user.upLine[0] },
                     //   {
                     //     $inc: { balance: bonus },
-                        
+
                     //   }
                     // );
                     // await offerBonus.updateOne(
@@ -3367,7 +3368,7 @@ export const processphonepePG = async (req, res) => {
                   const month = newabhirDate.getMonth() + 1;
                   const year = newabhirDate.getFullYear();
                   const dayMonth = `${day}/${month}/${year}`;
-          
+
                   const userday = newuserDate.getDate();
                   const usermonth = newuserDate.getMonth() + 1;
                   const userdayMonth = `${userday}/${usermonth}/${year}`;
@@ -3378,8 +3379,8 @@ export const processphonepePG = async (req, res) => {
                   const newphone4recharge = `newlevel4.${dayMonth}.${user.phone}.todayRecharge`;
                   const newphone5recharge = `newlevel5.${dayMonth}.${user.phone}.todayRecharge`;
                   const newphone6recharge = `newlevel6.${dayMonth}.${user.phone}.todayRecharge`;
-                 
-          
+
+
                   const phone0recharge = `level0.${user.phone}.totalRecharge`;
                   const phone1recharge = `level1.${user.phone}.totalRecharge`;
                   const phone2recharge = `level2.${user.phone}.totalRecharge`;
@@ -3387,7 +3388,7 @@ export const processphonepePG = async (req, res) => {
                   const phone4recharge = `level4.${user.phone}.totalRecharge`;
                   const phone5recharge = `level5.${user.phone}.totalRecharge`;
                   const phone6recharge = `level6.${user.phone}.totalRecharge`;
-          
+
                   const phone0first = `level0.${user.phone}.firstRecharge`;
                   const phone1first = `level1.${user.phone}.firstRecharge`;
                   const phone2first = `level2.${user.phone}.firstRecharge`;
@@ -3395,7 +3396,7 @@ export const processphonepePG = async (req, res) => {
                   const phone4first = `level4.${user.phone}.firstRecharge`;
                   const phone5first = `level5.${user.phone}.firstRecharge`;
                   const phone6first = `level6.${user.phone}.firstRecharge`;
-          
+
                   if (dayMonth === userdayMonth) {
                     if (user.upLine !== null) {
                       // Level 0
@@ -3411,7 +3412,7 @@ export const processphonepePG = async (req, res) => {
                           { upsert: true }
                         );
                       }
-                      
+
                       // Level 1
                       if (user.upLine[1]?.length > 0) {
                         await promotion.updateOne(
@@ -3425,7 +3426,7 @@ export const processphonepePG = async (req, res) => {
                           { upsert: true }
                         );
                       }
-                      
+
                       // Level 2
                       if (user.upLine[2]?.length > 0) {
                         await promotion.updateOne(
@@ -3439,7 +3440,7 @@ export const processphonepePG = async (req, res) => {
                           { upsert: true }
                         );
                       }
-                      
+
                       // Level 3
                       if (user.upLine[3]?.length > 0) {
                         await promotion.updateOne(
@@ -3453,7 +3454,7 @@ export const processphonepePG = async (req, res) => {
                           { upsert: true }
                         );
                       }
-                      
+
                       // Level 4
                       if (user.upLine[4]?.length > 0) {
                         await promotion.updateOne(
@@ -3467,7 +3468,7 @@ export const processphonepePG = async (req, res) => {
                           { upsert: true }
                         );
                       }
-                      
+
                       // Level 5
                       if (user.upLine[5]?.length > 0) {
                         await promotion.updateOne(
@@ -3481,7 +3482,7 @@ export const processphonepePG = async (req, res) => {
                           { upsert: true }
                         );
                       }
-                      
+
                       // Level 6
                       if (user.upLine[6]?.length > 0) {
                         await promotion.updateOne(
@@ -3497,7 +3498,7 @@ export const processphonepePG = async (req, res) => {
                       }
                     }
                   }
-          
+
                   if (user.upLine !== null) {
                     // Level 0
                     if (user.upLine[0]?.length > 0) {
@@ -3513,7 +3514,7 @@ export const processphonepePG = async (req, res) => {
                         { upsert: true }
                       );
                     }
-                    
+
                     // Level 1
                     if (user.upLine[1]?.length > 0) {
                       await promotion.updateOne(
@@ -3528,7 +3529,7 @@ export const processphonepePG = async (req, res) => {
                         { upsert: true }
                       );
                     }
-                    
+
                     // Level 2
                     if (user.upLine[2]?.length > 0) {
                       await promotion.updateOne(
@@ -3543,7 +3544,7 @@ export const processphonepePG = async (req, res) => {
                         { upsert: true }
                       );
                     }
-                    
+
                     // Level 3
                     if (user.upLine[3]?.length > 0) {
                       await promotion.updateOne(
@@ -3558,7 +3559,7 @@ export const processphonepePG = async (req, res) => {
                         { upsert: true }
                       );
                     }
-                    
+
                     // Level 4
                     if (user.upLine[4]?.length > 0) {
                       await promotion.updateOne(
@@ -3573,7 +3574,7 @@ export const processphonepePG = async (req, res) => {
                         { upsert: true }
                       );
                     }
-                    
+
                     // Level 5
                     if (user.upLine[5]?.length > 0) {
                       await promotion.updateOne(
@@ -3588,7 +3589,7 @@ export const processphonepePG = async (req, res) => {
                         { upsert: true }
                       );
                     }
-                    
+
                     // Level 6
                     if (user.upLine[6]?.length > 0) {
                       await promotion.updateOne(
@@ -3664,139 +3665,139 @@ export const createQRTrans = async (req, res) => {
 
     link = createOrder.data.data.payment_url;
   } else {
-   
+
 
     var randomValue = Math.floor(Math.random() * 10) + 1;
     var newAmount = amount - randomValue;
-   
-    
-    
-      var upis = [];
-      var upi = "";
-      function shuffleArray(array) {
-        for (var i = array.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var temp = array[i];
-          array[i] = array[j];
-          array[j] = temp;
-        }
-      }
-      var agents = getUpi.upi.v4.agent;
-      var keys = Object.keys(agents);
-    
-      var acitveAgents = [];
-      var upis = [];
-    
-      for (var i = 0; i < keys.length; i++) {
-        if (getUpi.upi.v4.agent[keys[i]].active) {
-          acitveAgents.push(keys[i]);
-        }
-      }
-    
-      if (acitveAgents.length != 0) {
-        for (var i = 0; i < acitveAgents.length; i++) {
-          agents[`${acitveAgents[i]}`].upis.forEach((element) => {
-            upis.push({ agent: acitveAgents[i], upi: element });
-          });
-        }
-      } else {
-        
-          upis.push({ agent: keys[0], upi: getUpi.upi.v4.agent[keys[0]].upis[0] });
-       
-      }
-      shuffleArray(upis);
 
-      
-      upi = upis[0].upi;
-      // if (amount <= 5000) {
-      //   function shuffleArray(array) {
-      //     for (var i = array.length - 1; i > 0; i--) {
-      //       var j = Math.floor(Math.random() * (i + 1));
-      //       var temp = array[i];
-      //       array[i] = array[j];
-      //       array[j] = temp;
-      //     }
-      //   }
 
-      //   const arr = getUpi.upi.arr1;
-      //   shuffleArray(arr);
-      //   upi = arr[0];
-      // }
-      // if (amount <= 15000 && amount > 5000) {
-      //   function shuffleArray(array) {
-      //     for (var i = array.length - 1; i > 0; i--) {
-      //       var j = Math.floor(Math.random() * (i + 1));
-      //       var temp = array[i];
-      //       array[i] = array[j];
-      //       array[j] = temp;
-      //     }
-      //   }
-      //   const arr = getUpi.upi.arr2;
-      //   shuffleArray(arr);
-      //   upi = arr[0];
-      // }
-      // if (amount <= 30000 && amount > 15000) {
-      //   function shuffleArray(array) {
-      //     for (var i = array.length - 1; i > 0; i--) {
-      //       var j = Math.floor(Math.random() * (i + 1));
-      //       var temp = array[i];
-      //       array[i] = array[j];
-      //       array[j] = temp;
-      //     }
-      //   }
-      //   const arr = getUpi.upi.arr3;
-      //   shuffleArray(arr);
-      //   upi = arr[0];
-      // }
-      // if (amount > 30000) {
-      //   function shuffleArray(array) {
-      //     for (var i = array.length - 1; i > 0; i--) {
-      //       var j = Math.floor(Math.random() * (i + 1));
-      //       var temp = array[i];
-      //       array[i] = array[j];
-      //       array[j] = temp;
-      //     }
-      //   }
-      //   const arr = getUpi.upi.arr4;
-      //   shuffleArray(arr);
-      //   upi = arr[0];
-      // }
-      await Trans.create({
-        gateway: "QR",
-        createDate: Date.now(),
-        date: Date.now(),
-        userId,
-        amount: newAmount,
-        number: newIncreament,
-        status: "created",
-        phone: customer_mobile,
-        agent: upis[0].agent,
-        upi: upi,
-      });
-      link = `upi://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
 
-      if (app === "phonepe") {
-        link = `phonepe://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+    var upis = [];
+    var upi = "";
+    function shuffleArray(array) {
+      for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
       }
-      if (app === "upi") {
-        link = `upi://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
-      }
-      if (app === "gpay") {
-        link = `tez://upi/pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
-      }
-      if (app === "paytm") {
-        link = `paytmmp://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+    }
+    var agents = getUpi.upi.v4.agent;
+    var keys = Object.keys(agents);
+
+    var acitveAgents = [];
+    var upis = [];
+
+    for (var i = 0; i < keys.length; i++) {
+      if (getUpi.upi.v4.agent[keys[i]].active) {
+        acitveAgents.push(keys[i]);
       }
     }
 
-  
-  
+    if (acitveAgents.length != 0) {
+      for (var i = 0; i < acitveAgents.length; i++) {
+        agents[`${acitveAgents[i]}`].upis.forEach((element) => {
+          upis.push({ agent: acitveAgents[i], upi: element });
+        });
+      }
+    } else {
+
+      upis.push({ agent: keys[0], upi: getUpi.upi.v4.agent[keys[0]].upis[0] });
+
+    }
+    shuffleArray(upis);
+
+
+    upi = upis[0].upi;
+    // if (amount <= 5000) {
+    //   function shuffleArray(array) {
+    //     for (var i = array.length - 1; i > 0; i--) {
+    //       var j = Math.floor(Math.random() * (i + 1));
+    //       var temp = array[i];
+    //       array[i] = array[j];
+    //       array[j] = temp;
+    //     }
+    //   }
+
+    //   const arr = getUpi.upi.arr1;
+    //   shuffleArray(arr);
+    //   upi = arr[0];
+    // }
+    // if (amount <= 15000 && amount > 5000) {
+    //   function shuffleArray(array) {
+    //     for (var i = array.length - 1; i > 0; i--) {
+    //       var j = Math.floor(Math.random() * (i + 1));
+    //       var temp = array[i];
+    //       array[i] = array[j];
+    //       array[j] = temp;
+    //     }
+    //   }
+    //   const arr = getUpi.upi.arr2;
+    //   shuffleArray(arr);
+    //   upi = arr[0];
+    // }
+    // if (amount <= 30000 && amount > 15000) {
+    //   function shuffleArray(array) {
+    //     for (var i = array.length - 1; i > 0; i--) {
+    //       var j = Math.floor(Math.random() * (i + 1));
+    //       var temp = array[i];
+    //       array[i] = array[j];
+    //       array[j] = temp;
+    //     }
+    //   }
+    //   const arr = getUpi.upi.arr3;
+    //   shuffleArray(arr);
+    //   upi = arr[0];
+    // }
+    // if (amount > 30000) {
+    //   function shuffleArray(array) {
+    //     for (var i = array.length - 1; i > 0; i--) {
+    //       var j = Math.floor(Math.random() * (i + 1));
+    //       var temp = array[i];
+    //       array[i] = array[j];
+    //       array[j] = temp;
+    //     }
+    //   }
+    //   const arr = getUpi.upi.arr4;
+    //   shuffleArray(arr);
+    //   upi = arr[0];
+    // }
+    await Trans.create({
+      gateway: "QR",
+      createDate: Date.now(),
+      date: Date.now(),
+      userId,
+      amount: newAmount,
+      number: newIncreament,
+      status: "created",
+      phone: customer_mobile,
+      agent: upis[0].agent,
+      upi: upi,
+    });
+    link = `upi://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+
+    if (app === "phonepe") {
+      link = `phonepe://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+    }
+    if (app === "upi") {
+      link = `upi://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+    }
+    if (app === "gpay") {
+      link = `tez://upi/pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+    }
+    if (app === "paytm") {
+      link = `paytmmp://pay?pa=${upi}&pn=${getUpi.upi.pn}&am=${newAmount}&cu=INR&mc=5411`;
+    }
+  }
+
+
+
   res.status(200).send({ link: link });
 };
 
-export const getRecentRecharge = async (req,res) => {
+export const getRecentRecharge = async (req, res) => {
   const userId = req.params.id;
-  const getRecharge = await Trans.find({userId}).sort({createDate: -1}).limit(10);
+  const getRecharge = await Trans.find({ userId }).sort({ createDate: -1 }).limit(10);
   return res.status(200).send(getRecharge);
 }
 export const getShuffleUPI = async (req, res) => {
@@ -3885,7 +3886,7 @@ export const submitUTR = async (req, res) => {
   const utr = req.body.utr;
   const lastTrans = await Trans.findOne().sort({ number: -1 });
   const newIncreament = lastTrans.number + 1;
-  
+
   await Trans.create({
     gateway: "QR",
     createDate: Date.now(),
@@ -3896,7 +3897,7 @@ export const submitUTR = async (req, res) => {
     phone: customer_mobile,
     upi: upi.upi,
     utr,
-    agent: upi?.agent??'toddRecharge',
+    agent: upi?.agent ?? 'toddRecharge',
   });
 
   res.status(200).send('done');
@@ -4151,8 +4152,8 @@ export const toddRechargegetPendingTransactionPaytm = async (req, res) => {
     const getTrans = await Trans.find({
       status: "created",
       gateway: "QR",
-      
-      agent: {$exists: false},
+
+      agent: { $exists: false },
     }).sort({ date: -1 });
     res.status(200).send(getTrans);
   } else {
@@ -4250,7 +4251,7 @@ export const toddRechargeupdatePendingTransaction = async (req, res) => {
                 },
               },
             },
-            {upsert: true}
+            { upsert: true }
           );
           if (amount > 4999) {
             const bonus = (amount * 10) / 100;
@@ -4275,8 +4276,8 @@ export const toddRechargeupdatePendingTransaction = async (req, res) => {
               },
             }
           );
-        }else{
-         
+        } else {
+
           const bonus = (amount * 5) / 100;
           amount = amount + bonus;
           await User.updateOne(
@@ -4302,7 +4303,7 @@ export const toddRechargeupdatePendingTransaction = async (req, res) => {
             { id: user.upLine[0] },
             {
               $inc: { balance: bonus },
-              
+
             }
           );
           await offerBonus.updateOne(
@@ -4319,7 +4320,7 @@ export const toddRechargeupdatePendingTransaction = async (req, res) => {
                 },
               },
             },
-            {upsert: true}
+            { upsert: true }
           );
         }
         const userDate = new Date(user.date);
@@ -5006,7 +5007,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
   if (data.status === "success") {
     const getId = await Trans.findOne({
       id: clientId,
-      
+
     });
     const getTransaction = await axios.post(
       "https://merchant.upigateway.com/api/check_order_status",
@@ -5065,7 +5066,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
               { userId: user.upLine[0] },
               {
                 userId: user.upLine[0],
-                $inc: { amount: +100, [filedName]: +100, totalReferral: +100},
+                $inc: { amount: +100, [filedName]: +100, totalReferral: +100 },
                 $push: {
                   history: {
                     credit: "wallet",
@@ -5075,126 +5076,126 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   },
                 },
               },
-              {upsert: true}
+              { upsert: true }
             );
-            
-  
-          
-             
-            
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +bonusAmount },
-                $push: {
-                  rechargeHistory: {
-                    amount: bonusAmount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: bonusAmount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
-              }
-            );
-             
-          //   const level0profit = (amount * 3) /100;
-          // const level1profit = (amount * 0) /100;
-          // const level2profit = (amount * 0) /100;
-  
-            
-          //   user.upLine.forEach(async (element,index) => {
-          //     if(index === 0){
-          //     const fieldName = `todayProfit.${todayProfit}.level${index}`;
-          //     const totallevel = `totalLevel${index}`;
-          //     await User.updateOne(
-          //       { id: element },
-          //       {
-          //         $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                  
-          //       }
-          //     );
-          //     await offerBonus.updateOne(
-          //       { userId: element },
-          //       {
-          //         userId: element,
-          //         $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
-          //         $push: {
-          //           history: {
-          //             credit: "wallet",
-          //             amount: bonus,
-          //             note: `Recharge bonus: ${user.id}`,
-          //             date: Date.now(),
-          //           },
-          //         },
-          //       },
-          //       {upsert: true}
-          //     );
-          //   }
-          //   });
-          }else{
-           var bonusAmount = amount;
-            var bonus;
-                  if (amount > 200) {
-                     bonus = (amount * 3) / 100;
-                     bonusAmount = amount + bonus;
-                  }
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +bonusAmount },
-                $push: {
-                  rechargeHistory: {
-                    amount: bonusAmount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: bonusAmount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
-              }
-            );
-            const level0profit = (amount * 3) /100;
-          const level1profit = (amount * 0) /100;
-          const level2profit = (amount * 0) /100;
 
-          user.upLine.forEach(async (element,index) => {
-            if(index === 0){
-            const fieldName = `todayProfit.${todayProfit}.level${index}`;
-            const totallevel = `totalLevel${index}`;
+
+
+
+
             await User.updateOne(
-              { id: element },
+              { id: user.id },
               {
-                $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
-                
-              }
-            );
-            await offerBonus.updateOne(
-              { userId: element },
-              {
-                userId: element,
-                $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
+                firstRecharge: true, $inc: { balance: +bonusAmount },
                 $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,
-                    note: `Recharge bonus: ${user.id}`,
+                  rechargeHistory: {
+                    amount: bonusAmount,
                     date: Date.now(),
+                    status: "Success",
+                  },
+                  walletHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    credit: true,
+                    note: `Add money ID: ${lastTransId.number}`,
                   },
                 },
-              },
-              {upsert: true}
+              }
             );
-          }
-          });
+
+            //   const level0profit = (amount * 3) /100;
+            // const level1profit = (amount * 0) /100;
+            // const level2profit = (amount * 0) /100;
+
+
+            //   user.upLine.forEach(async (element,index) => {
+            //     if(index === 0){
+            //     const fieldName = `todayProfit.${todayProfit}.level${index}`;
+            //     const totallevel = `totalLevel${index}`;
+            //     await User.updateOne(
+            //       { id: element },
+            //       {
+            //         $inc: { balance: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit  },
+
+            //       }
+            //     );
+            //     await offerBonus.updateOne(
+            //       { userId: element },
+            //       {
+            //         userId: element,
+            //         $inc: { amount: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit, [fieldName]:  index === 0 ?level0profit : index === 1 ?  level1profit : level2profit,[totallevel]: index === 0 ?level0profit : index === 1 ?  level1profit : level2profit },
+            //         $push: {
+            //           history: {
+            //             credit: "wallet",
+            //             amount: bonus,
+            //             note: `Recharge bonus: ${user.id}`,
+            //             date: Date.now(),
+            //           },
+            //         },
+            //       },
+            //       {upsert: true}
+            //     );
+            //   }
+            //   });
+          } else {
+            var bonusAmount = amount;
+            var bonus;
+            if (amount > 200) {
+              bonus = (amount * 3) / 100;
+              bonusAmount = amount + bonus;
+            }
+            await User.updateOne(
+              { id: user.id },
+              {
+                firstRecharge: true, $inc: { balance: +bonusAmount },
+                $push: {
+                  rechargeHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    status: "Success",
+                  },
+                  walletHistory: {
+                    amount: bonusAmount,
+                    date: Date.now(),
+                    credit: true,
+                    note: `Add money ID: ${lastTransId.number}`,
+                  },
+                },
+              }
+            );
+            const level0profit = (amount * 3) / 100;
+            const level1profit = (amount * 0) / 100;
+            const level2profit = (amount * 0) / 100;
+
+            user.upLine.forEach(async (element, index) => {
+              if (index === 0) {
+                const fieldName = `todayProfit.${todayProfit}.level${index}`;
+                const totallevel = `totalLevel${index}`;
+                await User.updateOne(
+                  { id: element },
+                  {
+                    $inc: { balance: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+
+                  }
+                );
+                await offerBonus.updateOne(
+                  { userId: element },
+                  {
+                    userId: element,
+                    $inc: { amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [fieldName]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit, [totallevel]: index === 0 ? level0profit : index === 1 ? level1profit : level2profit },
+                    $push: {
+                      history: {
+                        credit: "wallet",
+                        amount: index === 0 ? level0profit : index === 1 ? level1profit : level2profit,
+                        note: `Recharge bonus: ${user.id}`,
+                        date: Date.now(),
+                      },
+                    },
+                  },
+                  { upsert: true }
+                );
+              }
+            });
           }
           const userDate = new Date(user.date);
           const userDateLocal = (userDate / 1000 + 19800) * 1000;
@@ -5206,7 +5207,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
           const month = newabhirDate.getMonth() + 1;
           const year = newabhirDate.getFullYear();
           const dayMonth = `${day}/${month}/${year}`;
-  
+
           const userday = newuserDate.getDate();
           const usermonth = newuserDate.getMonth() + 1;
           const userdayMonth = `${userday}/${usermonth}/${year}`;
@@ -5217,8 +5218,8 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
           const newphone4recharge = `newlevel4.${dayMonth}.${user.phone}.todayRecharge`;
           const newphone5recharge = `newlevel5.${dayMonth}.${user.phone}.todayRecharge`;
           const newphone6recharge = `newlevel6.${dayMonth}.${user.phone}.todayRecharge`;
-         
-  
+
+
           const phone0recharge = `level0.${user.phone}.totalRecharge`;
           const phone1recharge = `level1.${user.phone}.totalRecharge`;
           const phone2recharge = `level2.${user.phone}.totalRecharge`;
@@ -5226,7 +5227,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
           const phone4recharge = `level4.${user.phone}.totalRecharge`;
           const phone5recharge = `level5.${user.phone}.totalRecharge`;
           const phone6recharge = `level6.${user.phone}.totalRecharge`;
-  
+
           const phone0first = `level0.${user.phone}.firstRecharge`;
           const phone1first = `level1.${user.phone}.firstRecharge`;
           const phone2first = `level2.${user.phone}.firstRecharge`;
@@ -5234,7 +5235,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
           const phone4first = `level4.${user.phone}.firstRecharge`;
           const phone5first = `level5.${user.phone}.firstRecharge`;
           const phone6first = `level6.${user.phone}.firstRecharge`;
-  
+
           if (dayMonth === userdayMonth) {
             if (user.upLine !== null) {
               // Level 0
@@ -5250,7 +5251,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   { upsert: true }
                 );
               }
-              
+
               // Level 1
               if (user.upLine[1]?.length > 0) {
                 await promotion.updateOne(
@@ -5264,7 +5265,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   { upsert: true }
                 );
               }
-              
+
               // Level 2
               if (user.upLine[2]?.length > 0) {
                 await promotion.updateOne(
@@ -5278,7 +5279,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   { upsert: true }
                 );
               }
-              
+
               // Level 3
               if (user.upLine[3]?.length > 0) {
                 await promotion.updateOne(
@@ -5292,7 +5293,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   { upsert: true }
                 );
               }
-              
+
               // Level 4
               if (user.upLine[4]?.length > 0) {
                 await promotion.updateOne(
@@ -5306,7 +5307,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   { upsert: true }
                 );
               }
-              
+
               // Level 5
               if (user.upLine[5]?.length > 0) {
                 await promotion.updateOne(
@@ -5320,7 +5321,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                   { upsert: true }
                 );
               }
-              
+
               // Level 6
               if (user.upLine[6]?.length > 0) {
                 await promotion.updateOne(
@@ -5336,7 +5337,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
               }
             }
           }
-  
+
           if (user.upLine !== null) {
             // Level 0
             if (user.upLine[0]?.length > 0) {
@@ -5352,7 +5353,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                 { upsert: true }
               );
             }
-            
+
             // Level 1
             if (user.upLine[1]?.length > 0) {
               await promotion.updateOne(
@@ -5367,7 +5368,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                 { upsert: true }
               );
             }
-            
+
             // Level 2
             if (user.upLine[2]?.length > 0) {
               await promotion.updateOne(
@@ -5382,7 +5383,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                 { upsert: true }
               );
             }
-            
+
             // Level 3
             if (user.upLine[3]?.length > 0) {
               await promotion.updateOne(
@@ -5397,7 +5398,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                 { upsert: true }
               );
             }
-            
+
             // Level 4
             if (user.upLine[4]?.length > 0) {
               await promotion.updateOne(
@@ -5412,7 +5413,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                 { upsert: true }
               );
             }
-            
+
             // Level 5
             if (user.upLine[5]?.length > 0) {
               await promotion.updateOne(
@@ -5427,7 +5428,7 @@ export const upiGatewayWebhooktdv1 = async (req, res) => {
                 { upsert: true }
               );
             }
-            
+
             // Level 6
             if (user.upLine[6]?.length > 0) {
               await promotion.updateOne(
@@ -5480,11 +5481,11 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
     monthSorted = `${month}`;
   }
   const newDate = `${daySorted}-${monthSorted}-${year}`;
-  
+
   const clientId = data.order_id;
 
   if (data.status === "SUCCESS") {
-    
+
     const sData = {
       user_token: "fb8ad7c492d10bf65ee1c9451eccb114",
       order_id: data.order_id
@@ -5500,167 +5501,224 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
         }
       }
     );
-      
-  
+
+
     if (getTransaction.data.status === true) {
       if (getTransaction.data.result.txnStatus === "SUCCESS") {
         try {
 
-          
-        var amount = parseFloat(getTransaction.data.result.amount);
-        const tempTran = await Trans.findOne({
-          id: clientId,
-          status: "success",
-        });
-        if (!tempTran) {
-          console.log("**************** WebHooked *********************");
-          const lastTransId = await Trans.findOne(
-            { id: clientId },
-            { number: 1, userId: 1 }
-          );
-          await Trans.updateOne(
-            { id: clientId },
-            { date: Date.now(), status: "success", expired: true,utr: getTransaction.data.result.utr}
-          );
-          const user = await User.findOne({ id: lastTransId.userId });
-          var firstRecharge = 0;
-          await daily.updateOne(
-            { id: newDate },
-            { $inc: { count: +1, amount: amount } },
-            { upsert: true }
-          );
 
-          if (!user.firstRecharge) {
-            firstRecharge = amount;
-            await User.updateOne(
-              { id: user.upLine[0] },
-              {
-                $inc: { balance: +151 },
-                $push: {
-                  walletHistory: {
-                    amount: 151,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Referal Reward User: ${user.id}`,
+          var amount = parseFloat(getTransaction.data.result.amount);
+          const tempTran = await Trans.findOne({
+            id: clientId,
+            status: "success",
+          });
+          if (!tempTran) {
+            console.log("**************** WebHooked *********************");
+            const lastTransId = await Trans.findOne(
+              { id: clientId },
+              { number: 1, userId: 1 }
+            );
+            await Trans.updateOne(
+              { id: clientId },
+              { date: Date.now(), status: "success", expired: true, utr: getTransaction.data.result.utr }
+            );
+            const user = await User.findOne({ id: lastTransId.userId });
+            var firstRecharge = 0;
+            await daily.updateOne(
+              { id: newDate },
+              { $inc: { count: +1, amount: amount } },
+              { upsert: true }
+            );
+
+            if (!user.firstRecharge) {
+              firstRecharge = amount;
+              await User.updateOne(
+                { id: user.upLine[0] },
+                {
+                  $inc: { balance: +151 },
+                  $push: {
+                    walletHistory: {
+                      amount: 151,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Referal Reward User: ${user.id}`,
+                    },
+                  },
+                }
+              );
+              await offerBonus.updateOne(
+                { userId: user.upLine[0] },
+                {
+                  userId: user.upLine[0],
+                  $inc: { amount: +151 },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: 151,
+                      note: `Referal Reward User: ${user.id}`,
+                      date: Date.now(),
+                    },
                   },
                 },
+                { upsert: true }
+              );
+              if (amount > 4999) {
+                const bonus = (amount * 10) / 100;
+                amount = amount + bonus;
               }
-            );
-            await offerBonus.updateOne(
-              { userId: user.upLine[0] },
-              {
-                userId: user.upLine[0],
-                $inc: { amount: +151 },
-                $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: 151,
-                    note: `Referal Reward User: ${user.id}`,
-                    date: Date.now(),
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +amount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
                   },
-                },
-              },
-              {upsert: true}
-            );
-            if (amount > 4999) {
-              const bonus = (amount * 10) / 100;
+                }
+              );
+            } else {
+
+              const bonus = (amount * 5) / 100;
               amount = amount + bonus;
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +amount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
+                  },
+                }
+              );
+              await User.updateOne(
+                { id: user.upLine[0] },
+                {
+                  $inc: { balance: bonus },
+
+                }
+              );
+              await offerBonus.updateOne(
+                { userId: user.upLine[0] },
+                {
+                  userId: user.upLine[0],
+                  $inc: { amount: +bonus },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: bonus,
+                      note: `Recharge bonus: ${user.id}`,
+                      date: Date.now(),
+                    },
+                  },
+                },
+                { upsert: true }
+              );
             }
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +amount },
-                $push: {
-                  rechargeHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
+            const userDate = new Date(user.date);
+            const userDateLocal = (userDate / 1000 + 19800) * 1000;
+            const newuserDate = new Date(userDateLocal);
+            const abhiDate = new Date();
+            const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+            const newabhirDate = new Date(abhiDateLocal);
+            const day = newabhirDate.getDate();
+            const month = newabhirDate.getMonth() + 1;
+            const year = newabhirDate.getFullYear();
+
+            const dayMonth = `${day}/${month}/${year}`;
+            const userday = newuserDate.getDate();
+            const usermonth = newuserDate.getMonth() + 1;
+            const useryear = newuserDate.getFullYear();
+
+            const userdayMonth = `${userday}/${usermonth}/${useryear}`;
+            const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+
+            const phone0recharge = `level0.${user.phone}.totalRecharge`;
+            const phone1recharge = `level1.${user.phone}.totalRecharge`;
+            const phone2recharge = `level2.${user.phone}.totalRecharge`;
+
+            const phone0first = `level0.${user.phone}.firstRecharge`;
+            const phone1first = `level1.${user.phone}.firstRecharge`;
+            const phone2first = `level2.${user.phone}.firstRecharge`;
+
+            if (dayMonth === userdayMonth) {
+              if (user.upLine !== null) {
+                if (user.upLine[0].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[0] ?? 1 },
+                    {
+                      userId: user.upLine[0] ?? 1,
+                      $inc: {
+                        [newphone0recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+                if (user.upLine.length === 2) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
+                if (user.upLine.length === 3) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  if (user.upLine[2].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[2] ?? 1 },
+                      {
+                        userId: user.upLine[2] ?? 1,
+                        $inc: {
+                          [newphone2recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
               }
-            );
-          }else{
-           
-            const bonus = (amount * 5) / 100;
-            amount = amount + bonus;
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +amount },
-                $push: {
-                  rechargeHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
-              }
-            );
-            await User.updateOne(
-              { id: user.upLine[0] },
-              {
-                $inc: { balance: bonus },
-                
-              }
-            );
-            await offerBonus.updateOne(
-              { userId: user.upLine[0] },
-              {
-                userId: user.upLine[0],
-                $inc: { amount: +bonus },
-                $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: bonus,
-                    note: `Recharge bonus: ${user.id}`,
-                    date: Date.now(),
-                  },
-                },
-              },
-              {upsert: true}
-            );
-          }
-          const userDate = new Date(user.date);
-          const userDateLocal = (userDate / 1000 + 19800) * 1000;
-          const newuserDate = new Date(userDateLocal);
-          const abhiDate = new Date();
-          const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-          const newabhirDate = new Date(abhiDateLocal);
-          const day = newabhirDate.getDate();
-          const month = newabhirDate.getMonth() + 1;
-          const year = newabhirDate.getFullYear();
+            }
 
-          const dayMonth = `${day}/${month}/${year}`;
-          const userday = newuserDate.getDate();
-          const usermonth = newuserDate.getMonth() + 1;
-          const useryear = newuserDate.getFullYear();
-
-          const userdayMonth = `${userday}/${usermonth}/${useryear}`;
-          const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-          const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-          const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-
-          const phone0recharge = `level0.${user.phone}.totalRecharge`;
-          const phone1recharge = `level1.${user.phone}.totalRecharge`;
-          const phone2recharge = `level2.${user.phone}.totalRecharge`;
-
-          const phone0first = `level0.${user.phone}.firstRecharge`;
-          const phone1first = `level1.${user.phone}.firstRecharge`;
-          const phone2first = `level2.${user.phone}.firstRecharge`;
-
-          if (dayMonth === userdayMonth) {
             if (user.upLine !== null) {
               if (user.upLine[0].length !== 0) {
                 await promotion.updateOne(
@@ -5668,7 +5726,8 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
                   {
                     userId: user.upLine[0] ?? 1,
                     $inc: {
-                      [newphone0recharge]: amount,
+                      [phone0first]: firstRecharge,
+                      [phone0recharge]: amount,
                     },
                   },
                   { upsert: true }
@@ -5681,7 +5740,8 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[1] ?? 1,
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -5695,7 +5755,8 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[1] ?? 1,
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -5708,7 +5769,8 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[2] ?? 1,
                       $inc: {
-                        [newphone2recharge]: amount,
+                        [phone2first]: firstRecharge,
+                        [phone2recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -5716,78 +5778,17 @@ export const finflyupiGatewayWebhooktdv1 = async (req, res) => {
                 }
               }
             }
+
+            res.status(200).send("done");
+          } else {
+            res.status(200).send("done");
           }
 
-          if (user.upLine !== null) {
-            if (user.upLine[0].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[0] ?? 1 },
-                {
-                  userId: user.upLine[0] ?? 1,
-                  $inc: {
-                    [phone0first]: firstRecharge,
-                    [phone0recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            if (user.upLine.length === 2) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-            if (user.upLine.length === 3) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-
-              if (user.upLine[2].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[2] ?? 1 },
-                  {
-                    userId: user.upLine[2] ?? 1,
-                    $inc: {
-                      [phone2first]: firstRecharge,
-                      [phone2recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-          }
-
-          res.status(200).send("done");
-        } else {
-          res.status(200).send("done");
-        }
-     
         } catch (error) {
           console.log(error.message);
           res.status(200).send("done");
         }
-       } else {
+      } else {
         res.status(200).send("done");
       }
     } else {
@@ -5820,7 +5821,7 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
     monthSorted = `${month}`;
   }
   const newDate = `${daySorted}-${monthSorted}-${year}`;
-  
+
   const clientId = data.order_id;
 
 
@@ -5843,11 +5844,11 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
         }
       }
     );
-    if(getTransaction.data.result.status === "SUCCESS"){
+    if (getTransaction.data.result.status === "SUCCESS") {
       try {
 
-          
-     
+
+
         const tempTran = await Trans.findOne({
           id: clientId,
           status: "created",
@@ -5856,158 +5857,215 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
           console.log("**************** WebHooked *********************");
           const lastTransId = await Trans.findOne(
             { id: clientId },
-            { number: 1, userId: 1,amount: 1}
+            { number: 1, userId: 1, amount: 1 }
           );
           var amount = lastTransId.amount;
           const updatedDoc = await Trans.findOneAndUpdate(
             { id: clientId, status: 'created' },
-            {status: 'success',expired: true,$inc: {__v: 1}},
+            { status: 'success', expired: true, $inc: { __v: 1 } },
             { new: true, runValidators: true }
           );
-        
-          if(updatedDoc){
+
+          if (updatedDoc) {
             const user = await User.findOne({ id: lastTransId.userId });
-          var firstRecharge = 0;
-          await daily.updateOne(
-            { id: newDate },
-            { $inc: { count: +1, amount: amount } },
-            { upsert: true }
-          );
-  
-          if (!user.firstRecharge) {
-            firstRecharge = amount;
-            await User.updateOne(
-              { id: user.upLine[0] },
-              {
-                $inc: { balance: +151 },
-                $push: {
-                  walletHistory: {
-                    amount: 151,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Referal Reward User: ${user.id}`,
+            var firstRecharge = 0;
+            await daily.updateOne(
+              { id: newDate },
+              { $inc: { count: +1, amount: amount } },
+              { upsert: true }
+            );
+
+            if (!user.firstRecharge) {
+              firstRecharge = amount;
+              await User.updateOne(
+                { id: user.upLine[0] },
+                {
+                  $inc: { balance: +151 },
+                  $push: {
+                    walletHistory: {
+                      amount: 151,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Referal Reward User: ${user.id}`,
+                    },
+                  },
+                }
+              );
+              await offerBonus.updateOne(
+                { userId: user.upLine[0] },
+                {
+                  userId: user.upLine[0],
+                  $inc: { amount: +151 },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: 151,
+                      note: `Referal Reward User: ${user.id}`,
+                      date: Date.now(),
+                    },
                   },
                 },
+                { upsert: true }
+              );
+              if (amount > 4999) {
+                const bonus = (amount * 10) / 100;
+                amount = amount + bonus;
               }
-            );
-            await offerBonus.updateOne(
-              { userId: user.upLine[0] },
-              {
-                userId: user.upLine[0],
-                $inc: { amount: +151 },
-                $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: 151,
-                    note: `Referal Reward User: ${user.id}`,
-                    date: Date.now(),
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +amount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
                   },
-                },
-              },
-              {upsert: true}
-            );
-            if (amount > 4999) {
-              const bonus = (amount * 10) / 100;
-              amount = amount + bonus;
+                }
+              );
+            } else {
+
+              var bonus;
+              if (amount > 4999) {
+                bonus = (amount * 10) / 100;
+                amount = amount + bonus;
+              }
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +amount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
+                  },
+                }
+              );
+              // await User.updateOne(
+              //   { id: user.upLine[0] },
+              //   {
+              //     $inc: { balance: bonus },
+
+              //   }
+              // );
+              // await offerBonus.updateOne(
+              //   { userId: user.upLine[0] },
+              //   {
+              //     userId: user.upLine[0],
+              //     $inc: { amount: +bonus },
+              //     $push: {
+              //       history: {
+              //         credit: "wallet",
+              //         amount: bonus,
+              //         note: `Recharge bonus: ${user.id}`,
+              //         date: Date.now(),
+              //       },
+              //     },
+              //   },
+              //   {upsert: true}
+              // );
             }
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +amount },
-                $push: {
-                  rechargeHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
-              }
-            );
-          }else{
-           
-            var bonus;
-                  if (amount > 4999) {
-                     bonus = (amount * 10) / 100;
-                    amount = amount + bonus;
+            const userDate = new Date(user.date);
+            const userDateLocal = (userDate / 1000 + 19800) * 1000;
+            const newuserDate = new Date(userDateLocal);
+            const abhiDate = new Date();
+            const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+            const newabhirDate = new Date(abhiDateLocal);
+            const day = newabhirDate.getDate();
+            const month = newabhirDate.getMonth() + 1;
+            const year = newabhirDate.getFullYear();
+
+            const dayMonth = `${day}/${month}/${year}`;
+            const userday = newuserDate.getDate();
+            const usermonth = newuserDate.getMonth() + 1;
+            const useryear = newuserDate.getFullYear();
+
+            const userdayMonth = `${userday}/${usermonth}/${useryear}`;
+            const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+
+            const phone0recharge = `level0.${user.phone}.totalRecharge`;
+            const phone1recharge = `level1.${user.phone}.totalRecharge`;
+            const phone2recharge = `level2.${user.phone}.totalRecharge`;
+
+            const phone0first = `level0.${user.phone}.firstRecharge`;
+            const phone1first = `level1.${user.phone}.firstRecharge`;
+            const phone2first = `level2.${user.phone}.firstRecharge`;
+
+            if (dayMonth === userdayMonth) {
+              if (user.upLine !== null) {
+                if (user.upLine[0].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[0] ?? 1 },
+                    {
+                      userId: user.upLine[0] ?? 1,
+                      $inc: {
+                        [newphone0recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+                if (user.upLine.length === 2) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
                   }
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +amount },
-                $push: {
-                  rechargeHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
+                }
+                if (user.upLine.length === 3) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  if (user.upLine[2].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[2] ?? 1 },
+                      {
+                        userId: user.upLine[2] ?? 1,
+                        $inc: {
+                          [newphone2recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
               }
-            );
-            // await User.updateOne(
-            //   { id: user.upLine[0] },
-            //   {
-            //     $inc: { balance: bonus },
-                
-            //   }
-            // );
-            // await offerBonus.updateOne(
-            //   { userId: user.upLine[0] },
-            //   {
-            //     userId: user.upLine[0],
-            //     $inc: { amount: +bonus },
-            //     $push: {
-            //       history: {
-            //         credit: "wallet",
-            //         amount: bonus,
-            //         note: `Recharge bonus: ${user.id}`,
-            //         date: Date.now(),
-            //       },
-            //     },
-            //   },
-            //   {upsert: true}
-            // );
-          }
-          const userDate = new Date(user.date);
-          const userDateLocal = (userDate / 1000 + 19800) * 1000;
-          const newuserDate = new Date(userDateLocal);
-          const abhiDate = new Date();
-          const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-          const newabhirDate = new Date(abhiDateLocal);
-          const day = newabhirDate.getDate();
-          const month = newabhirDate.getMonth() + 1;
-          const year = newabhirDate.getFullYear();
-  
-          const dayMonth = `${day}/${month}/${year}`;
-          const userday = newuserDate.getDate();
-          const usermonth = newuserDate.getMonth() + 1;
-          const useryear = newuserDate.getFullYear();
-  
-          const userdayMonth = `${userday}/${usermonth}/${useryear}`;
-          const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-          const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-          const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-  
-          const phone0recharge = `level0.${user.phone}.totalRecharge`;
-          const phone1recharge = `level1.${user.phone}.totalRecharge`;
-          const phone2recharge = `level2.${user.phone}.totalRecharge`;
-  
-          const phone0first = `level0.${user.phone}.firstRecharge`;
-          const phone1first = `level1.${user.phone}.firstRecharge`;
-          const phone2first = `level2.${user.phone}.firstRecharge`;
-  
-          if (dayMonth === userdayMonth) {
+            }
+
             if (user.upLine !== null) {
               if (user.upLine[0].length !== 0) {
                 await promotion.updateOne(
@@ -6015,7 +6073,8 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
                   {
                     userId: user.upLine[0] ?? 1,
                     $inc: {
-                      [newphone0recharge]: amount,
+                      [phone0first]: firstRecharge,
+                      [phone0recharge]: amount,
                     },
                   },
                   { upsert: true }
@@ -6028,7 +6087,8 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[1] ?? 1,
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -6042,20 +6102,22 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[1] ?? 1,
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
                   );
                 }
-  
+
                 if (user.upLine[2].length !== 0) {
                   await promotion.updateOne(
                     { userId: user.upLine[2] ?? 1 },
                     {
                       userId: user.upLine[2] ?? 1,
                       $inc: {
-                        [newphone2recharge]: amount,
+                        [phone2first]: firstRecharge,
+                        [phone2recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -6063,85 +6125,24 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
                 }
               }
             }
-          }
-  
-          if (user.upLine !== null) {
-            if (user.upLine[0].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[0] ?? 1 },
-                {
-                  userId: user.upLine[0] ?? 1,
-                  $inc: {
-                    [phone0first]: firstRecharge,
-                    [phone0recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            if (user.upLine.length === 2) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-            if (user.upLine.length === 3) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-  
-              if (user.upLine[2].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[2] ?? 1 },
-                  {
-                    userId: user.upLine[2] ?? 1,
-                    $inc: {
-                      [phone2first]: firstRecharge,
-                      [phone2recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-          }
-  
-          res.status(200).send("done");
-  
-          }else{
+
+            res.status(200).send("done");
+
+          } else {
             res.status(200).send('done');
           }
         } else {
           res.status(200).send("done");
-          }
-     
-        } catch (error) {
-          console.log(error.message);
-          res.status(200).send("done");
         }
-    }else{
+
+      } catch (error) {
+        console.log(error.message);
+        res.status(200).send("done");
+      }
+    } else {
       res.status(200).send("done");
     }
-    
+
     // const sData = {
     //   user_token: "36aba66c0f9b097a7c2b9fd30ff5b687",
     //   order_id: data.order_id
@@ -6158,11 +6159,11 @@ export const imbupiGatewayWebhooktdv1 = async (req, res) => {
     //   }
     // );
     // console.log(getTransaction.data)  
-  
+
     // if (getTransaction.data.status === 'COMPLETED') {
     //   if (getTransaction.data.result.status === "SUCCESS") {
     //     //console.log(getTransaction.data.result.utr)
-        
+
     //    } else {
     //     res.status(200).send("done");
     //   }
@@ -7710,11 +7711,19 @@ export const KSLpayouttodd = async (req, res) => {
 };
 
 export const getGateway = async (req, res) => {
-  const gateway = await extra.findOne({}, { gateway: 1, upi: 1 });
+  const doc = await extra.findOne({}, { gateway: 1, upi: 1, rechargeEnabled: 1, gatewayOrder: 1, gatewayEnabled: 1 });
+  const rechargeEnabled = doc.rechargeEnabled !== false;
+  const order = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length ? doc.gatewayOrder : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"];
+  const enabled = doc.gatewayEnabled && typeof doc.gatewayEnabled === "object" ? doc.gatewayEnabled : {};
+  const gatewayList = order.filter((id) => enabled[id] !== false);
   res.status(200).send({
-    gateway: gateway.gateway,
-    limit: gateway.upi.limit,
-    upi: gateway.upi,
+    gateway: doc.gateway,
+    limit: doc.upi?.limit,
+    upi: doc.upi,
+    rechargeEnabled,
+    gatewayOrder: order,
+    gatewayEnabled: enabled,
+    gatewayList,
   });
 };
 export const setGateway = async (req, res) => {
@@ -7853,6 +7862,44 @@ export const setGatewayOut = async (req, res) => {
   res.status(200).send("done");
 };
 
+export const getRechargeSettings = async (req, res) => {
+  const api = req.params.api;
+  if (api !== process.env.AdminAPI) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  const doc = await extra.findOne({ id: 1 }, { rechargeEnabled: 1, gatewayOrder: 1, gatewayEnabled: 1, gateway: 1, upi: 1 });
+  const rechargeEnabled = doc.rechargeEnabled !== false;
+  const gatewayOrder = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length
+    ? doc.gatewayOrder
+    : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"];
+  const gatewayEnabled = doc.gatewayEnabled && typeof doc.gatewayEnabled === "object"
+    ? doc.gatewayEnabled
+    : { auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true };
+  res.status(200).json({
+    rechargeEnabled,
+    gatewayOrder,
+    gatewayEnabled,
+    currentGateway: doc.gateway,
+    upiLimit: doc.upi?.limit,
+  });
+};
+
+export const updateRechargeSettings = async (req, res) => {
+  const api = req.params.api;
+  if (api !== process.env.AdminAPI) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  const { rechargeEnabled, gatewayOrder, gatewayEnabled } = req.body;
+  const update = {};
+  if (typeof rechargeEnabled === "boolean") update.rechargeEnabled = rechargeEnabled;
+  if (Array.isArray(gatewayOrder)) update.gatewayOrder = gatewayOrder;
+  if (gatewayEnabled && typeof gatewayEnabled === "object") update.gatewayEnabled = gatewayEnabled;
+  if (Object.keys(update).length) {
+    await extra.updateOne({ id: 1 }, { $set: update });
+  }
+  res.status(200).json({ success: true });
+};
+
 export const chineasePay = async (req, res) => {
   const order = Date.now();
   //   if($bank_code != ""){
@@ -7907,14 +7954,14 @@ export const chineasePay = async (req, res) => {
   res.status(200).send(createOrder.data);
 };
 
-export const chineaseRushPay = async (req, res) => {}
+export const chineaseRushPay = async (req, res) => { }
 
 // Rupee Rush Payment Gateway Integration
 export const rupeeRushCreateOrder = async (req, res) => {
   try {
     const { amount, customer_name, customer_email, customer_mobile } = req.body;
     const userId = req.params.id; // Get userId from URL params due to checkAuth middleware
-    
+
     // Validate required fields
     if (!amount || !userId || !customer_mobile) {
       return res.status(400).json({
@@ -7944,7 +7991,7 @@ export const rupeeRushCreateOrder = async (req, res) => {
       // For demo users, simulate successful payment
       const lastTrans = await Trans.findOne().sort({ number: -1 });
       const newIncrement = lastTrans ? lastTrans.number + 1 : 1;
-      
+
       await Trans.create({
         id: `DEMO_${Date.now()}`,
         number: newIncrement,
@@ -8003,9 +8050,9 @@ export const rupeeRushCreateOrder = async (req, res) => {
     // Get payment types from environment or use defaults
     const paymentTypesConfig = process.env.RUPEERUSH_PAYMENT_TYPES || "INRO, INRT, SCAN";
     const paymentTypes = paymentTypesConfig.split(',').map(type => type.trim());
-    
+
     console.log('Available payment types:', paymentTypes);
-    
+
     const params = {
       merNo: MER_NO,
       currencyCode: "INR",
@@ -8031,20 +8078,20 @@ export const rupeeRushCreateOrder = async (req, res) => {
           filteredParams[key] = value;
         }
       });
-      
+
       // Sort by ASCII (lexicographical order)
       const sortedKeys = Object.keys(filteredParams).sort();
       const sortedParams = {};
       sortedKeys.forEach(key => {
         sortedParams[key] = filteredParams[key];
       });
-      
+
       // Create JSON string and append merchant key
       const jsonStr = JSON.stringify(sortedParams);
       const stringToSign = jsonStr + merchantKey;
-      
+
       console.log('String to sign:', stringToSign);
-      
+
       // MD5 hash and convert to uppercase
       return crypto.createHash('md5').update(stringToSign).digest('hex').toUpperCase();
     };
@@ -8070,14 +8117,14 @@ export const rupeeRushCreateOrder = async (req, res) => {
     // Try different payment types if one fails
     let lastError = null;
     let result = null;
-    
+
     for (let i = 0; i < paymentTypes.length; i++) {
       const currentPayType = paymentTypes[i];
       params.payType = currentPayType;
-      
+
       // Regenerate signature with new payType
       params.sign = generateSign(params, SECRET_KEY);
-      
+
       console.log(`Trying payment type: ${currentPayType}`);
       console.log('Rupee Rush Request Params:', JSON.stringify(params, null, 2));
 
@@ -8085,14 +8132,14 @@ export const rupeeRushCreateOrder = async (req, res) => {
         // Make API request to Rupee Rush
         const response = await rupeeRushAxios.post(PAY_URL, params);
         result = response.data;
-        
+
         console.log('Rupee Rush Response:', result);
 
         if (result.resultCode === "0000" && result.payURL) {
           // Success! Store transaction in database
           const lastTrans = await Trans.findOne().sort({ number: -1 });
           const newIncrement = lastTrans ? lastTrans.number + 1 : 1;
-          
+
           await Trans.create({
             id: outTradeNo,
             number: newIncrement,
@@ -8146,14 +8193,14 @@ export const rupeeRushCreateOrder = async (req, res) => {
 
   } catch (error) {
     console.error('Rupee Rush Create Order Error:', error);
-    
+
     // Log more details about the error
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
       console.error('Response headers:', error.response.headers);
     }
-    
+
     return res.status(500).json({
       code: 500,
       message: 'Internal server error',
@@ -8167,7 +8214,7 @@ export const rupeeRushCreateOrder = async (req, res) => {
 export const rupeeRushCallback = async (req, res) => {
   try {
     console.log('Rupee Rush Callback received:', req.body);
-    
+
     const {
       merNo,
       outTradeNo,
@@ -8188,7 +8235,7 @@ export const rupeeRushCallback = async (req, res) => {
 
     // Verify signature
     const SECRET_KEY = process.env.RUPEERUSH_SECRET_KEY || "697F58B0E39DDC16C8B86286F591ED29";
-    
+
     const generateCallbackSign = (params, merchantKey) => {
       // Filter out empty values and sign field
       const filteredParams = {};
@@ -8198,36 +8245,36 @@ export const rupeeRushCallback = async (req, res) => {
           filteredParams[key] = value;
         }
       });
-      
+
       // Sort by ASCII (lexicographical order)
       const sortedKeys = Object.keys(filteredParams).sort();
       const sortedParams = {};
       sortedKeys.forEach(key => {
         sortedParams[key] = filteredParams[key];
       });
-      
+
       // Create JSON string and append merchant key
       const jsonStr = JSON.stringify(sortedParams);
       const stringToSign = jsonStr + merchantKey;
-      
+
       console.log('Callback string to sign:', stringToSign);
-      
+
       // MD5 hash and convert to uppercase
       return crypto.createHash('md5').update(stringToSign).digest('hex').toUpperCase();
     };
 
     const expectedSign = generateCallbackSign(req.body, SECRET_KEY);
-    
+
     console.log('Signature verification:');
     console.log('Received sign:', sign);
     console.log('Expected sign:', expectedSign);
-    
+
     if (sign !== expectedSign) {
       console.error('Invalid signature in callback');
       console.error('Signature mismatch - callback rejected');
       return res.status(400).send('FAIL');
     }
-    
+
     console.log('Signature verified successfully');
 
     // Find the transaction
@@ -8252,16 +8299,20 @@ export const rupeeRushCallback = async (req, res) => {
       }
 
       const amount = parseFloat(totalAmount);
-      
+
       // Update transaction status
       await Trans.updateOne(
         { id: outTradeNo },
-        { 
+        {
           status: 'success',
           gatewayOrderId: payOrderNo,
           completedAt: Date.now()
         }
       );
+
+      // Credit Commission
+      await creditCommission('PACKAGE_PURCHASE', transaction.userId, amount, outTradeNo);
+      await creditCommission('KYC_PAYMENT', transaction.userId, amount, outTradeNo);
 
       // Process recharge logic (similar to existing gateways)
       const date = new Date();
@@ -8289,7 +8340,7 @@ export const rupeeRushCallback = async (req, res) => {
       // First recharge bonus logic
       if (!user.firstRecharge) {
         firstRecharge = amount;
-        
+
         // Give referral bonus to upline
         if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
           await User.updateOne(
@@ -8311,10 +8362,10 @@ export const rupeeRushCallback = async (req, res) => {
             { userId: user.upLine[0] },
             {
               userId: user.upLine[0],
-              $inc: { 
-                amount: +151, 
-                [`todayProfit.${todayProfit}.referral`]: +151, 
-                totalReferral: +151 
+              $inc: {
+                amount: +151,
+                [`todayProfit.${todayProfit}.referral`]: +151,
+                totalReferral: +151
               },
               $push: {
                 history: {
@@ -8357,7 +8408,7 @@ export const rupeeRushCallback = async (req, res) => {
 
         // Level commissions for first recharge
         const level0profit = (amount * 3) / 100;
-        
+
         if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
           await User.updateOne(
             { id: user.upLine[0] },
@@ -8415,7 +8466,7 @@ export const rupeeRushCallback = async (req, res) => {
 
         // Level commissions for subsequent recharge
         const level0profit = (amount * 3) / 100;
-        
+
         if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
           await User.updateOne(
             { id: user.upLine[0] },
@@ -8498,7 +8549,7 @@ export const rupeeRushCallback = async (req, res) => {
       // Payment failed
       await Trans.updateOne(
         { id: outTradeNo },
-        { 
+        {
           status: 'failed',
           failureReason: `Payment failed with status: ${payState}`,
           completedAt: Date.now()
@@ -8524,7 +8575,7 @@ export const watchPayCreateOrder = async (req, res) => {
   try {
     const { amount, customer_name, customer_email, customer_mobile } = req.body;
     const userId = req.params.id;
-    
+
     // Validate required fields
     if (!amount || !userId || !customer_mobile) {
       return res.status(400).json({
@@ -8554,7 +8605,7 @@ export const watchPayCreateOrder = async (req, res) => {
       // For demo users, simulate successful payment
       const lastTrans = await Trans.findOne().sort({ number: -1 });
       const newIncrement = lastTrans ? lastTrans.number + 1 : 1;
-      
+
       await Trans.create({
         id: `DEMO_${Date.now()}`,
         number: newIncrement,
@@ -8615,19 +8666,19 @@ export const watchPayCreateOrder = async (req, res) => {
           filteredParams[key] = value;
         }
       });
-      
+
       // Sort by key name
       const sortedKeys = Object.keys(filteredParams).sort();
-      
+
       // Create query string
       let queryString = "";
       sortedKeys.forEach(key => {
         queryString += key + "=" + filteredParams[key] + "&";
       });
       queryString += "key=" + merchantKey;
-      
+
       console.log('WatchPay String to sign:', queryString);
-      
+
       // MD5 hash and convert to lowercase
       return crypto.createHash('md5').update(queryString).digest('hex').toLowerCase();
     };
@@ -8654,14 +8705,14 @@ export const watchPayCreateOrder = async (req, res) => {
     // Make API request
     const response = await watchPayAxios.post(API_URL, formData);
     const result = response.data;
-    
+
     console.log('WatchPay Response:', result);
 
     if (result.respCode === "SUCCESS" && result.payInfo) {
       // Store transaction in database
       const lastTrans = await Trans.findOne().sort({ number: -1 });
       const newIncrement = lastTrans ? lastTrans.number + 1 : 1;
-      
+
       await Trans.create({
         id: mchOrderNo,
         number: newIncrement,
@@ -8695,12 +8746,12 @@ export const watchPayCreateOrder = async (req, res) => {
 
   } catch (error) {
     console.error('WatchPay Create Order Error:', error);
-    
+
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
     }
-    
+
     return res.status(500).json({
       code: 500,
       message: 'Internal server error',
@@ -8713,7 +8764,7 @@ export const watchPayCreateOrder = async (req, res) => {
 export const watchPayCallback = async (req, res) => {
   try {
     console.log('WatchPay Callback received:', req.body);
-    
+
     const {
       tradeResult,
       mchId,
@@ -8739,7 +8790,7 @@ export const watchPayCallback = async (req, res) => {
 
     // Verify signature
     const MERCHANT_KEY = process.env.WATCHPAY_MERCHANT_KEY || "4444ddddd68344ab8207a6f40a076bc7";
-    
+
     const generateCallbackSign = (params, merchantKey) => {
       // Create a copy and remove sign and signType
       const filteredParams = {};
@@ -8749,35 +8800,35 @@ export const watchPayCallback = async (req, res) => {
           filteredParams[key] = value;
         }
       });
-      
+
       // Sort by key name
       const sortedKeys = Object.keys(filteredParams).sort();
-      
+
       // Create query string
       let queryString = "";
       sortedKeys.forEach(key => {
         queryString += key + "=" + filteredParams[key] + "&";
       });
       queryString += "key=" + merchantKey;
-      
+
       console.log('WatchPay Callback string to sign:', queryString);
-      
+
       // MD5 hash and convert to lowercase
       return crypto.createHash('md5').update(queryString).digest('hex').toLowerCase();
     };
 
     const expectedSign = generateCallbackSign(req.body, MERCHANT_KEY);
-    
+
     console.log('WatchPay Signature verification:');
     console.log('Received sign:', sign);
     console.log('Expected sign:', expectedSign);
-    
+
     if (sign !== expectedSign) {
       console.error('Invalid signature in callback');
       console.error('Signature mismatch - callback rejected');
       return res.status(400).send('sign error');
     }
-    
+
     console.log('Signature verified successfully');
 
     // Check if payment successful
@@ -8807,16 +8858,20 @@ export const watchPayCallback = async (req, res) => {
     }
 
     const paymentAmount = parseFloat(transaction.amount);
-    
+
     // Update transaction status
     await Trans.updateOne(
       { id: mchOrderNo },
-      { 
+      {
         status: 'success',
         gatewayOrderId: orderNo,
         completedAt: Date.now()
       }
     );
+
+    // Credit Commission
+    await creditCommission('PACKAGE_PURCHASE', transaction.userId, paymentAmount, mchOrderNo);
+    await creditCommission('KYC_PAYMENT', transaction.userId, paymentAmount, mchOrderNo);
 
     // Process recharge logic
     const date = new Date();
@@ -8851,13 +8906,13 @@ export const watchPayCallback = async (req, res) => {
     // First recharge bonus logic
     if (!user.firstRecharge || rechargeCount === 1) {
       firstRecharge = paymentAmount;
-      
+
       console.log('🎉 First recharge for user', user.id);
-      
+
       // Give referral bonus to upline (10% of recharge amount)
       if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
         const referralBonus = Math.round(paymentAmount * 0.10 * 100) / 100; // 10%
-        
+
         await User.updateOne(
           { id: user.upLine[0] },
           {
@@ -8877,10 +8932,10 @@ export const watchPayCallback = async (req, res) => {
           { userId: user.upLine[0] },
           {
             userId: user.upLine[0],
-            $inc: { 
-              amount: referralBonus, 
-              [`todayProfit.${todayProfit}.referral`]: referralBonus, 
-              totalReferral: referralBonus 
+            $inc: {
+              amount: referralBonus,
+              [`todayProfit.${todayProfit}.referral`]: referralBonus,
+              totalReferral: referralBonus
             },
             $push: {
               history: {
@@ -8893,7 +8948,7 @@ export const watchPayCallback = async (req, res) => {
           },
           { upsert: true }
         );
-        
+
         console.log(`🎁 Referral reward of ${referralBonus} given to user ${user.upLine[0]}`);
       }
 
@@ -8921,7 +8976,7 @@ export const watchPayCallback = async (req, res) => {
 
       // Level commissions for first recharge
       const level0profit = (paymentAmount * 3) / 100;
-      
+
       if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
         await User.updateOne(
           { id: user.upLine[0] },
@@ -8954,7 +9009,7 @@ export const watchPayCallback = async (req, res) => {
       if (paymentAmount > 200) {
         const level0profit = (paymentAmount * 3) / 100;
         bonusAmount = paymentAmount + level0profit;
-        
+
         if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
           await User.updateOne(
             { id: user.upLine[0] },
@@ -9068,7 +9123,7 @@ export const lgPayCreateOrder = async (req, res) => {
   try {
     const { amount, customer_name, customer_email, customer_mobile } = req.body;
     const userId = req.params.id;
-    
+
     // Validate required fields
     if (!amount || !userId || !customer_mobile) {
       return res.status(400).json({
@@ -9098,7 +9153,7 @@ export const lgPayCreateOrder = async (req, res) => {
       // For demo users, simulate successful payment
       const lastTrans = await Trans.findOne().sort({ number: -1 });
       const newIncrement = lastTrans ? lastTrans.number + 1 : 1;
-      
+
       await Trans.create({
         id: `DEMO_${Date.now()}`,
         number: newIncrement,
@@ -9139,15 +9194,15 @@ export const lgPayCreateOrder = async (req, res) => {
 
     // Format amount with 2 decimal places
     const formattedAmount = parseFloat(amount).toFixed(2);
-    
+
     // Convert amount to paise (multiply by 100)
     const amountInPaise = Math.round(parseFloat(amount) * 100);
 
     // Get client IP address
-    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
-                     req.headers['x-real-ip'] || 
-                     req.connection?.remoteAddress || 
-                     '127.0.0.1';
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.headers['x-real-ip'] ||
+      req.connection?.remoteAddress ||
+      '127.0.0.1';
 
     // Prepare payment parameters
     const params = {
@@ -9165,16 +9220,16 @@ export const lgPayCreateOrder = async (req, res) => {
     const generateLgPaySign = (params, secretKey) => {
       // Sort by key name
       const sortedKeys = Object.keys(params).sort();
-      
+
       // Create query string
       let signString = "";
       sortedKeys.forEach(key => {
         signString += key + "=" + params[key] + "&";
       });
       signString += "key=" + secretKey;
-      
+
       console.log('lgPay String to sign:', signString);
-      
+
       // MD5 hash and convert to UPPERCASE
       return crypto.createHash('md5').update(signString).digest('hex').toUpperCase();
     };
@@ -9201,14 +9256,14 @@ export const lgPayCreateOrder = async (req, res) => {
     // Make API request
     const response = await lgPayAxios.post(API_URL, formData);
     const result = response.data;
-    
+
     console.log('lgPay Response:', result);
 
     if (result.status === 1 && result.data && result.data.pay_url) {
       // Store transaction in database
       const lastTrans = await Trans.findOne().sort({ number: -1 });
       const newIncrement = lastTrans ? lastTrans.number + 1 : 1;
-      
+
       await Trans.create({
         id: orderSn,
         number: newIncrement,
@@ -9242,12 +9297,12 @@ export const lgPayCreateOrder = async (req, res) => {
 
   } catch (error) {
     console.error('lgPay Create Order Error:', error);
-    
+
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
     }
-    
+
     return res.status(500).json({
       code: 500,
       message: 'Internal server error',
@@ -9260,7 +9315,7 @@ export const lgPayCreateOrder = async (req, res) => {
 export const lgPayCallback = async (req, res) => {
   try {
     console.log('lgPay Callback received:', req.body);
-    
+
     const {
       order_sn,
       money,
@@ -9282,7 +9337,7 @@ export const lgPayCallback = async (req, res) => {
 
     // Verify signature
     const SECRET_KEY = process.env.LGPAY_SECRET_KEY || "Y1CJKWSbcOkSQQsxi0ztanJe5li3nxh1";
-    
+
     const generateCallbackSign = (params, secretKey) => {
       // Filter params for signature
       const paramArray = {
@@ -9293,7 +9348,7 @@ export const lgPayCallback = async (req, res) => {
         msg: params.msg,
         remark: params.remark
       };
-      
+
       // Filter out null/undefined values
       const filteredParams = {};
       Object.keys(paramArray).forEach(key => {
@@ -9302,29 +9357,29 @@ export const lgPayCallback = async (req, res) => {
           filteredParams[key] = value;
         }
       });
-      
+
       // Sort by key name
       const sortedKeys = Object.keys(filteredParams).sort();
-      
+
       // Create query string
       let signString = "";
       sortedKeys.forEach(key => {
         signString += key + "=" + filteredParams[key] + "&";
       });
       signString += "key=" + secretKey;
-      
+
       console.log('lgPay Callback string to sign:', signString);
-      
+
       // MD5 hash and convert to UPPERCASE
       return crypto.createHash('md5').update(signString).digest('hex').toUpperCase();
     };
 
     const expectedSign = generateCallbackSign(req.body, SECRET_KEY);
-    
+
     console.log('lgPay Signature verification:');
     console.log('Received sign:', sign);
     console.log('Expected sign:', expectedSign);
-    
+
     if (sign !== expectedSign) {
       console.error('Invalid signature in callback');
       console.error('Signature mismatch - callback rejected');
@@ -9333,7 +9388,7 @@ export const lgPayCallback = async (req, res) => {
         status: false
       });
     }
-    
+
     console.log('Signature verified successfully');
 
     // Find the transaction
@@ -9357,15 +9412,19 @@ export const lgPayCallback = async (req, res) => {
     }
 
     const paymentAmount = parseFloat(transaction.amount);
-    
+
     // Update transaction status
     await Trans.updateOne(
       { id: order_sn },
-      { 
+      {
         status: 'success',
         completedAt: Date.now()
       }
     );
+
+    // Credit Commission
+    await creditCommission('PACKAGE_PURCHASE', transaction.userId, paymentAmount, order_sn);
+    await creditCommission('KYC_PAYMENT', transaction.userId, paymentAmount, order_sn);
 
     // Process recharge logic
     const date = new Date();
@@ -9400,13 +9459,13 @@ export const lgPayCallback = async (req, res) => {
     // First recharge bonus logic
     if (!user.firstRecharge || rechargeCount === 1) {
       firstRecharge = paymentAmount;
-      
+
       console.log('🎉 First recharge for user', user.id);
-      
+
       // Give referral bonus to upline (10% of recharge amount)
       if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
         const referralBonus = Math.round(paymentAmount * 0.10 * 100) / 100; // 10%
-        
+
         await User.updateOne(
           { id: user.upLine[0] },
           {
@@ -9426,10 +9485,10 @@ export const lgPayCallback = async (req, res) => {
           { userId: user.upLine[0] },
           {
             userId: user.upLine[0],
-            $inc: { 
-              amount: referralBonus, 
-              [`todayProfit.${todayProfit}.referral`]: referralBonus, 
-              totalReferral: referralBonus 
+            $inc: {
+              amount: referralBonus,
+              [`todayProfit.${todayProfit}.referral`]: referralBonus,
+              totalReferral: referralBonus
             },
             $push: {
               history: {
@@ -9442,7 +9501,7 @@ export const lgPayCallback = async (req, res) => {
           },
           { upsert: true }
         );
-        
+
         console.log(`🎁 Referral reward of ${referralBonus} given to user ${user.upLine[0]}`);
       }
 
@@ -9470,7 +9529,7 @@ export const lgPayCallback = async (req, res) => {
 
       // Level commissions for first recharge
       const level0profit = (paymentAmount * 3) / 100;
-      
+
       if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
         await User.updateOne(
           { id: user.upLine[0] },
@@ -9503,7 +9562,7 @@ export const lgPayCallback = async (req, res) => {
       if (paymentAmount > 200) {
         const level0profit = (paymentAmount * 3) / 100;
         bonusAmount = paymentAmount + level0profit;
-        
+
         if (user.upLine && user.upLine[0] && user.upLine[0] !== "null") {
           await User.updateOne(
             { id: user.upLine[0] },
@@ -9641,19 +9700,19 @@ export const lgPayBalanceFetch = async (req, res) => {
     const generateLgPayBalanceSign = (params, secretKey) => {
       // Sort parameters alphabetically
       const sortedKeys = Object.keys(params).sort();
-      
+
       // Create query string: key1=value1&key2=value2
       let signString = "";
       sortedKeys.forEach(key => {
         signString += key + "=" + params[key] + "&";
       });
-      
+
       // Remove trailing "&" and append secret key
       signString = signString.slice(0, -1);
       signString += "&key=" + secretKey;
-      
+
       console.log('LG Pay Balance String to sign:', signString);
-      
+
       // MD5 hash and convert to UPPERCASE
       return crypto.createHash('md5').update(signString).digest('hex').toUpperCase();
     };
@@ -9688,7 +9747,7 @@ export const lgPayBalanceFetch = async (req, res) => {
       // Balance is in cents, convert to actual amount
       const balanceInCents = parseFloat(result.data.balance || 0);
       const actualBalance = balanceInCents / 100;
-      
+
       return res.status(200).json({
         status: "success",
         message: "Balance fetched successfully",
@@ -9707,12 +9766,12 @@ export const lgPayBalanceFetch = async (req, res) => {
 
   } catch (error) {
     console.error('LG Pay Balance Fetch Error:', error);
-    
+
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
     }
-    
+
     return res.status(500).json({
       status: "error",
       message: error.message || "Internal server error",
@@ -9724,75 +9783,75 @@ export const lgPayBalanceFetch = async (req, res) => {
 export const admPay = async (req, res) => {
 
 
-function generateSignature(data, privateKey) {
-  // Sort the parameters by ASCII code (dictionary order)
-  const sortedKeys = Object.keys(data).sort();
-  let stringA = '';
+  function generateSignature(data, privateKey) {
+    // Sort the parameters by ASCII code (dictionary order)
+    const sortedKeys = Object.keys(data).sort();
+    let stringA = '';
 
-  // Concatenate parameters into a string (key1=value1&key2=value2...)
-  for (const key of sortedKeys) {
-    const value = data[key];
-    if (value !== null && value !== '') {
-      stringA += `${key}=${value}&`;
+    // Concatenate parameters into a string (key1=value1&key2=value2...)
+    for (const key of sortedKeys) {
+      const value = data[key];
+      if (value !== null && value !== '') {
+        stringA += `${key}=${value}&`;
+      }
     }
+
+    // Append the private key
+    const stringSignTemp = stringA.slice(0, -1) + '&key=' + privateKey;
+
+    // Perform MD5 operation and convert to lowercase
+    return crypto.createHash('md5').update(stringSignTemp).digest('hex').toLowerCase();
   }
 
-  // Append the private key
-  const stringSignTemp = stringA.slice(0, -1) + '&key=' + privateKey;
 
-  // Perform MD5 operation and convert to lowercase
-  return crypto.createHash('md5').update(stringSignTemp).digest('hex').toLowerCase();
-}
+  const privateKey = '68853b0b8e2a4e7cb16d36d431707f58';
+  const url = 'https://api.wpay.one/v1/balance';
+  const order_id = 'jhdvjhwg874hjd'; // Replace with your actual order ID
+  const amount = '100.00'; // Replace with your actual amount
+  const callbackurl = 'https://winkaro.online'; // Replace with your actual callback URL
+  const data = {
+    mchId: 1492,
+    currency: 'INR',
+    // out_trade_no: order_id,
+    // pay_type: 'UPI',
+    // money: amount,
+    // notify_url: callbackurl,
+    // returnUrl: `https://${process.env.SERVER_NAME}/success`, // Assuming you have SERVER_NAME in your environment
+  };
 
+  // Generate the signature
+  data.sign = generateSignature(data, privateKey);
 
-const privateKey = '68853b0b8e2a4e7cb16d36d431707f58';
-const url = 'https://api.wpay.one/v1/balance';
-const order_id = 'jhdvjhwg874hjd'; // Replace with your actual order ID
-const amount = '100.00'; // Replace with your actual amount
-const callbackurl = 'https://winkaro.online'; // Replace with your actual callback URL
-const data = {
-  mchId: 1492,
-  currency: 'INR',
-  // out_trade_no: order_id,
-  // pay_type: 'UPI',
-  // money: amount,
-  // notify_url: callbackurl,
-  // returnUrl: `https://${process.env.SERVER_NAME}/success`, // Assuming you have SERVER_NAME in your environment
-};
+  try {
+    const response = await axios.post(url, data, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'charset': 'utf-8',
+      },
+    });
 
-// Generate the signature
-data.sign = generateSignature(data, privateKey);
+    const responseData = response.data;
 
-try {
-  const response = await axios.post(url, data, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'charset': 'utf-8',
-    },
-  });
+    // Check if the response contains the payment URL
+    if (responseData.data && responseData.data.url) {
+      const payment_link = responseData.data.url;
 
-  const responseData = response.data;
+      // Update the payment_links table with the generated link (replace with your actual database logic)
+      const update_sql = `UPDATE payment_links SET is_already_link = 'yes', bytevip_link = '${payment_link}' WHERE link_token = '${link_token}' AND order_id = '${order_id}'`;
+      setXbyY(update_sql); // Replace setXbyY with your database update function
 
-  // Check if the response contains the payment URL
-  if (responseData.data && responseData.data.url) {
-    const payment_link = responseData.data.url;
-
-    // Update the payment_links table with the generated link (replace with your actual database logic)
-    const update_sql = `UPDATE payment_links SET is_already_link = 'yes', bytevip_link = '${payment_link}' WHERE link_token = '${link_token}' AND order_id = '${order_id}'`;
-    setXbyY(update_sql); // Replace setXbyY with your database update function
-
-    // Redirect to the payment URL
-    console.log(`Redirecting to: ${payment_link}`);
-    // You would typically use a server-side redirect here (e.g., with Express.js res.redirect)
-    // For this example, we'll just log the URL
-  } else {
-    console.error('No payment URL found in the response:', responseData);
+      // Redirect to the payment URL
+      console.log(`Redirecting to: ${payment_link}`);
+      // You would typically use a server-side redirect here (e.g., with Express.js res.redirect)
+      // For this example, we'll just log the URL
+    } else {
+      console.error('No payment URL found in the response:', responseData);
+    }
+  } catch (error) {
+    console.error('Error:', error);
   }
-} catch (error) {
-  console.error('Error:', error);
-}
 
-  
+
 };
 
 export const planetCreateLink = async (req, res) => {
@@ -9880,9 +9939,9 @@ export const planetCreateLink = async (req, res) => {
 
               res.status(200).send({ link: response.data.data.data.url });
             })
-            .catch(function (error) {});
+            .catch(function (error) { });
         })
-        .catch(function (error) {});
+        .catch(function (error) { });
     });
 
   // const createOrder = await axios.post(
@@ -10590,7 +10649,7 @@ export const payoutWith = async (req, res) => {
   const phone = req.body.phone;
   const withdrawalId = req.body.withdrawalId;
   const id = `${Date.now()}`;
-  const orderId = 'ORD'+id.substring(0, 10);
+  const orderId = 'ORD' + id.substring(0, 10);
   var amount = pamount;
   if (type === "withdrawal") {
     if (pamount <= 1000) {
@@ -10615,312 +10674,312 @@ export const payoutWith = async (req, res) => {
         }
       }
       const myHeaders = new Headers();
-myHeaders.append("Authorization", `Bearer ${seospay}`);
-myHeaders.append("AuthKey", "5e5860051bf3");
-myHeaders.append("AuthToken", "715fbf60dfa657340deb94e12a5bf64ce43a1286");
-myHeaders.append("AuthCode", "7865493");
-myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${seospay}`);
+      myHeaders.append("AuthKey", "5e5860051bf3");
+      myHeaders.append("AuthToken", "715fbf60dfa657340deb94e12a5bf64ce43a1286");
+      myHeaders.append("AuthCode", "7865493");
+      myHeaders.append("Content-Type", "application/json");
 
-const raw = JSON.stringify({
-  "name": name,
-  "accountNumber": account,
-  "referenceNumber": orderId,
-  "beneBankName": "PNB",
-  "bankIfsc": IFSC,
-  "mobileNumber": 8120441687,
-  "transferMode": "IMPS",
-  "transferAmount": amount
-});
+      const raw = JSON.stringify({
+        "name": name,
+        "accountNumber": account,
+        "referenceNumber": orderId,
+        "beneBankName": "PNB",
+        "bankIfsc": IFSC,
+        "mobileNumber": 8120441687,
+        "transferMode": "IMPS",
+        "transferAmount": amount
+      });
 
-const requestOptions = {
-  method: "POST",
-  headers: myHeaders,
-  body: raw,
-  redirect: "follow"
-};
-
-
-fetch("https://api.seospay.in/api/new/v1/payout/docashtransfer", requestOptions)
-  .then((res) => res.json())
-  .then(async (response) =>{
-    if(response.data)
-    if (response.status === "PENDING") {
-      if (type === "withdrawal") {
-        await payout.create({
-          orderId: orderId,
-          txnId: response.data.txn_id,
-          amount,
-          bank: { account, IFSC, name },
-          status: "pending",
-          type: "withdrawal",
-          withdrawalId,
-          userId,
-          gateway: "seospay",
-        });
-      } else {
-        await payout.create({
-          orderId: orderId,
-          txnId: response.data.txn_id,
-          amount,
-          bank: { account, IFSC, name },
-          status: "pending",
-          type: "admin",
-          gateway: "seospay",
-        });
-      }
-      return res.status(200).send({ status: "pending", rrn: response.data.txn_id });
-    } 
-    
-    if (response.status === "FAILED") {
-      
-      return res.status(200).send({ status: "Failed", rrn: response.data.txn_id });
-    } 
-   
-    if (response.status === "SUCCESS") {
-      if (type === "withdrawal") {
-        await payout.create({
-          orderId: orderId,
-          txnId: response.data.bank_ref,
-          amount,
-          bank: { account, IFSC, name },
-          status: "success",
-          type: "withdrawal",
-          withdrawalId,
-          userId,
-          gateway: "seospay",
-        });
-        await User.updateOne(
-          { id: parseInt(userId) },
-          {
-            $push: {
-              walletHistory: {
-                credit: false,
-                amount: amount,
-                note: `Redeem Successful ID: ${withdrawalId}`,
-                date: Date.now(),
-              },
-            },
-          }
-        );
-        await withdrawal.updateOne({ _id: withdrawalId }, { status: "Success",payout: 'seospay',txnId: response.data.bank_ref});
-        const user = await User.findOne({ id: userId });
-        const date = new Date();
-        const localDate = (date / 1000 + 19800) * 1000;
-        const newDatefor = new Date(localDate);
-        const day = newDatefor.getDate();
-        const month = newDatefor.getMonth() + 1;
-        const year = newDatefor.getFullYear();
-  
-        const userDate = new Date(user.date);
-        const userDateLocal = (userDate / 1000 + 19800) * 1000;
-        const newuserDate = new Date(userDateLocal);
-  
-        const dayMonth = `${day}/${month}`;
-  
-        const userday = newuserDate.getDate();
-        const usermonth = newuserDate.getMonth() + 1;
-        const userdayMonth = `${userday}/${usermonth}`;
-        var daySorted;
-        var monthSorted;
-        if (day < 10) {
-          daySorted = `0${day}`;
-        } else {
-          daySorted = `${day}`;
-        }
-        if (month < 10) {
-          monthSorted = `0${month}`;
-        } else {
-          monthSorted = `${month}`;
-        }
-        const newDate = `${daySorted}-${monthSorted}-${year}`;
-        await Daily.updateOne(
-          { id: newDate },
-          { $inc: { redeem: amount, redeemCount: +1 } },
-          { upsert: true }
-        );
-  
-        const phone0with = `level0.${user.phone}.totalWithdrawal`;
-        const phone1with = `level1.${user.phone}.totalWithdrawal`;
-        const phone2with = `level2.${user.phone}.totalWithdrawal`;
-        const newphone0with = `newlevel0.${dayMonth}.${user.phone}.todayWithdrawal`;
-        const newphone1with = `newlevel1.${dayMonth}.${user.phone}.todayWithdrawal`;
-        const newphone2with = `newlevel2.${dayMonth}.${user.phone}.todayWithdrawal`;
-        if (dayMonth === userdayMonth) {
-          if (user.upLine !== null) {
-            if (user.upLine[0].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[0] ?? 1 },
-                {
-                  userId: user.upLine[0] ?? 1,
-                  $inc: {
-                    [newphone0with]: parseInt(amount),
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            if (user.upLine.length === 2) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [newphone1with]: parseInt(amount),
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-            if (user.upLine.length === 3) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [newphone1with]: parseInt(amount),
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-  
-              if (user.upLine[2].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[2] ?? 1 },
-                  {
-                    userId: user.upLine[2] ?? 1,
-                    $inc: {
-                      [newphone2with]: parseInt(amount),
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-          }
-        }
-  
-        if (user.upLine !== null) {
-          if (user.upLine[0].length !== 0) {
-            await promotion.updateOne(
-              { userId: user.upLine[0] ?? 1 },
-              {
-                userId: user.upLine[0] ?? 1,
-                $inc: {
-                  [phone0with]: parseInt(amount),
-                },
-              },
-              { upsert: true }
-            );
-          }
-          if (user.upLine.length === 2) {
-            if (user.upLine[1].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[1] ?? 1 },
-                {
-                  userId: user.upLine[1] ?? 1,
-                  $inc: {
-                    [phone1with]: parseInt(amount),
-                  },
-                },
-                { upsert: true }
-              );
-            }
-          }
-          if (user.upLine.length === 3) {
-            if (user.upLine[1].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[1] ?? 1 },
-                {
-                  userId: user.upLine[1] ?? 1,
-                  $inc: {
-                    [phone1with]: parseInt(amount),
-                  },
-                },
-                { upsert: true }
-              );
-            }
-  
-            if (user.upLine[2].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[2] ?? 1 },
-                {
-                  userId: user.upLine[2] ?? 1,
-                  $inc: {
-                    [phone2with]: parseInt(amount),
-                  },
-                },
-                { upsert: true }
-              );
-            }
-          }
-        }
-      
-      } else {
-        await payout.create({
-          orderId: orderId,
-          txnId: response.data.bank_ref,
-          amount,
-          bank: { account, IFSC, name },
-          status: "success",
-          type: "admin",
-          gateway: "seospay",
-        });
-      }
-      return res.status(200).send({ status: "success", rrn: response.data.bank_ref });
-    }
-    if(!response.status){
-      console.log(response);
-      const options1 = {
+      const requestOptions = {
         method: "POST",
-        url: "https://api.seospay.in/api/new/generateToken",
-        headers: {
-          "Content-Type":"application/json",
-          "Accept":"application/json",
-         
-          "AuthKey":"5e5860051bf3",
-          "AuthToken":"715fbf60dfa657340deb94e12a5bf64ce43a1286",
-        },
-        data: {
-          "email": "avishawakarma43@gmail.com",
-          "password": "OKH%^$8934"
-        },
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
       };
-  
-      axios.request(options1).then(async function (response) {
-        seospay = response.data.token;
-      }).catch(async function(error){
-        console.log('here1')
-        console.log(error)
-         //return res.status(200).send({ status: "Failed", error: "Try again" , message: error});
-  
-      })
-      return res.status(200).send({ status: "Failed", error: "Try again" , message: error});
+
+
+      fetch("https://api.seospay.in/api/new/v1/payout/docashtransfer", requestOptions)
+        .then((res) => res.json())
+        .then(async (response) => {
+          if (response.data)
+            if (response.status === "PENDING") {
+              if (type === "withdrawal") {
+                await payout.create({
+                  orderId: orderId,
+                  txnId: response.data.txn_id,
+                  amount,
+                  bank: { account, IFSC, name },
+                  status: "pending",
+                  type: "withdrawal",
+                  withdrawalId,
+                  userId,
+                  gateway: "seospay",
+                });
+              } else {
+                await payout.create({
+                  orderId: orderId,
+                  txnId: response.data.txn_id,
+                  amount,
+                  bank: { account, IFSC, name },
+                  status: "pending",
+                  type: "admin",
+                  gateway: "seospay",
+                });
+              }
+              return res.status(200).send({ status: "pending", rrn: response.data.txn_id });
+            }
+
+          if (response.status === "FAILED") {
+
+            return res.status(200).send({ status: "Failed", rrn: response.data.txn_id });
+          }
+
+          if (response.status === "SUCCESS") {
+            if (type === "withdrawal") {
+              await payout.create({
+                orderId: orderId,
+                txnId: response.data.bank_ref,
+                amount,
+                bank: { account, IFSC, name },
+                status: "success",
+                type: "withdrawal",
+                withdrawalId,
+                userId,
+                gateway: "seospay",
+              });
+              await User.updateOne(
+                { id: parseInt(userId) },
+                {
+                  $push: {
+                    walletHistory: {
+                      credit: false,
+                      amount: amount,
+                      note: `Redeem Successful ID: ${withdrawalId}`,
+                      date: Date.now(),
+                    },
+                  },
+                }
+              );
+              await withdrawal.updateOne({ _id: withdrawalId }, { status: "Success", payout: 'seospay', txnId: response.data.bank_ref });
+              const user = await User.findOne({ id: userId });
+              const date = new Date();
+              const localDate = (date / 1000 + 19800) * 1000;
+              const newDatefor = new Date(localDate);
+              const day = newDatefor.getDate();
+              const month = newDatefor.getMonth() + 1;
+              const year = newDatefor.getFullYear();
+
+              const userDate = new Date(user.date);
+              const userDateLocal = (userDate / 1000 + 19800) * 1000;
+              const newuserDate = new Date(userDateLocal);
+
+              const dayMonth = `${day}/${month}`;
+
+              const userday = newuserDate.getDate();
+              const usermonth = newuserDate.getMonth() + 1;
+              const userdayMonth = `${userday}/${usermonth}`;
+              var daySorted;
+              var monthSorted;
+              if (day < 10) {
+                daySorted = `0${day}`;
+              } else {
+                daySorted = `${day}`;
+              }
+              if (month < 10) {
+                monthSorted = `0${month}`;
+              } else {
+                monthSorted = `${month}`;
+              }
+              const newDate = `${daySorted}-${monthSorted}-${year}`;
+              await Daily.updateOne(
+                { id: newDate },
+                { $inc: { redeem: amount, redeemCount: +1 } },
+                { upsert: true }
+              );
+
+              const phone0with = `level0.${user.phone}.totalWithdrawal`;
+              const phone1with = `level1.${user.phone}.totalWithdrawal`;
+              const phone2with = `level2.${user.phone}.totalWithdrawal`;
+              const newphone0with = `newlevel0.${dayMonth}.${user.phone}.todayWithdrawal`;
+              const newphone1with = `newlevel1.${dayMonth}.${user.phone}.todayWithdrawal`;
+              const newphone2with = `newlevel2.${dayMonth}.${user.phone}.todayWithdrawal`;
+              if (dayMonth === userdayMonth) {
+                if (user.upLine !== null) {
+                  if (user.upLine[0].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[0] ?? 1 },
+                      {
+                        userId: user.upLine[0] ?? 1,
+                        $inc: {
+                          [newphone0with]: parseInt(amount),
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                  if (user.upLine.length === 2) {
+                    if (user.upLine[1].length !== 0) {
+                      await promotion.updateOne(
+                        { userId: user.upLine[1] ?? 1 },
+                        {
+                          userId: user.upLine[1] ?? 1,
+                          $inc: {
+                            [newphone1with]: parseInt(amount),
+                          },
+                        },
+                        { upsert: true }
+                      );
+                    }
+                  }
+                  if (user.upLine.length === 3) {
+                    if (user.upLine[1].length !== 0) {
+                      await promotion.updateOne(
+                        { userId: user.upLine[1] ?? 1 },
+                        {
+                          userId: user.upLine[1] ?? 1,
+                          $inc: {
+                            [newphone1with]: parseInt(amount),
+                          },
+                        },
+                        { upsert: true }
+                      );
+                    }
+
+                    if (user.upLine[2].length !== 0) {
+                      await promotion.updateOne(
+                        { userId: user.upLine[2] ?? 1 },
+                        {
+                          userId: user.upLine[2] ?? 1,
+                          $inc: {
+                            [newphone2with]: parseInt(amount),
+                          },
+                        },
+                        { upsert: true }
+                      );
+                    }
+                  }
+                }
+              }
+
+              if (user.upLine !== null) {
+                if (user.upLine[0].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[0] ?? 1 },
+                    {
+                      userId: user.upLine[0] ?? 1,
+                      $inc: {
+                        [phone0with]: parseInt(amount),
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+                if (user.upLine.length === 2) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [phone1with]: parseInt(amount),
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
+                if (user.upLine.length === 3) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [phone1with]: parseInt(amount),
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  if (user.upLine[2].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[2] ?? 1 },
+                      {
+                        userId: user.upLine[2] ?? 1,
+                        $inc: {
+                          [phone2with]: parseInt(amount),
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
+              }
+
+            } else {
+              await payout.create({
+                orderId: orderId,
+                txnId: response.data.bank_ref,
+                amount,
+                bank: { account, IFSC, name },
+                status: "success",
+                type: "admin",
+                gateway: "seospay",
+              });
+            }
+            return res.status(200).send({ status: "success", rrn: response.data.bank_ref });
+          }
+          if (!response.status) {
+            console.log(response);
+            const options1 = {
+              method: "POST",
+              url: "https://api.seospay.in/api/new/generateToken",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+
+                "AuthKey": "5e5860051bf3",
+                "AuthToken": "715fbf60dfa657340deb94e12a5bf64ce43a1286",
+              },
+              data: {
+                "email": "avishawakarma43@gmail.com",
+                "password": "OKH%^$8934"
+              },
+            };
+
+            axios.request(options1).then(async function (response) {
+              seospay = response.data.token;
+            }).catch(async function (error) {
+              console.log('here1')
+              console.log(error)
+              //return res.status(200).send({ status: "Failed", error: "Try again" , message: error});
+
+            })
+            return res.status(200).send({ status: "Failed", error: "Try again", message: error });
+          }
+
+
+        })
+        .catch((error) => {
+          console.log('main error')
+          console.log(error);
+          return res.status(200).send({ status: "Failed", error: "Try again", message: error });
+
+        });
+
+
     }
-    
 
-  })
-  .catch((error) => {
-    console.log('main error')
-    console.log(error);
-    return res.status(200).send({ status: "Failed", error: "Try again" , message: error});
-
-  });
-
-   
-    }
-    
   } catch (error) {
     console.log('try catch error');
     console.log(error);
-    res.status(200).send({ status: "Failed", error: "error",message: error});
-    
+    res.status(200).send({ status: "Failed", error: "error", message: error });
+
   }
 
-  
+
 };
 
 export const UPIPointGateway = async (req, res) => {
@@ -10928,79 +10987,79 @@ export const UPIPointGateway = async (req, res) => {
   try {
 
     var user_token = process.env.upipoint;
-  const order_id = Math.random().toString(16).slice(2);
-  const amount = parseFloat(req.body.amount);
-  const userId = req.body.userId;
-  const customer_name = req.body.customer_name;
-  const customer_email = req.body.customer_email;
-  const customer_mobile = req.body.customer_mobile;
-  const redirect_url = req.body.redirect_url;
+    const order_id = Math.random().toString(16).slice(2);
+    const amount = parseFloat(req.body.amount);
+    const userId = req.body.userId;
+    const customer_name = req.body.customer_name;
+    const customer_email = req.body.customer_email;
+    const customer_mobile = req.body.customer_mobile;
+    const redirect_url = req.body.redirect_url;
 
-  const data = {
-    user_token,
-    order_id,
-    amount,
-    remark1: 'product',
-    remark2: 'product2',
-    customer_mobile,
-    redirect_url,
-    route: 2
-  }
-  const postDataString = querystring.stringify(data);
+    const data = {
+      user_token,
+      order_id,
+      amount,
+      remark1: 'product',
+      remark2: 'product2',
+      customer_mobile,
+      redirect_url,
+      route: 2
+    }
+    const postDataString = querystring.stringify(data);
 
-  
+
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: "https://upipoint.com/api/create-order",
-      headers:  {
+      headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      data : postDataString,
+      data: postDataString,
     };
 
     axios.request(config)
-    .then(async (response) => {
-      
-      axios.get(`${response.data.result.payment_url}`).then(async(resp) => {
-        
+      .then(async (response) => {
+
+        axios.get(`${response.data.result.payment_url}`).then(async (resp) => {
+
           const lastTrans = await Trans.findOne().sort({ number: -1 });
-    const newIncreament = lastTrans.number + 1;
-    await Trans.create({
-      id: order_id,
-      number: newIncreament,
-      date: Date.now(),
-      userId,
-      amount: amount,
-      status: "created",
-      name: customer_name,
-      email: customer_email,
-      phone: customer_mobile,
-      
-    });
-      res.status(200).send(resp.data);
-      }).catch((err) => {
-        console.log(err)
-        res.status(200).send({error: err});
+          const newIncreament = lastTrans.number + 1;
+          await Trans.create({
+            id: order_id,
+            number: newIncreament,
+            date: Date.now(),
+            userId,
+            amount: amount,
+            status: "created",
+            name: customer_name,
+            email: customer_email,
+            phone: customer_mobile,
+
+          });
+          res.status(200).send(resp.data);
+        }).catch((err) => {
+          console.log(err)
+          res.status(200).send({ error: err });
+        })
+
       })
-    
-    })
-    .catch((error) => {
-      //console.log('here');
-      console.log(error)
-      res.status(200).send({error: error});
-    });
-    
-    
+      .catch((error) => {
+        //console.log('here');
+        console.log(error)
+        res.status(200).send({ error: error });
+      });
+
+
   } catch (error) {
     console.log(error)
-      res.status(200).send({error: error});
+    res.status(200).send({ error: error });
   }
-  
-  
 
- 
-       
+
+
+
+
 };
 export const upiPointGatewayWebhooktdv1 = async (req, res) => {
   const data = req.body;
@@ -11024,11 +11083,11 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
     monthSorted = `${month}`;
   }
   const newDate = `${daySorted}-${monthSorted}-${year}`;
-  
+
   const clientId = data.order_id;
 
   if (data.status === "SUCCESS") {
-    
+
     const sData = {
       user_token: process.env.upipoint,
       order_id: data.order_id
@@ -11044,148 +11103,205 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
         }
       }
     );
-      
-  
+
+
     if (getTransaction.data.status === true) {
       if (getTransaction.data.result.txnStatus === "SUCCESS") {
         try {
 
-          
-        var amount = parseFloat(getTransaction.data.result.amount);
-        const tempTran = await Trans.findOne({
-          id: clientId,
-          status: "success",
-        });
-        if (!tempTran) {
-          console.log("**************** WebHooked *********************");
-          const lastTransId = await Trans.findOne(
-            { id: clientId },
-            { number: 1, userId: 1 }
-          );
-          await Trans.updateOne(
-            { id: clientId },
-            { date: Date.now(), status: "success", expired: true,utr: getTransaction.data.result.utr}
-          );
-          const user = await User.findOne({ id: lastTransId.userId });
-          var firstRecharge = 0;
-          await daily.updateOne(
-            { id: newDate },
-            { $inc: { count: +1, amount: amount } },
-            { upsert: true }
-          );
 
-          if (!user.firstRecharge) {
-            firstRecharge = amount;
-            await User.updateOne(
-              { id: user.upLine[0] },
-              {
-                $inc: { balance: +151 },
-                $push: {
-                  walletHistory: {
-                    amount: 151,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Referal Reward User: ${user.id}`,
+          var amount = parseFloat(getTransaction.data.result.amount);
+          const tempTran = await Trans.findOne({
+            id: clientId,
+            status: "success",
+          });
+          if (!tempTran) {
+            console.log("**************** WebHooked *********************");
+            const lastTransId = await Trans.findOne(
+              { id: clientId },
+              { number: 1, userId: 1 }
+            );
+            await Trans.updateOne(
+              { id: clientId },
+              { date: Date.now(), status: "success", expired: true, utr: getTransaction.data.result.utr }
+            );
+            const user = await User.findOne({ id: lastTransId.userId });
+            var firstRecharge = 0;
+            await daily.updateOne(
+              { id: newDate },
+              { $inc: { count: +1, amount: amount } },
+              { upsert: true }
+            );
+
+            if (!user.firstRecharge) {
+              firstRecharge = amount;
+              await User.updateOne(
+                { id: user.upLine[0] },
+                {
+                  $inc: { balance: +151 },
+                  $push: {
+                    walletHistory: {
+                      amount: 151,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Referal Reward User: ${user.id}`,
+                    },
+                  },
+                }
+              );
+              await offerBonus.updateOne(
+                { userId: user.upLine[0] },
+                {
+                  userId: user.upLine[0],
+                  $inc: { amount: +151 },
+                  $push: {
+                    history: {
+                      credit: "wallet",
+                      amount: 151,
+                      note: `Referal Reward User: ${user.id}`,
+                      date: Date.now(),
+                    },
                   },
                 },
+                { upsert: true }
+              );
+              if (amount > 4999) {
+                const bonus = (amount * 10) / 100;
+                amount = amount + bonus;
               }
-            );
-            await offerBonus.updateOne(
-              { userId: user.upLine[0] },
-              {
-                userId: user.upLine[0],
-                $inc: { amount: +151 },
-                $push: {
-                  history: {
-                    credit: "wallet",
-                    amount: 151,
-                    note: `Referal Reward User: ${user.id}`,
-                    date: Date.now(),
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +amount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
                   },
-                },
-              },
-              {upsert: true}
-            );
-            if (amount > 4999) {
-              const bonus = (amount * 10) / 100;
-              amount = amount + bonus;
+                }
+              );
+            } else {
+              var bonus;
+              if (amount > 4999) {
+                bonus = (amount * 10) / 100;
+                amount = amount + bonus;
+              }
+
+              await User.updateOne(
+                { id: user.id },
+                {
+                  firstRecharge: true, $inc: { balance: +amount },
+                  $push: {
+                    rechargeHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      status: "Success",
+                    },
+                    walletHistory: {
+                      amount: amount,
+                      date: Date.now(),
+                      credit: true,
+                      note: `Add money ID: ${lastTransId.number}`,
+                    },
+                  },
+                }
+              );
+
             }
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +amount },
-                $push: {
-                  rechargeHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
+            const userDate = new Date(user.date);
+            const userDateLocal = (userDate / 1000 + 19800) * 1000;
+            const newuserDate = new Date(userDateLocal);
+            const abhiDate = new Date();
+            const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
+            const newabhirDate = new Date(abhiDateLocal);
+            const day = newabhirDate.getDate();
+            const month = newabhirDate.getMonth() + 1;
+            const year = newabhirDate.getFullYear();
+
+            const dayMonth = `${day}/${month}/${year}`;
+            const userday = newuserDate.getDate();
+            const usermonth = newuserDate.getMonth() + 1;
+            const useryear = newuserDate.getFullYear();
+
+            const userdayMonth = `${userday}/${usermonth}/${useryear}`;
+            const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
+            const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
+
+            const phone0recharge = `level0.${user.phone}.totalRecharge`;
+            const phone1recharge = `level1.${user.phone}.totalRecharge`;
+            const phone2recharge = `level2.${user.phone}.totalRecharge`;
+
+            const phone0first = `level0.${user.phone}.firstRecharge`;
+            const phone1first = `level1.${user.phone}.firstRecharge`;
+            const phone2first = `level2.${user.phone}.firstRecharge`;
+
+            if (dayMonth === userdayMonth) {
+              if (user.upLine !== null) {
+                if (user.upLine[0].length !== 0) {
+                  await promotion.updateOne(
+                    { userId: user.upLine[0] ?? 1 },
+                    {
+                      userId: user.upLine[0] ?? 1,
+                      $inc: {
+                        [newphone0recharge]: amount,
+                      },
+                    },
+                    { upsert: true }
+                  );
+                }
+                if (user.upLine.length === 2) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
+                if (user.upLine.length === 3) {
+                  if (user.upLine[1].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[1] ?? 1 },
+                      {
+                        userId: user.upLine[1] ?? 1,
+                        $inc: {
+                          [newphone1recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+
+                  if (user.upLine[2].length !== 0) {
+                    await promotion.updateOne(
+                      { userId: user.upLine[2] ?? 1 },
+                      {
+                        userId: user.upLine[2] ?? 1,
+                        $inc: {
+                          [newphone2recharge]: amount,
+                        },
+                      },
+                      { upsert: true }
+                    );
+                  }
+                }
               }
-            );
-          }else{
-            var bonus;
-           if(amount > 4999){
-             bonus = (amount * 10) / 100;
-            amount = amount + bonus;
-           }
-            
-            await User.updateOne(
-              { id: user.id },
-              {
-                firstRecharge: true, $inc: { balance: +amount },
-                $push: {
-                  rechargeHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    status: "Success",
-                  },
-                  walletHistory: {
-                    amount: amount,
-                    date: Date.now(),
-                    credit: true,
-                    note: `Add money ID: ${lastTransId.number}`,
-                  },
-                },
-              }
-            );
-            
-          }
-          const userDate = new Date(user.date);
-          const userDateLocal = (userDate / 1000 + 19800) * 1000;
-          const newuserDate = new Date(userDateLocal);
-          const abhiDate = new Date();
-          const abhiDateLocal = (abhiDate / 1000 + 19800) * 1000;
-          const newabhirDate = new Date(abhiDateLocal);
-          const day = newabhirDate.getDate();
-          const month = newabhirDate.getMonth() + 1;
-          const year = newabhirDate.getFullYear();
+            }
 
-          const dayMonth = `${day}/${month}/${year}`;
-          const userday = newuserDate.getDate();
-          const usermonth = newuserDate.getMonth() + 1;
-          const useryear = newuserDate.getFullYear();
-
-          const userdayMonth = `${userday}/${usermonth}/${useryear}`;
-          const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
-          const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
-          const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-
-          const phone0recharge = `level0.${user.phone}.totalRecharge`;
-          const phone1recharge = `level1.${user.phone}.totalRecharge`;
-          const phone2recharge = `level2.${user.phone}.totalRecharge`;
-
-          const phone0first = `level0.${user.phone}.firstRecharge`;
-          const phone1first = `level1.${user.phone}.firstRecharge`;
-          const phone2first = `level2.${user.phone}.firstRecharge`;
-
-          if (dayMonth === userdayMonth) {
             if (user.upLine !== null) {
               if (user.upLine[0].length !== 0) {
                 await promotion.updateOne(
@@ -11193,7 +11309,8 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
                   {
                     userId: user.upLine[0] ?? 1,
                     $inc: {
-                      [newphone0recharge]: amount,
+                      [phone0first]: firstRecharge,
+                      [phone0recharge]: amount,
                     },
                   },
                   { upsert: true }
@@ -11206,7 +11323,8 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[1] ?? 1,
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -11220,7 +11338,8 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[1] ?? 1,
                       $inc: {
-                        [newphone1recharge]: amount,
+                        [phone1first]: firstRecharge,
+                        [phone1recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -11233,7 +11352,8 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
                     {
                       userId: user.upLine[2] ?? 1,
                       $inc: {
-                        [newphone2recharge]: amount,
+                        [phone2first]: firstRecharge,
+                        [phone2recharge]: amount,
                       },
                     },
                     { upsert: true }
@@ -11241,78 +11361,17 @@ export const upiPointGatewayWebhooktdv1 = async (req, res) => {
                 }
               }
             }
+
+            res.status(200).send("done");
+          } else {
+            res.status(200).send("done");
           }
 
-          if (user.upLine !== null) {
-            if (user.upLine[0].length !== 0) {
-              await promotion.updateOne(
-                { userId: user.upLine[0] ?? 1 },
-                {
-                  userId: user.upLine[0] ?? 1,
-                  $inc: {
-                    [phone0first]: firstRecharge,
-                    [phone0recharge]: amount,
-                  },
-                },
-                { upsert: true }
-              );
-            }
-            if (user.upLine.length === 2) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-            if (user.upLine.length === 3) {
-              if (user.upLine[1].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[1] ?? 1 },
-                  {
-                    userId: user.upLine[1] ?? 1,
-                    $inc: {
-                      [phone1first]: firstRecharge,
-                      [phone1recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-
-              if (user.upLine[2].length !== 0) {
-                await promotion.updateOne(
-                  { userId: user.upLine[2] ?? 1 },
-                  {
-                    userId: user.upLine[2] ?? 1,
-                    $inc: {
-                      [phone2first]: firstRecharge,
-                      [phone2recharge]: amount,
-                    },
-                  },
-                  { upsert: true }
-                );
-              }
-            }
-          }
-
-          res.status(200).send("done");
-        } else {
-          res.status(200).send("done");
-        }
-     
         } catch (error) {
           console.log(error.message);
           res.status(200).send("done");
         }
-       } else {
+      } else {
         res.status(200).send("done");
       }
     } else {
@@ -11473,7 +11532,7 @@ export const watchPayPayout = async (req, res) => {
 
       // Handle response
       if (result.respCode === "SUCCESS") {
-       
+
 
 
 
@@ -11490,9 +11549,9 @@ export const watchPayPayout = async (req, res) => {
       } else {
         // Payout failed
         console.error('WatchPay Payout Failed:', result);
-        
+
         // Update withdrawal status to Failed and refund user
-        
+
         return res.status(400).json({
           status: "error",
           message: result.errorMsg || result.respMsg || "Transfer failed",
@@ -11507,7 +11566,7 @@ export const watchPayPayout = async (req, res) => {
   } catch (error) {
     console.error('WatchPay Payout Error:', error);
 
-    
+
 
     return res.status(500).json({
       status: "error",
@@ -11520,14 +11579,14 @@ export const watchPayPayout = async (req, res) => {
 // WatchPay Balance Fetch
 export const watchPayBalanceFetch = async (req, res) => {
   try {
-       // Check admin authentication
-       const api = req.params.api;
-       if (api !== process.env.AdminAPI) {
-         return res.status(403).json({
-           status: "error",
-           message: "Unauthorized access"
-         });
-       }
+    // Check admin authentication
+    const api = req.params.api;
+    if (api !== process.env.AdminAPI) {
+      return res.status(403).json({
+        status: "error",
+        message: "Unauthorized access"
+      });
+    }
     // WatchPay Balance API Configuration
     const MCH_ID = process.env.WATCHPAY_MCH_ID || "100225573";
     const MERCHANT_KEY = process.env.WATCHPAY_MERCHANT_KEY_PAY || "QOSH8PGJNROQWHWR3DDQD9CKMRLE6WUJ";
@@ -11551,7 +11610,7 @@ export const watchPayBalanceFetch = async (req, res) => {
 
       // Sort parameters alphabetically
       const sortedKeys = Object.keys(filteredParams).sort();
-      
+
       // Build query string
       let queryString = "";
       sortedKeys.forEach(key => {
@@ -11609,12 +11668,12 @@ export const watchPayBalanceFetch = async (req, res) => {
 
   } catch (error) {
     console.error('WatchPay Balance Fetch Error:', error);
-    
+
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
     }
-    
+
     return res.status(500).json({
       status: "error",
       message: error.message || "Internal server error",
@@ -11755,10 +11814,10 @@ export const rupeeRushPayout = async (req, res) => {
         const verifyParams = { ...result };
         delete verifyParams.sign;
         const expectedSign = generateRupeeRushPayoutSign(verifyParams, SECRET_KEY);
-        
+
         console.log('Response Sign:', respSign);
         console.log('Expected Sign:', expectedSign);
-        
+
         if (respSign !== expectedSign) {
           console.error('RupeeRush Payout Signature Mismatch');
           throw new Error('Signature verification failed');
@@ -11767,10 +11826,10 @@ export const rupeeRushPayout = async (req, res) => {
 
       // Handle response
       if (result.resultCode === "0000") {
-        
 
 
-        
+
+
         console.log('RupeeRush Payout Success:', outTradeNo);
 
         return res.status(200).json({
@@ -11784,8 +11843,8 @@ export const rupeeRushPayout = async (req, res) => {
       } else {
         // Payout failed
         console.error('RupeeRush Payout Failed:', result);
-        
-       
+
+
 
         return res.status(400).json({
           status: "error",
@@ -11814,7 +11873,7 @@ export const rupeeRushPayout = async (req, res) => {
 export const rupeeRushPayoutCallback = async (req, res) => {
   try {
     console.log('RupeeRush Payout Callback received:', req.body);
-    
+
     const result = req.body;
     const SECRET_KEY = process.env.RUPEERUSH_PAYOUT_SECRET_KEY || "ACB6313A8AED3E2975B65C05CF2008E6";
 
@@ -11856,7 +11915,7 @@ export const rupeeRushPayoutCallback = async (req, res) => {
     // Handle callback based on status
     if (result.resultCode === "0000") {
       const outTradeNo = result.outTradeNo;
-      
+
       // Update withdrawal if needed
       // const withdrawalRecord = await withdrawal.findOne({ _id: outTradeNo });
       // if (withdrawalRecord && withdrawalRecord.status !== "Success") {
@@ -11921,12 +11980,12 @@ export const rupeeRushBalanceFetch = async (req, res) => {
 
       // JSON encode (no escaped slashes)
       const jsonString = JSON.stringify(sorted);
-      
+
       // Append secret key and generate MD5 (uppercase)
       const signString = jsonString + secretKey;
-      
+
       console.log('RupeeRush Balance String to sign:', signString);
-      
+
       return crypto.createHash('md5').update(signString).digest('hex').toUpperCase();
     };
 
@@ -11956,7 +12015,7 @@ export const rupeeRushBalanceFetch = async (req, res) => {
     if (result.resultCode === "0000") {
       // Subtract 3000 from balance as per PHP logic
       const adjustedBalance = parseFloat(result.balance || 0) - 3000;
-      
+
       return res.status(200).json({
         status: "success",
         message: "Balance fetched successfully",
@@ -11977,12 +12036,12 @@ export const rupeeRushBalanceFetch = async (req, res) => {
 
   } catch (error) {
     console.error('RupeeRush Balance Fetch Error:', error);
-    
+
     if (error.response) {
       console.error('Response data:', error.response.data);
       console.error('Response status:', error.response.status);
     }
-    
+
     return res.status(500).json({
       status: "error",
       message: error.message || "Internal server error",

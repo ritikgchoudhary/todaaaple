@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 import { Link } from "react-router-dom";
-import { Container, Badge } from "@material-ui/core";
 import {
   PersonOutline as AccountIcon,
   AccountBalanceWalletOutlined as DepositIcon,
@@ -18,19 +17,22 @@ import Telegram from "../images/telegram.png";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+    maxWidth: "500px",
     position: "fixed",
     bottom: 0,
-    boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
-    backgroundColor: "#fff",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "transparent",
     zIndex: 2000,
     display: 'flex',
     justifyContent: 'center', // Center on PC
+    paddingBottom: "env(safe-area-inset-bottom)",
   },
   navContainer: {
     width: '100%',
-    maxWidth: '500px', // Match the Home page's mainContainer width
     backgroundColor: '#fff',
     borderTop: '1px solid #f0f2f5',
+    boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
   },
   navAction: {
     minWidth: 'auto',
@@ -79,13 +81,10 @@ export default function NavBar() {
     setValue(newValue);
   };
 
-  const [time, setTime] = useState(new Date());
-
   useEffect(() => {
 
     const interval = setInterval(() => {
 
-      setTime(new Date());
       const loggedInUser = localStorage.getItem("user");
       if (loggedInUser) {
         setAuth(true)
@@ -153,17 +152,34 @@ export default function NavBar() {
           className={classes.navAction}
         />
       </BottomNavigation>
+
       <a href="https://wa.me/message/6F6ZZQERITWCK1">
         <div style={{
-          position: "fixed", bottom: 130, right: 20, width: '50px', height: '50px', borderRadius: '50px', backgroundImage: `url(${WhatsApp})`, backgroundSize: 'cover',
-          backgroundPosition: 'center', zIndex: 1000
+          position: "fixed",
+          bottom: 130,
+          right: "max(20px, calc(50% - 250px + 20px))",
+          width: '50px',
+          height: '50px',
+          borderRadius: '50px',
+          backgroundImage: `url(${WhatsApp})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 1000
         }}>
         </div>
       </a>
       <a href="https://t.me/earningsource111">
         <div style={{
-          position: "fixed", bottom: 70, right: 20, width: '50px', height: '50px', borderRadius: '50px', backgroundImage: `url(${Telegram})`, backgroundSize: 'cover',
-          backgroundPosition: 'center', zIndex: 1000
+          position: "fixed",
+          bottom: 70,
+          right: "max(20px, calc(50% - 250px + 20px))",
+          width: '50px',
+          height: '50px',
+          borderRadius: '50px',
+          backgroundImage: `url(${Telegram})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 1000
         }}>
         </div>
       </a>

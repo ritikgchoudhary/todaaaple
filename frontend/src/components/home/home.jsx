@@ -1,1153 +1,847 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useHistory } from "react-router-dom";
 import {
-  Container,
-  Grid,
-  Typography,
+  makeStyles,
   Box,
+  Typography,
   Button,
-  Dialog,
-  Paper,
   IconButton,
-  Avatar
+  Grid,
 } from "@material-ui/core";
-import { Link, useHistory } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
-import * as api from "../../api/auth";
-import axios from "axios";
-import { AnimatePresence, motion } from "framer-motion";
 import {
-  VolumeUp as NoticeIcon,
   Close as CloseIcon,
-  ExitToApp as RegisterIcon,
-  AddCircle as LoginIcon
+  VolumeUp as NoticeIcon,
+  SportsEsports as GameIcon,
 } from "@material-ui/icons";
+import { CircularProgress, Dialog, Container } from "@material-ui/core";
+import axios from "axios";
+import * as api from "../../api/auth";
+import { fetchGameCatalogPublic } from "../../api/gameCatalog";
 
-import BannerAviator from "../../images/header.jpg";
-import Game9Wickets from "../../images/wicket_9_banner.png";
-import LuckySportsBanner from "../../images/lucky_sports_banner.png";
-import SABABanner from "../../images/saba_sports_banner.png";
-import CasinoBanner from "../../images/casino_banner.png";
-import BonusBanner from "../../images/bonus_banner.png";
-import Phonepe from "../../images/phonepe.png";
+// --- IMAGES (Restored from previous versions or generic placeholders) ---
+import HeaderBg from "../../images/header.jpg";
+import Banner1 from "../../images/lucky_sports_banner.png";
+import Banner2 from "../../images/casino_banner.png";
+import Banner3 from "../../images/bonus_banner.png";
 
-// Casino Providers
-import EvoImg from "../../images/casino/evo.png";
-import PtImg from "../../images/casino/pt.png";
-import EzugiImg from "../../images/casino/ezugi.png";
-import SexyImg from "../../images/casino/sexy.png";
+// Fallback provider/game images
+import WingoIcon from "../../images/wingo.png";
 
-// Crash Games
-import AviatorRed from "../../images/crash/aviator_red.png";
-import AviatorBlue from "../../images/crash/aviator_blue.png";
-import ChickenImg from "../../images/crash/chicken.png";
-import CricketImg from "../../images/cricket.png";
-import WingoImg from "../../images/wingo.png";
-import MinesImg from "../../images/mines.png";
-
+// Logo URL matching the "Deltin" brand in the image
 const LOGO_URL = "https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#f5f7fa",
     minHeight: "100vh",
-    paddingBottom: "100px",
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center', // Center content on PC
+    backgroundColor: "#EFF2F5", // Background for the "desktop" space around the phone
+    display: "flex",
+    justifyContent: "center",
+    "& *": {
+      textDecoration: "none !important",
+    },
+    "& *:hover": {
+      textDecoration: "none !important",
+    }
   },
   mainContainer: {
-    width: '100%',
-    maxWidth: '500px', // Restrict width on PC for professional mobile-app look
-    backgroundColor: '#fff',
-    minHeight: '100vh',
-    position: 'relative',
-    boxShadow: '0 0 40px rgba(0,0,0,0.05)', // Subtle shadow on PC
-    [theme.breakpoints.up('sm')]: {
-      margin: '20px 0',
-      borderRadius: '24px',
-      minHeight: 'calc(100vh - 40px)',
-      overflow: 'hidden',
-    }
+    width: "100%",
+    maxWidth: "480px", // Strict mobile width
+    backgroundColor: "#F4F7FE", // App background
+    minHeight: "100vh",
+    paddingBottom: "80px",
+    position: "relative",
+    boxShadow: "0 0 20px rgba(0,0,0,0.05)",
+    overflowX: "hidden", // Prevent accidental horizontal scroll
   },
-  topBar: {
+  // 1. Top Download Banner
+  topAppBanner: {
     backgroundColor: "#fff",
-    padding: "10px 20px",
+    padding: "4px 8px", // Reduced padding
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottom: "1px solid #f0f2f5",
+    borderBottom: "1px solid #eee",
+  },
+  appBannerLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
   },
   downloadBtn: {
-    background: "#f1a340",
+    backgroundColor: "#10B9B0", // Teal
     color: "#fff",
-    borderRadius: "25px",
+    borderRadius: "20px",
     textTransform: "none",
-    fontWeight: "900",
-    fontSize: '13px',
-    padding: "6px 22px",
-    boxShadow: 'none',
-    '&:hover': {
-      background: "#e09230",
-    }
+    fontWeight: "bold",
+    fontSize: "11px",
+    padding: "2px 10px", // Smaller button
+    "&:hover": { backgroundColor: "#0D9488" }
   },
-  authBar: {
-    backgroundColor: "#fff",
-    padding: "16px 20px",
+
+  // 2. Main Header
+  header: {
+    padding: "6px 12px", // Tighter header
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-  },
-  logo: {
-    height: "50px",
-    objectFit: 'contain',
-  },
-  btnRegister: {
-    background: "#ff5967",
-    color: "#fff",
-    borderRadius: "25px",
-    marginRight: "10px",
-    textTransform: "none",
-    padding: "8px 22px",
-    fontWeight: '800',
-    fontSize: '14px',
-    boxShadow: 'none',
-  },
-  btnLogin: {
-    background: "#1aabff",
-    color: "#fff",
-    borderRadius: "25px",
-    textTransform: "none",
-    padding: "8px 22px",
-    fontWeight: '800',
-    fontSize: '14px',
-    boxShadow: 'none',
-  },
-  heroBanner: {
-    width: "100%",
-    height: "220px",
-    borderRadius: "24px",
-    overflow: "hidden",
-    margin: "10px 0 20px",
-    position: "relative",
-    backgroundColor: '#1a1a1c',
-    boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
-  },
-  carouselTrack: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-    display: 'flex',
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    position: 'absolute',
-  },
-  dotContainer: {
-    position: 'absolute',
-    bottom: 12,
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '8px',
-    zIndex: 10,
-  },
-  dot: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    '&.active': {
-      backgroundColor: '#fff',
-      width: '20px',
-      borderRadius: '4px',
-    }
-  },
-  heroOverlay: {
-    position: 'absolute',
-    bottom: 25,
-    left: 25,
-    color: '#fff',
-    zIndex: 2,
-    '& h5': {
-      fontSize: '28px',
-      fontWeight: '900',
-      letterSpacing: '1px',
-      textShadow: '0 4px 8px rgba(0,0,0,0.8)',
-    },
-    '& p': {
-      fontSize: '14px',
-      opacity: 0.9,
-    }
-  },
-  announcementBar: {
     backgroundColor: "#fff",
-    color: "#4a90e2",
-    padding: "0 15px",
+  },
+  headerLogo: {
+    height: "28px", // Smaller logo
+    objectFit: "contain",
+  },
+  authBtns: {
     display: "flex",
-    alignItems: "center",
-    borderRadius: "25px",
-    margin: "0 20px 24px",
-    border: '1px solid #e0e6ed',
-    height: '42px',
-    overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    gap: "8px",
   },
-  newsTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    flexShrink: 0,
-    paddingRight: '10px',
-    marginRight: '10px',
-    borderRight: '1px solid #eee',
-    height: '24px',
-    gap: '6px',
-    '& span': {
-      fontSize: '13px',
-      fontWeight: '900',
-      color: '#4a90e2',
-      textTransform: 'uppercase',
-    }
-  },
-  newsCarousel: {
-    flex: 1,
-    overflow: 'hidden',
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  newsSlider: {
-    display: 'flex',
-    whiteSpace: 'nowrap',
-    animation: '$marquee 40s linear infinite',
-    '&:hover': {
-      animationPlayState: 'paused',
-    }
-  },
-  slideItem: {
-    fontSize: '13px',
-    fontWeight: '600',
-    color: '#1a73e8',
-    paddingRight: '50px',
-  },
-  "@keyframes marquee": {
-    "0%": { transform: "translateX(100%)" },
-    "100%": { transform: "translateX(-100%)" }
-  },
-  gameTypeWrapper: {
-    width: "100%",
-    padding: "10px 0 20px",
-    backgroundColor: "rgba(248, 249, 251, 0.5)",
-  },
-  typeWrapper: {
-    overflowX: "auto",
-    scrollbarWidth: "none",
-    WebkitOverflowScrolling: "touch",
-    "&::-webkit-scrollbar": {
-      display: "none",
-    },
-    position: "relative",
-    "&.rightSideBlurMask::after": {
-      content: '""',
-      position: "absolute",
-      top: 0,
-      right: 0,
-      width: "60px",
-      height: "100%",
-      background: "linear-gradient(to right, transparent, #fff)",
-      pointerEvents: "none",
-      zIndex: 2,
-    }
-  },
-  tabScrollRoot: {
-    display: "flex",
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
-    gap: "0px", // Removed gap completely to be controlled by padding/margin
-  },
-  typeItem: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: "68px",
-    height: "78px",
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    border: "1px solid #f0f2f5",
-    cursor: "pointer",
-    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
-    margin: "0 0.5px",
-    "&:first-child": {
-      marginLeft: "0px",
-    },
-    "&:last-child": {
-      marginRight: "30px",
-    },
-    "& img": {
-      width: "28px",
-      height: "28px",
-      marginBottom: "2px",
-      objectFit: "contain",
-      transition: "transform 0.3s ease",
-    },
-    "& span": {
-      fontSize: "9.5px",
-      fontWeight: "800",
-      color: "#666",
-      textAlign: "center",
-      lineHeight: 1,
-    },
-    "&.active": {
-      backgroundColor: "#ebf5ff",
-      borderColor: "#7ebfff",
-      boxShadow: "0 4px 12px rgba(126, 191, 255, 0.2)",
-      "& span": {
-        color: "#1a73e8",
-      },
-      "& img": {
-        transform: "scale(1.05)",
-      }
-    },
-    "&:hover": {
-      transform: "translateY(-2px)",
-      boxShadow: "0 6px 15px rgba(0,0,0,0.08)",
-    }
-  },
-  cockfightCard: {
-    minWidth: "75px !important",
-    height: "85px !important",
-    background: "transparent !important",
-    border: "none !important",
-    boxShadow: "none !important",
-    "& img": {
-      filter: "none !important", // Keep original color
-    },
-    "&.active": {
-      background: "linear-gradient(135deg, #ff5a5f 0%, #e0484d 100%) !important",
-      boxShadow: "0 8px 15px rgba(255, 90, 95, 0.3) !important",
-      borderRadius: "16px",
-      "& span": { color: "#fff !important" },
-      "& img": { filter: "brightness(2) !important" }
-    }
-  },
-  catIconBox: {
-    width: "36px", // Slightly smaller to fit box shape better
-    height: "36px",
-    borderRadius: "10px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "5px",
-    backgroundColor: "#f8f9fa",
-    transition: 'all 0.3s ease',
-  },
-  catLabel: {
-    fontSize: "10.5px", // Refined for box fit
-    fontWeight: "800",
-    color: "#444",
-    textAlign: "center",
-    transition: 'color 0.3s ease',
-    lineHeight: 1.1,
-  },
-  featuredGrid: {
-    padding: "0 20px",
-  },
-  featuredCard: {
-    width: "100%",
+  regBtn: {
+    border: "1px solid #10B9B0", // Teal
+    color: "#10B9B0",
     borderRadius: "20px",
-    marginBottom: "20px",
-    position: "relative",
-    overflow: "hidden",
-    backgroundColor: "#fff",
-    boxShadow: "0 6px 20px rgba(0,0,0,0.06)",
-    cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    '&:hover': {
-      transform: 'translateY(-6px)',
-      boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
-    },
-    '& img': {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      display: 'block',
-    }
+    textTransform: "none",
+    fontSize: "12px",
+    padding: "2px 12px",
+    minWidth: "auto",
+    "& .MuiButton-startIcon": { marginRight: "4px" }
   },
-  featuredLarge: {
-    height: "220px",
-  },
-  featuredSmall: {
-    height: "160px",
-  },
-  gridHalf: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "20px",
-    marginBottom: "20px",
-  },
-  providerCard: {
-    width: '100%',
-    height: '140px',
-    borderRadius: '20px',
-    position: 'relative',
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    boxShadow: '0 8px 20px rgba(0,0,0,0.06)',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    '&:hover': {
-      transform: 'scale(1.02)',
-      boxShadow: '0 12px 30px rgba(0,0,0,0.1)',
-    },
-    '& img': {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-    }
-  },
-  // Sports Section Styles (from reference image)
-  gtWrapper: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '8px',
-    padding: '0 10px',
-    marginBottom: '20px',
-  },
-  gameItem: {
-    width: '100%',
-    height: '140px',
-    borderRadius: '20px',
-    position: 'relative',
-    overflow: 'hidden',
-    background: '#fff',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px',
-    border: '1px solid #f0f3f8',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
-    '&:active': {
-      transform: 'scale(0.98)',
-    },
-  },
-  featuredItem: {
-    gridColumn: '1 / span 2',
-    height: '200px',
-    background: 'linear-gradient(to right, #fff 50%, #e7f3ff 100%)',
-    padding: '30px',
-    '& $gameItemName': {
-      fontSize: '24px',
-    },
-    '& $gameItemLogo': {
-      width: '110px',
-    }
-  },
-  gameItemName: {
-    fontSize: '16px',
-    fontWeight: '900',
-    color: '#333',
-    zIndex: 3,
-    marginBottom: '10px',
-    position: 'relative',
-  },
-  gameItemLogo: {
-    width: '70px',
-    height: 'auto',
-    objectFit: 'contain',
-    zIndex: 3,
-    position: 'relative',
-    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.05))',
-  },
-  athleteImg: {
-    position: 'absolute',
-    bottom: -10,
-    right: -15,
-    height: '115%',
-    width: 'auto',
-    zIndex: 2,
-    objectFit: 'contain',
-    pointerEvents: 'none',
+  loginBtn: {
+    backgroundColor: "#10B9B0", // Teal
+    color: "#fff",
+    borderRadius: "20px",
+    textTransform: "none",
+    fontSize: "12px",
+    padding: "2px 14px",
+    minWidth: "auto",
+    "&:hover": { backgroundColor: "#0D9488" }
   },
 
-  // Casino Section Styles (from new reference image)
-  casinoWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-    padding: '0 12px',
-    marginBottom: '20px',
+  // 3. Carousel
+  carouselWrap: {
+    padding: "8px 15px",
   },
-  casinoItem: {
-    width: '100%',
-    height: '150px',
-    borderRadius: '20px',
-    position: 'relative',
-    overflow: 'hidden',
-    backgroundColor: '#f5f5f5', // Light background
-    backgroundImage: 'url(https://img.bzvm68.com/site_common/H5_7_mobile/game_item_background/bg-white.png)', // Using a light background if available, else solid
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    cursor: 'pointer',
-    transition: 'transform 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 40px',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-    '&:active': {
-      transform: 'scale(0.98)',
-    },
-    // Adding the abstract logo background effect
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '120px',
-      height: '120px',
-      backgroundImage: 'url(https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png)',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'center',
-      backgroundSize: 'contain',
-      opacity: 0.03,
-      zIndex: 1,
-    }
-  },
-  casinoChar: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: '55%',
-    height: '100%',
-    backgroundSize: 'contain',
-    backgroundPosition: 'right bottom',
-    backgroundRepeat: 'no-repeat',
-    zIndex: 2,
-    filter: 'drop-shadow(-10px 0 15px rgba(0,0,0,0.05))',
-  },
-  casinoContent: {
-    position: 'relative',
-    zIndex: 3,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '120px', // Center content in the left area
-  },
-  casinoName: {
-    fontSize: '20px',
-    fontWeight: '900',
-    color: '#333',
-    marginBottom: '8px',
-  },
-  casinoLogo: {
-    height: '35px',
-    width: 'auto',
-    objectFit: 'contain',
-  },
-  gameGrid: {
-    padding: "0 15px",
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: '8px',
-    marginBottom: '15px',
-  },
-  gameCard: {
-    backgroundColor: "#fff",
-    borderRadius: "15px",
-    overflow: "hidden",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    transition: 'all 0.2s ease',
-    '&:active': {
-      transform: 'scale(0.95)',
-    }
-  },
-  gameImageWrapper: {
+  bannerImg: {
     width: "100%",
-    aspectRatio: "1/1",
-    overflow: "hidden",
-    position: "relative",
-  },
-  gameImage: {
-    width: "100%",
-    height: "100%",
+    height: "160px", // Reduced height to look like a carousel
+    borderRadius: "12px",
+    display: "block",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
     objectFit: "cover",
   },
-  gameLabel: {
-    fontSize: "10px",
-    fontWeight: "600",
-    color: "#333",
-    padding: "6px 2px",
-    textAlign: "center",
-    backgroundColor: "#f8f9fa",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  favoriteIcon: {
-    position: "absolute",
-    top: "6px",
-    right: "6px",
-    backgroundColor: "rgba(255, 90, 95, 0.9)",
-    borderRadius: "50%",
-    padding: "4px",
+
+  // 4. Announcement
+  announcement: {
+    backgroundColor: "#fff",
+    margin: "0 15px",
+    borderRadius: "8px",
+    padding: "6px 10px",
     display: "flex",
     alignItems: "center",
+    fontSize: "12px",
+    color: "#666",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+  },
+  marquee: {
+    marginLeft: "8px",
+    flex: 1,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    color: "#5C7092", // Blue-ish grey text
+  },
+
+  // 5. Category Tabs (The square ones from the image)
+  catScroll: {
+    display: "flex",
+    overflowX: "auto",
+    padding: "15px 15px",
+    gap: "10px",
+    "&::-webkit-scrollbar": { display: "none" },
+  },
+  catItem: {
+    minWidth: "75px",
+    height: "75px",
+    backgroundColor: "#EBF1FA", // Light grey-blue
+    borderRadius: "10px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+    cursor: "pointer",
+    transition: "all 0.2s",
+    border: "2px solid transparent",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.03)",
+  },
+  catItemActive: {
+    backgroundColor: "rgba(16, 185, 176, 0.1)", // Light Teal tint
+    borderColor: "#10B9B0", // Teal border
+    "& $catLabel": { color: "#10B9B0", fontWeight: "bold" },
+  },
+  catIcon: {
+    width: "32px",
+    height: "32px",
+    marginBottom: "4px",
+    objectFit: "contain",
+  },
+  catLabel: {
+    fontSize: "11px",
+    color: "#666",
+    lineHeight: "1.2",
+  },
+
+  // 6. Game Grid
+  featuredCard: {
+    margin: "0 15px 15px",
+    backgroundColor: "#E8F0FE", // Very light blue
+    borderRadius: "16px",
+    padding: "0",
+    position: "relative",
+    overflow: "hidden",
+    height: "140px",
+    display: "flex",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
+    cursor: "pointer",
+  },
+  featuredContent: {
     zIndex: 2,
-    '& svg': {
-      fontSize: "14px",
-      color: "#fff",
-    }
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
-  slotContainer: {
+  featuredTitle: {
+    fontWeight: "900",
+    fontSize: "18px",
+    color: "#0F172A",
+    marginBottom: "4px",
+    textTransform: "uppercase",
+  },
+  featuredBadge: {
+    marginTop: "8px",
+    backgroundColor: "#000",
+    color: "#fff",
+    padding: "2px 8px",
+    borderRadius: "4px",
+    fontSize: "10px",
+    width: "fit-content",
+  },
+  featuredImg: {
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    height: "100%",
+    width: "60%",
+    objectFit: "cover",
+    maskImage: "linear-gradient(to left, black 60%, transparent 100%)",
+    WebkitMaskImage: "linear-gradient(to left, black 60%, transparent 100%)",
+  },
+
+  gridList: {
+    padding: "0 15px",
+  },
+  gridCard: {
+    backgroundColor: "#fff",
+    borderRadius: "12px",
+    padding: "12px",
+    position: "relative",
+    overflow: "hidden",
+    minHeight: "100px",
+    display: "flex",
+    justifyContent: "space-between",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+    background: "linear-gradient(135deg, #ffffff 0%, #F1FBF9 100%)", // Light Green tint
+    cursor: "pointer",
+  },
+  cardLeft: {
+    display: "flex",
+    flexDirection: "column",
+    zIndex: 2,
+    maxWidth: "60%"
+  },
+  cardName: {
+    fontWeight: "bold",
+    fontSize: "13px",
+    color: "#1E293B",
+    marginBottom: "6px",
+    lineHeight: "1.2",
+  },
+  cardLogo: {
+    width: "30px",
+    height: "30px",
+    objectFit: "contain",
+    borderRadius: "50%",
+    backgroundColor: "#fff",
+    padding: "2px",
+    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  },
+  cardChar: {
+    position: "absolute",
+    right: "-5px",
+    bottom: "-5px",
+    height: "110px", // Larger breakout
+    width: "80px",
+    objectFit: "contain", // Or scale-down
+  },
+  // Wallet Section for Logged In
+  balanceCard: {
+    margin: "15px",
+    padding: "16px 20px",
+    borderRadius: "16px",
+    background: "linear-gradient(135deg, #10B9B0 0%, #0D9488 100%)", // Teal Gradient
+    color: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    boxShadow: "0 8px 20px rgba(16, 185, 176, 0.2)",
+  },
+  balanceRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  walletActions: {
+    display: "flex",
+    gap: "10px",
+    marginTop: "16px",
+  },
+  walletBtn: {
+    flex: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    color: "#fff",
+    borderRadius: "10px",
+    textTransform: "none",
+    fontSize: "13px",
+    fontWeight: "bold",
+    backdropFilter: "blur(4px)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.25)" }
+  },
+  depositBtn: {
+    flex: 1,
+    backgroundColor: "#fff",
+    color: "#0D9488", // Dark Teal
+    borderRadius: "10px",
+    textTransform: "none",
+    fontSize: "13px",
+    fontWeight: "bold",
+  },
+  // Sidebar for Slots
+  sidebarWrap: {
     display: 'flex',
-    padding: '0 10px',
     gap: '10px',
+    // Calculate height: 100vh - (Header + Nav + Search + Margin roughly 180px)
+    // Adjust as needed
+    height: 'calc(100vh - 220px)',
+    overflow: 'hidden',
+    padding: '10px 15px',
   },
-  slotSidebar: {
-    width: '70px',
-    flexShrink: 0,
+  sidebar: {
+    width: '80px',
+    minWidth: '80px',
+    overflowY: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
+    gap: '12px',
+    paddingRight: '4px',
+    paddingBottom: '50px',
+    "&::-webkit-scrollbar": { display: "none" },
   },
   sidebarItem: {
     width: '100%',
-    padding: '8px 4px',
+    height: '60px',
     borderRadius: '12px',
     backgroundColor: '#fff',
-    border: '1px solid #eef0f3',
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: '4px',
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    '&.active': {
-      backgroundColor: '#ebfcfb',
-      borderColor: '#05c0b8',
-      '& $sidebarLabel': {
-        color: '#05c0b8',
-      }
-    }
+    border: '2px solid transparent',
+    transition: 'all 0.2s',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+    padding: '4px',
   },
-  sidebarLabel: {
-    fontSize: '10px',
-    fontWeight: 'bold',
-    color: '#666',
-    textAlign: 'center',
+  sidebarItemActive: {
+    borderColor: '#10B9B0',
+    backgroundColor: 'rgba(16,185,176,0.15)',
+    transform: 'scale(1.05)',
   },
-  sidebarIcon: {
-    width: '24px',
-    height: '24px',
+  sidebarLogo: {
+    maxWidth: '90%',
+    maxHeight: '90%',
     objectFit: 'contain',
   },
-  slotMain: {
-    flexGrow: 1,
+  contentArea: {
+    flex: 1,
+    overflowY: 'auto',
+    height: '100%',
+    paddingBottom: '50px',
+    "&::-webkit-scrollbar": { display: "none" },
   },
-  searchBar: {
-    width: '100%',
-    height: '40px',
-    backgroundColor: '#f1f3f6',
-    borderRadius: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 15px',
-    marginBottom: '15px',
-    '& input': {
-      border: 'none',
-      background: 'transparent',
-      outline: 'none',
-      marginLeft: '10px',
-      fontSize: '12px',
-      width: '100%',
-      color: '#666',
-    }
-  },
-  gameGridSlot: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: '8px',
-  }
 }));
+
+// --- CATEGORY DATA (Matching the visual icons roughly) ---
+const CATEGORIES = [
+  { id: 'sports', label: 'Sports', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/4_active.png" },
+  { id: 'casino', label: 'Live Casino', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/3.png" },
+  { id: 'crash', label: 'Crash Game', icon: "https://img.bzvm68.com/GoWin11/crash_game_icon/crash.png" },
+  { id: 'slot', label: 'Slot Game', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2.png" },
+  { id: 'lottery', label: 'Lottery', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/5.png" },
+  { id: 'cards', label: 'Card Game', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/6.png" },
+];
 
 const Home = () => {
   const classes = useStyles();
   const history = useHistory();
   const [user, setUser] = useState(null);
   const [isAuth, setIsAuth] = useState(false);
-  const [notice, setNotice] = useState({ open: false, data: null });
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('sports');
+  const [games, setGames] = useState([]);
+  const [selectedCat, setSelectedCat] = useState('sports');
+  const [notice, setNotice] = useState("Welcome to Deltin7. Win Big Daily!");
+  const [launching, setLaunching] = useState(false);
+  const [providers, setProviders] = useState([]);
+  const [selectedProvider, setSelectedProvider] = useState('all');
+  const [carouselImages, setCarouselImages] = useState([]);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [siteLogoUrl, setSiteLogoUrl] = useState("");
+  const [apkDownloadUrl, setApkDownloadUrl] = useState("");
 
-  const slides = [
-    { image: "https://i.ibb.co/VWVvG2f/double-stake.png", title: "DOUBLE YOUR STAKE", subtitle: "100% Bonus, Double the Fun!" },
-    { image: CasinoBanner, title: "CASINO", subtitle: "PREMIUM EXPERIENCE" },
-    { image: BonusBanner, title: "BONUS", subtitle: "REFER & EARN MORE" },
-  ];
-
+  // Fetch Providers
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
-    return () => clearInterval(timer);
+    axios.get(`${api.url}/getProviders`)
+      .then(res => {
+        // 1. Filter active providers
+        const activeProviders = res.data.filter(p => p.status === 1);
+
+        // 2. Remove Duplicates based on brand_title (unique name)
+        const uniqueProviders = [];
+        const seenNames = new Set();
+
+        activeProviders.forEach(p => {
+          // Normalize name for comparison (lowercase, trim)
+          const nameKey = p.brand_title ? p.brand_title.toLowerCase().trim() : p.brand_id;
+
+          if (!seenNames.has(nameKey)) {
+            seenNames.add(nameKey);
+            uniqueProviders.push(p);
+          }
+        });
+
+        setProviders(uniqueProviders);
+      })
+      .catch(e => console.error("Providers fetch error:", e));
   }, []);
 
-  const categories = [
-    { id: 'sports', label: 'Sports', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/4_active.png" },
-    { id: 'casino', label: 'Live Casino', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/3.png" },
-    { id: 'crash', label: 'Crash Game', icon: "https://img.bzvm68.com/GoWin11/crash_game_icon/crash.png" },
-    { id: 'slot', label: 'Slot Game', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2.png" },
-    { id: 'lottery', label: 'Lottery', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/5.png" },
-    { id: 'cards', label: 'Card Game', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/6.png" },
-    { id: 'cockfight', label: 'Cockfight Live', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/8.png" },
-  ];
-
-  const crashGames = [
-    { title: "Aviator", image: AviatorRed },
-    { title: "AviatorX", image: AviatorBlue },
-    { title: "Aviator Extra", image: AviatorRed },
-    { title: "Chicken Dash", image: ChickenImg },
-    { title: "Frog Dash", image: ChickenImg },
-    { title: "Cricket Burst", image: CricketImg },
-    { title: "Firework", image: WingoImg },
-    { title: "Go Rush", image: MinesImg },
-    { title: "Crash Goal", image: CricketImg },
-  ];
-
-  const lotteryCards = [
-    { title: "INDIA LOTTO", subtitle: "National Jackpot", image: LuckySportsBanner, logo: "🇮🇳" },
-    { title: "SEA", subtitle: "TC GAMING", image: SABABanner, logo: "🎰" },
-    { title: "BBIN", subtitle: "THE GAMING BEAT", image: CasinoBanner, logo: "🎮" },
-  ];
-
-  const slotProviders = [
-    { id: 'search', label: 'Search', icon: '🔍' },
-    { id: 'hot', label: 'HOT', icon: '🔥' },
-    { id: 'jdb', label: 'JDB', icon: '🎰' },
-    { id: 'r88', label: 'R88', icon: '💎' },
-    { id: 'jili', label: 'JILI', icon: '🃏' },
-    { id: 'pg', label: 'PG', icon: '🔥' },
-    { id: 'maha', label: 'Maha', icon: '🐘' },
-  ];
-
-  const slotGames = [
-    { title: "Aviator", image: AviatorRed },
-    { title: "Chicken Dash", image: ChickenImg },
-    { title: "Cleopatra", image: CasinoBanner },
-    { title: "Super Ace", image: EvoImg },
-    { title: "Maya Gems", image: PtImg },
-    { title: "Piggy Bank", image: LuckySportsBanner },
-    { title: "Fortune Gems", image: SexyImg },
-    { title: "Double Ace", image: EzugiImg },
-  ];
-
-  const [selectedProvider, setSelectedProvider] = useState('hot');
-  const [selectedCardProvider, setSelectedCardProvider] = useState('jili');
-
-  const cardProviders = [
-    { id: 'jili', label: 'JILI', icon: '🎰' },
-    { id: 'r88', label: 'R88', icon: '💎' },
-    { id: 'km', label: 'KM', icon: '🃏' },
-    { id: 'jdb', label: 'JDB', icon: '🔥' },
-    { id: 'cq9', label: 'CQ9', icon: '🎮' },
-  ];
-
-  const cardGames = [
-    { title: "Teenpatti 20-20", image: SexyImg, badge: "JL" },
-    { title: "TeenPatti Joker", image: EvoImg, badge: "JL" },
-    { title: "TeenPatti", image: PtImg, badge: "JL" },
-    { title: "Pool Rummy", image: EzugiImg, badge: "JL" },
-    { title: "Rummy", image: SexyImg, badge: "JL" },
-    { title: "Andar Bahar", image: EvoImg, badge: "JL" },
-    { title: "Domino Go", image: PtImg, badge: "JL" },
-    { title: "Ultimate Texas", image: EzugiImg, badge: "JL" },
-    { title: "Video Poker", image: SexyImg, badge: "JL" },
-  ];
+  // Reset provider filter when category changes
+  useEffect(() => {
+    setSelectedProvider('all');
+  }, [selectedCat]);
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem("user");
     if (loggedInUser) {
       setIsAuth(true);
       const foundUser = JSON.parse(loggedInUser);
+      setUser(foundUser);
+
       const AuthStr = "Bearer ".concat(foundUser.token);
       axios.get(`${api.url}/getUserHome/${foundUser.result.id}/`, {
         headers: { Authorization: AuthStr },
       }).then((res) => {
-        setUser(res.data[0]);
+        if (res.data && res.data[0]) setUser(res.data[0]);
       }).catch(err => {
-        console.error(err);
+        console.error("User Fetch Error:", err);
+        // Optionally handle user fetch failure
       });
     }
-
-    axios.get(`${api.url}/getNotice`).then((res) => {
-      if (res.data.notice?.heading) {
-        setNotice({ open: true, data: res.data.notice });
-      }
-    });
   }, []);
+
+  // Fallback games if API fails or returns empty
+  const FALLBACK_GAMES = [
+    { key: "9wickets", name: "9WICKETS", category: "sports", type: "featured", logoUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GP9W.png", charImageUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/4-GP9W.png" },
+    { key: "lucky-sports", name: "Lucky Sports", category: "sports", type: "grid", logoUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPLS.png", charImageUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/4-GPLS.png" },
+    { key: "saba-sports", name: "SABA", category: "sports", type: "grid", logoUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPOW-en_US.png", charImageUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/4-GPOW.png" },
+    { key: "evo", name: "EVO", category: "casino", type: "grid", logoUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPEV.png", charImageUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/3-1.png" },
+    { key: "aviator", name: "Aviator", category: "crash", type: "grid", charImageUrl: "https://img.bzvm68.com/GoWin11/crash_game_icon/crash.png" },
+    { key: "slots-hot", name: "HOT Slots", category: "slot", type: "grid", charImageUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2.png" },
+    { key: "sv388", name: "SV388", category: "cockfight", type: "grid", logoUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GP9W.png", charImageUrl: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/4_active.png" },
+  ];
+
+  // Fetch Games
+  useEffect(() => {
+    fetchGameCatalogPublic()
+      .then((res) => {
+        if (res.data?.games && res.data.games.length > 0) {
+          // Deduplicate Games
+          const uniqueGames = [];
+          const seenIds = new Set();
+
+          res.data.games.forEach(g => {
+            const key = g.id || g._id;
+            if (key && !seenIds.has(key)) {
+              seenIds.add(key);
+              uniqueGames.push(g);
+            }
+          });
+
+          setGames(uniqueGames);
+        } else {
+          setGames([]);
+        }
+      })
+      .catch((e) => {
+        console.error("Fetch Games Error:", e);
+        setGames([]);
+      });
+  }, []);
+
+  // Fetch Carousel
+  useEffect(() => {
+    axios.get(`${api.url}/carousel`)
+      .then((res) => {
+        if (Array.isArray(res.data?.images) && res.data.images.length > 0) {
+          setCarouselImages(res.data.images);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fetch Site Settings (logo + APK)
+  useEffect(() => {
+    axios.get(`${api.url}/site-settings`)
+      .then((res) => {
+        if (res.data?.logoUrl) setSiteLogoUrl(res.data.logoUrl);
+        if (res.data?.apkDownloadUrl) setApkDownloadUrl(res.data.apkDownloadUrl);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Auto-advance carousel
+  useEffect(() => {
+    if (carouselImages.length <= 1) return;
+    const t = setInterval(() => {
+      setCarouselIndex((i) => (i + 1) % carouselImages.length);
+    }, 4000);
+    return () => clearInterval(t);
+  }, [carouselImages.length]);
+
+  // Fetch Notice
+  useEffect(() => {
+    axios.get(`${api.url}/getNotice`)
+      .then((res) => {
+        if (res.data.notice?.heading) {
+          setNotice(res.data.notice.body || res.data.notice.heading);
+        }
+      })
+      .catch((err) => {
+        console.error("Notice Fetch Error:", err);
+      });
+  }, []);
+
+  const openGame = async (game) => {
+    if (!isAuth) {
+      history.push('/login');
+      return;
+    }
+
+    // Logic: If it has a SoftAPI UID OR it's in the sports category, prioritize the iGaming launch flow.
+    // This avoids games in the sports category redirecting to local /cricket routes.
+    if (game.softapiGameUid || game.category === 'sports') {
+      setLaunching(true);
+      try {
+        const uId = user?.id || JSON.parse(localStorage.getItem("user"))?.result?.id;
+        const AuthStr = "Bearer ".concat(user?.token || JSON.parse(localStorage.getItem("user"))?.token);
+
+        // Fallback to game.key if softapiGameUid is missing (common for seeded sports games)
+        const game_uid = game.softapiGameUid || game.key;
+
+        const res = await axios.post(`${api.url}/game/launch/${uId}`, {
+          game_uid: game_uid
+        }, {
+          headers: { Authorization: AuthStr }
+        });
+
+        if (res.data.success && res.data.url) {
+          // Open in Iframe Player instead of new tab
+          history.push('/play', { url: res.data.url, title: game.name });
+        } else {
+          alert(res.data.msg || "Failed to launch game. Please ensure the Game UID is configured.");
+        }
+      } catch (err) {
+        console.error("Launch Error:", err);
+        alert("Server Error while launching game");
+      }
+      setLaunching(false);
+      return;
+    }
+
+    if (game.externalUrl) {
+      // Try opening external URL in iframe too
+      history.push('/play', { url: game.externalUrl, title: game.name });
+    }
+    else if (game.onClickPath) history.push(game.onClickPath);
+  };
+
+  const filteredGames = useMemo(() => {
+    let result = games.filter(g => g.category?.toLowerCase() === selectedCat?.toLowerCase());
+
+    if (selectedCat === 'slot' && selectedProvider !== 'all') {
+      result = result.filter(g => g.provider === selectedProvider);
+    }
+    return result;
+  }, [games, selectedCat, selectedProvider]);
+
+  // Separate Featured vs Grid games (logic: if type='featured' and it's the first one)
+  const featuredGame = filteredGames.find(g => g.type === 'featured');
+  // Show standard grid for the rest
+  const gridGames = filteredGames.filter(g => g !== featuredGame);
 
   return (
     <div className={classes.root}>
       <div className={classes.mainContainer}>
-        <div className={classes.topBar}>
-          <Box display="flex" alignItems="center">
-            <CloseIcon style={{ fontSize: 24, color: '#333', marginRight: '15px', cursor: 'pointer' }} />
-            <img src={LOGO_URL} alt="Deltin" style={{ height: '30px', marginRight: '10px' }} />
-            <Typography style={{ fontWeight: 900, fontSize: '16px', color: '#1a1a1a' }}>DELTIN7 APP</Typography>
-          </Box>
-          <Button variant="contained" className={classes.downloadBtn}>Download</Button>
+        {/* 1. App Download Banner */}
+        <div className={classes.topAppBanner}>
+          <div className={classes.appBannerLeft}>
+            <CloseIcon style={{ fontSize: "16px", color: "#999" }} />
+            <div>
+              <img src={siteLogoUrl || LOGO_URL} alt="icon" style={{ height: "16px", verticalAlign: 'middle' }} />
+              <span style={{ fontWeight: "900", fontSize: "12px", marginLeft: "4px" }}>APP</span>
+            </div>
+          </div>
+          {apkDownloadUrl ? (
+            <Button className={classes.downloadBtn} component="a" href={apkDownloadUrl} download target="_blank" rel="noopener noreferrer">
+              Download
+            </Button>
+          ) : (
+            <Button className={classes.downloadBtn} disabled>Download</Button>
+          )}
         </div>
 
-        {/* Logo / Auth Bar */}
-        <div className={classes.authBar}>
-          <img src={LOGO_URL} alt="Deltin Sport" className={classes.logo} />
-          {!isAuth ? (
-            <Box display="flex">
+        {/* 2. Header (Logo + Auth/Wallet) */}
+        <div className={classes.header}>
+          <img src={siteLogoUrl || LOGO_URL} alt="Site" className={classes.headerLogo} />
+
+          {isAuth ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ textAlign: 'right' }} onClick={() => history.push('/wallet')}>
+                <Typography variant="caption" style={{ color: '#666', fontWeight: 'bold', fontSize: '10px', display: 'block' }}>BALANCE</Typography>
+                <Typography variant="body2" style={{ color: '#0F172A', fontWeight: '900', fontSize: '14px' }}>₹{user?.balance ? Number(user.balance).toFixed(2) : '0.00'}</Typography>
+              </div>
               <Button
-                variant="contained"
-                className={classes.btnRegister}
+                className={classes.loginBtn}
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  window.location.reload();
+                }}
+                style={{ backgroundColor: '#475569', padding: '4px 12px' }}
+              >
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <div className={classes.authBtns}>
+              <Button
+                className={classes.regBtn}
+                startIcon={<span style={{ fontSize: '16px' }}>→</span>}
                 onClick={() => history.push('/login')}
               >
                 Register
               </Button>
               <Button
-                variant="contained"
-                className={classes.btnLogin}
+                className={classes.loginBtn}
                 onClick={() => history.push('/login')}
+                startIcon={<span style={{ fontSize: '14px' }}>+</span>}
               >
                 Log-in
               </Button>
-            </Box>
-          ) : (
-            <Box textAlign="right" onClick={() => history.push('/profile')} style={{ cursor: 'pointer' }}>
-              <Typography variant="overline" style={{ color: '#888', fontWeight: 'bold', display: 'block', lineHeight: 1 }}>ACCOUNT BALANCE</Typography>
-              <Typography variant="h5" style={{ color: '#05c0b8', fontWeight: '900' }}>₹{user?.balance.toFixed(2)}</Typography>
-            </Box>
+            </div>
           )}
         </div>
 
-        {/* Hero Banner Slider */}
-        <Box px={2.5}>
-          <div className={classes.heroBanner}>
-            <AnimatePresence initial={false}>
-              <motion.img
-                key={currentSlide}
-                src={slides[currentSlide].image}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className={classes.heroImage}
-              />
-            </AnimatePresence>
-            <div className={classes.dotContainer}>
-              {slides.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`${classes.dot} ${currentSlide === idx ? 'active' : ''}`}
-                  onClick={() => setCurrentSlide(idx)}
-                />
-              ))}
+        {/* 3. Balance Card (Visible only when logged in) */}
+        {isAuth && (
+          <div className={classes.balanceCard}>
+            <div className={classes.balanceRow}>
+              <div>
+                <Typography variant="caption" style={{ opacity: 0.8, fontSize: '11px', display: 'block' }}>Total Balance</Typography>
+                <Typography variant="h5" style={{ fontWeight: '900', marginTop: '4px' }}>₹ {user?.balance ? Number(user.balance).toFixed(2) : '0.00'}</Typography>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <Typography variant="caption" style={{ opacity: 0.8, fontSize: '11px', display: 'block' }}>User ID</Typography>
+                <Typography variant="body2" style={{ fontWeight: 'bold' }}>{user?.id || '----'}</Typography>
+              </div>
+            </div>
+            <div className={classes.walletActions}>
+              <Button className={classes.walletBtn} onClick={() => history.push('/wallet')}>Withdraw</Button>
+              <Button className={classes.depositBtn} onClick={() => history.push('/recharge')}>Recharge</Button>
             </div>
           </div>
-        </Box>
+        )}
 
-        {/* Announcement Section (Ticker) */}
-        <div className={classes.announcementBar}>
-          <div className={classes.newsTitle}>
-            <NoticeIcon style={{ fontSize: 20 }} />
-            <span>Announcement</span>
-          </div>
-          <div className={classes.newsCarousel}>
-            <div className={classes.newsSlider}>
-              <span className={classes.slideItem}>📢 Maintenance Announcement - SSG Live Casino will be under maintenance.</span>
-              <span className={classes.slideItem}>⚠️ Maintenance Announcement - R88 will be under maintenance from 04/02.</span>
-              <span className={classes.slideItem}>⚙️ Maintenance Announcement - CQ9 will be under maintenance from 14/03.</span>
-              <span className={classes.slideItem}>⛔ Please do not save old UPI for deposit to avoid loss of funds.</span>
-              <span className={classes.slideItem}>✨ Welcome to Deltin7 - India's most trusted gaming platform!</span>
-            </div>
+        {/* 3. Hero Banner / Carousel */}
+        <div className={classes.carouselWrap}>
+          {carouselImages.length > 0 ? (
+            <>
+              <img src={carouselImages[carouselIndex]} alt={`Banner ${carouselIndex + 1}`} className={classes.bannerImg} />
+              {carouselImages.length > 1 && (
+                <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 8 }}>
+                  {carouselImages.map((_, i) => (
+                    <span
+                      key={i}
+                      onClick={() => setCarouselIndex(i)}
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        backgroundColor: i === carouselIndex ? "#10B9B0" : "#ccc",
+                        cursor: "pointer",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <img src={Banner1} alt="Banner" className={classes.bannerImg} />
+          )}
+        </div>
+
+        {/* 4. Announcement */}
+        <div className={classes.announcement}>
+          <NoticeIcon style={{ color: "#10B9B0", fontSize: "20px" }} />
+          <div className={classes.marquee}>
+            <marquee scrollamount="4">{notice}</marquee>
           </div>
         </div>
 
-        {/* Categories Menu Section */}
-        <div className={classes.gameTypeWrapper}>
-          <div className={`${classes.typeWrapper} rightSideBlurMask`}>
-            <ul className={classes.tabScrollRoot}>
-              {categories.map((cat) => (
-                <li key={cat.id}>
-                  <div
-                    className={`${classes.typeItem} ${selectedCategory === cat.id ? 'active' : ''} ${cat.id === 'cockfight' ? classes.cockfightCard : ''}`}
-                    onClick={() => setSelectedCategory(cat.id)}
-                  >
-                    <img src={cat.icon} alt={cat.label} />
-                    <span>{cat.label}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Custom Scroll Indicator Bar */}
-        <Box px={20} mb={3} mt={-1}>
-          <div style={{ height: '3px', width: '100px', margin: '0 auto', backgroundColor: '#f0f2f5', borderRadius: '10px', position: 'relative', overflow: 'hidden' }}>
+        {/* 5. Category Tabs */}
+        <div className={classes.catScroll}>
+          {CATEGORIES.map((cat) => (
             <div
-              id="category-scroll-indicator"
-              style={{
-                height: '100%',
-                width: '30%',
-                backgroundColor: '#05c0b8',
-                borderRadius: '10px',
-                position: 'absolute',
-                left: '0%',
-                transition: 'left 0.1s ease-out',
-                boxShadow: '0 0 8px rgba(5, 192, 184, 0.4)'
-              }}
+              key={cat.id}
+              className={`${classes.catItem} ${selectedCat === cat.id ? classes.catItemActive : ''}`}
+              onClick={() => setSelectedCat(cat.id)}
+            >
+              <img src={cat.icon} alt={cat.label} className={classes.catIcon} />
+              <span className={classes.catLabel}>{cat.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* 6. Featured Game (Big Card) */}
+        {featuredGame && (
+          <div className={classes.featuredCard} onClick={() => openGame(featuredGame)}>
+            <div className={classes.featuredContent}>
+              <div className={classes.featuredTitle}>{featuredGame.name}</div>
+              <img
+                src={featuredGame.logoUrl || "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GP9W.png"}
+                style={{ height: "24px", objectFit: "contain", alignSelf: "flex-start" }}
+                alt="logo"
+              />
+            </div>
+            <img
+              src={featuredGame.charImageUrl || Banner1}
+              className={classes.featuredImg}
+              alt="char"
             />
           </div>
-        </Box>
+        )}
 
-        {/* Dynamic Content Area */}
-        <Box minHeight="500px">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedCategory}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-            >
-              {selectedCategory === 'sports' && (
-                <div className={classes.gtWrapper}>
-                  {[
-                    { id: '9W', name: '9WICKETS', type: 'featured', char: '4-GP9W.png', icon: '4-GP9W.png' },
-                    { id: 'LS', name: 'Lucky Sports', type: 'grid', char: '4-GPLS.png', icon: '4-GPLS.png' },
-                    { id: 'SABA', name: 'SABA', type: 'grid', char: '4-GPOW.png', icon: '4-GPOW-en_US.png' },
-                    { id: 'NBB', name: 'NewBB', type: 'grid', char: '4-GPNBB.png', icon: '4-GPBB-new bb.png' },
-                    { id: 'SBO', name: 'SBO', type: 'grid', char: '4-GPSB2.png', icon: '4-GPSB2.png' },
-                    { id: 'FB', name: 'FB', type: 'grid', char: '4-GPFB.png', icon: '4-GPFB-en_US.png' },
-                  ].map((game) => (
-                    <div
-                      key={game.id}
-                      className={`${classes.gameItem} ${game.type === 'featured' ? classes.featuredItem : ''}`}
-                      onClick={() => history.push('/cricket')}
-                    >
-                      <div className={classes.gameItemName}>{game.name}</div>
-                      <img
-                        src={`https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/${game.icon}`}
-                        alt={game.name}
-                        className={classes.gameItemLogo}
-                      />
-                      <img
-                        src={`https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/${game.char}`}
-                        alt="Athlete"
-                        className={classes.athleteImg}
-                      />
-                    </div>
-                  ))}
+        {/* 7. Grid Games */}
+        {/* 7. Grid Games (Sidebar for Slots) */}
+        {selectedCat === 'slot' ? (
+          <div className={classes.sidebarWrap}>
+            {/* Sidebar */}
+            <div className={classes.sidebar}>
+              <div
+                className={`${classes.sidebarItem} ${selectedProvider === 'all' ? classes.sidebarItemActive : ''}`}
+                onClick={() => setSelectedProvider('all')}
+              >
+                <span style={{ fontWeight: '900', fontSize: '10px', color: '#ef4444' }}>HOT</span>
+                <span style={{ fontSize: '16px' }}>🔥</span>
+              </div>
+              {providers.filter(p =>
+                games.some(g => g.category === selectedCat && g.provider === p.brand_id)
+              ).map(p => (
+                <div
+                  key={p.brand_id}
+                  className={`${classes.sidebarItem} ${selectedProvider === p.brand_id ? classes.sidebarItemActive : ''}`}
+                  onClick={() => setSelectedProvider(p.brand_id)}
+                >
+                  <img src={p.brand_img_cdn || p.brand_img} className={classes.sidebarLogo} alt={p.brand_title} />
                 </div>
-              )}
+              ))}
+            </div>
 
-              {selectedCategory === 'casino' && (
-                <div className={classes.casinoWrapper}>
-                  {[
-                    { id: 'EVO', name: 'EVO', char: '3-1.png', icon: '3-GPEV.png' },
-                    { id: 'PT', name: 'PT', char: '3-2.png', icon: '3-GPPT3.png' },
-                    { id: 'EZUGI', name: 'Ezugi', char: '3-3.png', icon: '3-GPEZ.png' },
-                    { id: 'SEXY', name: 'SEXY', char: '3-4.png', icon: '3-GPSX2.png' },
-                    { id: 'SSG', name: 'SSG', char: '3-5.png', icon: '3-GPSS.png' },
-                    { id: 'MG', name: 'MG', char: '3-6.png', icon: '3-GPMG2.png' },
-                    { id: 'PA', name: 'PA', char: '3-7.png', icon: '3-GPAG2.png' },
-                  ].map((game) => (
-                    <motion.div
-                      key={game.id}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={classes.casinoItem}
-                      onClick={() => history.push('/casino')}
-                    >
-                      <div
-                        className={classes.casinoChar}
-                        style={{ backgroundImage: `url(https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/${game.char})` }}
-                      />
-                      <div className={classes.casinoContent}>
-                        <div className={classes.casinoName}>{game.name}</div>
+            {/* Content */}
+            <div className={classes.contentArea}>
+              <Grid container spacing={2}>
+                {gridGames.map((game, idx) => {
+                  const charImg = game.charImageUrl || game.backgroundUrl || "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/4-GPLS.png";
+                  const logoImg = game.logoUrl || WingoIcon;
+
+                  // Force thumbnail layout for slots
+                  return (
+                    <Grid item xs={4} key={game._id || idx}>
+                      <div className={classes.gridCard} onClick={() => openGame(game)} style={{ padding: 0, height: '130px', minHeight: 'unset', overflow: 'hidden' }}>
                         <img
-                          src={`https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/${game.icon}`}
+                          src={charImg}
+                          style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block', borderRadius: '12px' }}
                           alt={game.name}
-                          className={classes.casinoLogo}
                         />
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
+                    </Grid>
+                  )
+                })}
+              </Grid>
+            </div>
+          </div>
+        ) : (
+          /* Standard Grid for other categories */
+          <Grid container spacing={2} className={classes.gridList}>
+            {gridGames.map((game, idx) => {
+              const charImg = game.charImageUrl || game.backgroundUrl || "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/4-GPLS.png";
+              const logoImg = game.logoUrl || WingoIcon;
 
-              {selectedCategory === 'crash' && (
-                <div className={classes.gameGrid}>
-                  {crashGames.map((game, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.05 }}
-                      className={classes.gameCard}
-                      onClick={() => history.push('/aviator')}
-                    >
-                      <div className={classes.favoriteIcon}>
-                        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
-                      </div>
-                      <div className={classes.gameImageWrapper}>
-                        <img src={game.image} className={classes.gameImage} alt={game.title} />
-                      </div>
-                      <Typography className={classes.gameLabel}>{game.title}</Typography>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
+              const isCardLayout = (selectedCat === 'sports' || selectedCat === 'casino');
+              const gridSize = isCardLayout ? 6 : 3;
 
-              {selectedCategory === 'slot' && (
-                <div className={classes.slotContainer}>
-                  <div className={classes.slotSidebar}>
-                    {slotProviders.map((p) => (
-                      <div
-                        key={p.id}
-                        className={`${classes.sidebarItem} ${selectedProvider === p.id ? 'active' : ''}`}
-                        onClick={() => setSelectedProvider(p.id)}
-                      >
-                        <Typography className={classes.sidebarLabel}>{p.label}</Typography>
-                        <span style={{ fontSize: '18px' }}>{p.icon}</span>
+              return (
+                <Grid item xs={gridSize} key={game._id || idx}>
+                  {isCardLayout ? (
+                    <div className={classes.gridCard} onClick={() => openGame(game)}>
+                      <div className={classes.cardLeft}>
+                        <div className={classes.cardName}>{game.name}</div>
+                        <img src={logoImg} className={classes.cardLogo} alt="logo" />
                       </div>
-                    ))}
-                  </div>
-                  <div className={classes.slotMain}>
-                    <div className={classes.searchBar}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                      <input placeholder="Search games..." type="text" />
+                      <img src={charImg} className={classes.cardChar} alt="char" />
                     </div>
-                    <div className={classes.gameGridSlot}>
-                      {slotGames.map((game, index) => (
-                        <div key={index} className={classes.gameCard} onClick={() => history.push('/casino')}>
-                          <div className={classes.favoriteIcon}><svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg></div>
-                          <div className={classes.gameImageWrapper}><img src={game.image} className={classes.gameImage} alt={game.title} /></div>
-                          <Typography className={classes.gameLabel}>{game.title}</Typography>
-                        </div>
-                      ))}
+                  ) : (
+                    <div className={classes.gridCard} onClick={() => openGame(game)} style={{ padding: 0, height: '130px', minHeight: 'unset', overflow: 'hidden' }}>
+                      <img
+                        src={charImg}
+                        style={{ width: '100%', height: '100%', objectFit: 'fill', display: 'block', borderRadius: '12px' }}
+                        alt={game.name}
+                      />
                     </div>
-                  </div>
-                </div>
-              )}
+                  )}
+                </Grid>
+              )
+            })}
+          </Grid>
+        )}
 
-              {selectedCategory === 'cards' && (
-                <div className={classes.slotContainer}>
-                  <div className={classes.slotSidebar}>
-                    {cardProviders.map((p) => (
-                      <div
-                        key={p.id}
-                        className={`${classes.sidebarItem} ${selectedCardProvider === p.id ? 'active' : ''}`}
-                        onClick={() => setSelectedCardProvider(p.id)}
-                      >
-                        <Typography className={classes.sidebarLabel}>{p.label}</Typography>
-                        <span style={{ fontSize: '18px' }}>{p.icon}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className={classes.slotMain}>
-                    <div className={classes.gameGridSlot}>
-                      {cardGames.map((game, index) => (
-                        <div key={index} className={classes.gameCard} onClick={() => history.push('/casino')}>
-                          <div style={{ position: 'absolute', top: 5, right: 5, backgroundColor: 'rgba(252, 194, 94, 0.9)', padding: '2px 4px', borderRadius: '4px', zIndex: 2 }}>
-                            <Typography style={{ fontSize: '8px', fontWeight: 'bold', color: '#000' }}>{game.badge}</Typography>
-                          </div>
-                          <div className={classes.gameImageWrapper}><img src={game.image} className={classes.gameImage} alt={game.title} /></div>
-                          <Typography className={classes.gameLabel}>{game.title}</Typography>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {selectedCategory === 'lottery' && (
-                <div className={classes.providerList}>
-                  {lotteryCards.map((lottery, index) => (
-                    <motion.div
-                      key={index}
-                      className={classes.providerCard}
-                      onClick={() => history.push('/wingo')}
-                      style={{
-                        background: index === 0 ? 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)' : 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
-                        height: '160px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '0 25px'
-                      }}
-                    >
-                      <Box style={{ flex: 1, zIndex: 1 }}>
-                        <Typography variant="h6" style={{ fontWeight: 900, color: '#1a237e' }}>{lottery.title}</Typography>
-                        <Typography variant="body2" style={{ fontWeight: 'bold', color: '#5c6bc0' }}>{lottery.subtitle}</Typography>
-                        <div style={{ marginTop: 10, width: '50px', height: '50px', backgroundColor: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>{lottery.logo}</div>
-                      </Box>
-                      <img src={lottery.image} alt={lottery.title} style={{ width: '160px', height: 'auto', position: 'absolute', right: '-10px', bottom: '0', opacity: 0.8 }} />
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-              {selectedCategory === 'cockfight' && (
-                <div className={classes.providerList}>
-                  <motion.div
-                    className={classes.providerCard}
-                    onClick={() => history.push('/casino')}
-                    style={{
-                      background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
-                      height: '180px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '0 25px',
-                      position: 'relative',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <Box style={{ zIndex: 1 }}>
-                      <Typography variant="h5" style={{ fontWeight: 900, color: '#1a237e' }}>SV388</Typography>
-                      <div style={{ marginTop: '10px', width: '50px', height: '50px', backgroundColor: '#fff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Typography style={{ fontWeight: 900, color: '#fbc02d', fontSize: '20px' }}>SV</Typography>
-                      </div>
-                    </Box>
-                    <img src={SABABanner} alt="SV388" style={{ position: 'absolute', right: '-20px', bottom: '0', width: '220px', height: 'auto', opacity: 0.9 }} />
-                  </motion.div>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </Box>
-
-        {/* Notice Dialog */}
-        <Dialog open={notice.open} onClose={() => setNotice({ ...notice, open: false })} PaperProps={{ style: { borderRadius: '20px' } }}>
-          <Box p={4}>
-            <Typography variant="h5" style={{ fontWeight: 900, marginBottom: '16px', color: '#333' }}>{notice.data?.heading}</Typography>
-            <Typography variant="body1" style={{ color: '#666', lineHeight: 1.6 }}>{notice.data?.body}</Typography>
-            <Box mt={4} textAlign="center">
-              <Button fullWidth variant="contained" style={{ backgroundColor: '#05c0b8', color: '#fff', borderRadius: '12px', padding: '12px', fontWeight: 'bold' }} onClick={() => setNotice({ ...notice, open: false })}>
-                Great, Let's Play!
-              </Button>
-            </Box>
+        {/* Fallback empty state */}
+        {filteredGames.length === 0 && (
+          <Box p={3} textAlign="center">
+            <Typography variant="body2" color="textSecondary">No games found in this category.</Typography>
           </Box>
-        </Dialog>
+        )}
       </div>
+
+      <Dialog open={launching} PaperProps={{ style: { backgroundColor: 'transparent', boxShadow: 'none' } }}>
+        <Container align="center" style={{ backgroundColor: 'black', opacity: '0.8', height: '120px', width: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+          <CircularProgress style={{ color: '#10B9B0' }} />
+          <Typography style={{ marginTop: '15px', color: "white", fontWeight: 'bold', fontSize: '14px' }}>Launching...</Typography>
+        </Container>
+      </Dialog>
     </div>
   );
 };

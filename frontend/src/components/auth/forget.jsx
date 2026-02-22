@@ -1,252 +1,397 @@
-import React,{useState} from 'react';
-import {Typography, Grid,FormControl,InputLabel,CircularProgress,FilledInput, Button, Container, Dialog} from '@material-ui/core/';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  CircularProgress,
+  Button,
+  Dialog,
+  IconButton,
+  Box,
+  TextField,
+  InputAdornment
+} from "@material-ui/core";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
-import SmsIcon from '@material-ui/icons/Sms';
-import axios from 'axios';
+import SmsIcon from "@material-ui/icons/Sms";
+import LockIcon from "@material-ui/icons/Lock";
+import PhoneIcon from "@material-ui/icons/Phone";
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 import * as api from "../../api/auth";
 
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    minHeight: "100vh",
+    backgroundColor: "#F8FAFC",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    fontFamily: "'Outfit', sans-serif",
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  decoration: {
+    position: 'absolute',
+    top: '-15%',
+    right: '-10%',
+    width: '300px',
+    height: '300px',
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg, rgba(16, 185, 177, 0.1) 0%, rgba(16, 185, 177, 0.05) 100%)',
+    zIndex: 0,
+  },
+  decoration2: {
+    position: 'absolute',
+    bottom: '-10%',
+    left: '-15%',
+    width: '250px',
+    height: '250px',
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg, rgba(16, 185, 177, 0.05) 0%, rgba(16, 185, 177, 0.1) 100%)',
+    zIndex: 0,
+  },
+  header: {
+    width: '100%',
+    maxWidth: '500px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px",
+    zIndex: 10,
+  },
+  backBtn: {
+    backgroundColor: "#fff",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.02)",
+    "&:hover": { backgroundColor: "#F1F5F9" },
+  },
+  card: {
+    width: "100%",
+    maxWidth: "500px",
+    flex: 1,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: "40px",
+    borderTopRightRadius: "40px",
+    padding: "40px 30px",
+    boxShadow: "0 -10px 40px rgba(0,0,0,0.04)",
+    display: "flex",
+    flexDirection: "column",
+    zIndex: 5,
+    [theme.breakpoints.up('sm')]: {
+      borderRadius: '40px',
+      margin: '20px 0',
+      flex: 'none',
+    }
+  },
+  titleSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: "40px",
+    zIndex: 10
+  },
+  title: {
+    fontSize: "2rem",
+    fontWeight: 800,
+    color: "#0F172A",
+    marginTop: "15px",
+    textAlign: "center",
+  },
+  subtitle: {
+    color: "#64748B",
+    fontSize: "0.95rem",
+    marginTop: "8px",
+    textAlign: "center",
+    maxWidth: '280px'
+  },
+  inputField: {
+    marginBottom: "20px",
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "18px",
+      backgroundColor: "#F8FAFC",
+      border: "1px solid #F1F5F9",
+      transition: "all 0.3s ease",
+      "&.Mui-focused": {
+        borderColor: "#10B9B1",
+        backgroundColor: "#fff",
+        boxShadow: "0 0 0 4px rgba(16, 185, 177, 0.08)",
+      },
+      "& fieldset": { border: "none" },
+    },
+    "& .MuiInputBase-input": {
+      padding: "18px 14px",
+      fontWeight: 500,
+    }
+  },
+  iconHighlight: {
+    backgroundColor: "rgba(16, 185, 177, 0.1)",
+    borderRadius: "12px",
+    padding: "8px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: "10px",
+  },
+  actionBtn: {
+    marginTop: "30px",
+    width: "100%",
+    background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)",
+    color: "#fff",
+    padding: "18px",
+    borderRadius: "20px",
+    fontWeight: 800,
+    fontSize: "1.1rem",
+    textTransform: "none",
+    boxShadow: "0 15px 30px rgba(15, 23, 42, 0.2)",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      background: "#10B9B1",
+      transform: "translateY(-2px)",
+      boxShadow: "0 20px 40px rgba(16, 185, 177, 0.3)",
+    },
+    "&:disabled": {
+      background: "#CBD5E1",
+      boxShadow: "none",
+    }
+  },
+  otpButton: {
+    color: "#10B9B1",
+    fontWeight: 700,
+    textTransform: "none",
+    backgroundColor: "rgba(16, 185, 177, 0.08)",
+    borderRadius: "12px",
+    padding: "8px 15px",
+    fontSize: "0.85rem",
+    "&:disabled": { color: "#94A3B8" },
+  },
+}));
 
 const Forget = () => {
-    const URL =  api.url;
-    const history = useHistory();
-    const [loader, setLoader] = useState(false);
-    const [validated, setValidated] = useState(false);
-    const [openDialog, setDialog] = useState({open: false, body: ''});
-    const [counter, setCounter] = useState(90);
-    const initialState = { phone: 0, password: "", code: '', confirm: ""};
-    const [formData, setFormData] = useState(initialState);
-    const [otp, setOtp] = useState();
-    const [canRun, setRun] = useState(false);
-    if(canRun) counter > 0 &&  setTimeout(() => setCounter(counter - 1), 1000) ;
-//     const SITE_KEY = "6Le-ej8mAAAAAL_Fl83Pp_iZ5ZLKpyQ8KWuTTF83";
+  const URL = api.url;
+  const history = useHistory();
+  const classes = useStyles();
+  const [loader, setLoader] = useState(false);
+  const [validated, setValidated] = useState(false);
+  const [openDialog, setDialog] = useState({ open: false, body: "" });
+  const [counter, setCounter] = useState(90);
+  const [canRun, setRun] = useState(false);
+  const [formData, setFormData] = useState({ phone: "", password: "", code: "", confirm: "" });
 
- 
-// useEffect(() => {
-//   const loadScriptByURL = (id, url, callback) => {
-//     const isScriptExist = document.getElementById(id);
- 
-//     if (!isScriptExist) {
-//       var script = document.createElement("script");
-//       script.type = "text/javascript";
-//       script.src = url;
-//       script.id = id;
-//       script.onload = function () {
-//         if (callback) callback();
-//       };
-//       document.body.appendChild(script);
-//     }
- 
-//     if (isScriptExist && callback) callback();
-//   }
- 
-//   // load the script by passing the URL
-//   loadScriptByURL("recaptcha-key", `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`, function () {
-    
-//   });
-// }, []);
-    const dialogClose = () => {
-        setDialog({ ...openDialog, open: false});
-      };
-      const sendOTP = async(e) => {
-        if(formData.phone.length !== 10){
-          setDialog({ ...openDialog, open: true, body: 'Please Enter Valid Number !'})
-        }else{
-        setCounter(90);
-        setRun(true); 
-
-        const data = {
-          
-          phone: formData.phone,
-        };
-        await axios.post(`${URL}/sendOTPFor`, data);
-
+  useEffect(() => {
+    let timer;
+    if (canRun && counter > 0) {
+      timer = setTimeout(() => setCounter(counter - 1), 1000);
+    } else if (counter === 0) {
+      setRun(false);
     }
+    return () => clearTimeout(timer);
+  }, [canRun, counter]);
+
+  const sendOTP = async () => {
+    if (formData.phone.length !== 10) {
+      setDialog({ open: true, body: "Please enter a valid 10-digit number!" });
+      return;
     }
-    const handleSubmit = async(e) => {
-        e.preventDefault();
-        setLoader(true);
-        try {
-            const { data } = await api.reset(formData);
-            setLoader(false);
+    try {
+      setCounter(90);
+      setRun(true);
+      await axios.post(`${URL}/sendOTPFor`, { phone: formData.phone });
+    } catch (err) {
+      setDialog({ open: true, body: "Error sending OTP. Try again." });
+    }
+  };
 
-            alert('Password Changed Successfully');
-            history.push("/login");
-        } catch (error) {
-            setLoader(false);
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    if (!formData.code || !formData.phone) {
+      setDialog({ open: true, body: "Please fill all fields!" });
+      return;
+    }
+    setLoader(true);
+    // Mimic verification or call API if exists
+    setTimeout(() => {
+      setValidated(true);
+      setLoader(false);
+    }, 1000);
+  };
 
-            setDialog({ ...openDialog, open: true, body: error.response.data.error})
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirm) {
+      setDialog({ open: true, body: "Passwords do not match!" });
+      return;
+    }
+    setLoader(true);
+    try {
+      await api.reset(formData);
+      setLoader(false);
+      setDialog({ open: true, body: "Password Changed Successfully!" });
+      setTimeout(() => history.push("/login"), 2000);
+    } catch (error) {
+      setLoader(false);
+      setDialog({ open: true, body: error.response?.data?.error || "Update failed!" });
+    }
+  };
 
-        }
-        setLoader(false);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    } 
-      const handleVerify = async (e) => {
-        e.preventDefault();
-        setLoader(true);
-        
-        try {
-          setValidated(true);
-        } catch (error) {
-         setDialog({ ...openDialog, open: true, body: error.response.data.error})
-        }
-        setLoader(false);
-      };
-    const handleChange = (e)=>{
-        setFormData({ ...formData, [e.target.name]: e.target.value});
-        console.log(formData)
-    } 
-    
-    return (
-        <div>
-            <Dialog
-          open={loader}
-          PaperProps={{
-            style: {
-              backgroundColor: 'transparent',
-              boxShadow: 'none',
-            },
-          }}
-        >
-          <Container  align="center" style={{backgroundColor: 'black', opacity: '0.6',height: '100px',paddingTop: "10px"}}>
-          <CircularProgress style={{color: 'white',}} />
-           <Typography style={{paddingTop: '10px', color: "white" }}>Please Wait!</Typography>
-          </Container>
-          
-          
-        </Dialog>
-            <Dialog
-                    open={openDialog.open}
-                    onClose={dialogClose}
-                    PaperProps={{
-                    style: {
-                        backgroundColor: 'transparent',
-                        boxShadow: 'none',
-                    },
-                    }}
-                
-                    
-                >
-                    <Container style={{backgroundColor: 'black', opacity: '0.6',height: '50px'}}>
-                <Typography style={{paddingTop: '10px', color: "white" }}>{openDialog.body}</Typography>
-                </Container>
-                
-                
-              </Dialog>
-        <Grid container direction="row" justify="" alignItems="center" style={{paddingLeft: '20px',paddingTop: '15px',paddingBottom: '15px',paddingRight: '20px', backgroundColor: 'white'}}>
-                <Grid item xs={4}>  
-                <Link to="../login">
-                <ArrowBackIosIcon style={{fontSize:'20px'}} />
-                </Link>                  
-                 </Grid>
-                 <Grid item xs={4}>                    
-                <Typography align="center" >Forget Password</Typography>
-                 </Grid>
-        </Grid>
-        { !validated ? 
-        <div>
-              <Grid container direction="row" alignItems="center" style={{padding:'20px'}}>
-                  <Grid item xs={2}>
-                     <Typography>+91</Typography>
-                  </Grid>
-                  <Grid item xs={10}>
-                    <FormControl fullWidth
-                      
-                      variant="filled"
-                       
+  return (
+    <div className={classes.root}>
+      <div className={classes.decoration} />
+      <div className={classes.decoration2} />
+
+      <div className={classes.header}>
+        <IconButton onClick={() => history.push("/login")} className={classes.backBtn}>
+          <ArrowBackIcon style={{ color: "#0F172A", fontSize: "20px" }} />
+        </IconButton>
+        <IconButton className={classes.backBtn}>
+          <HelpOutlineIcon style={{ color: "#64748B", fontSize: "20px" }} />
+        </IconButton>
+      </div>
+
+      <div className={classes.titleSection}>
+        <Typography className={classes.title}>Reset Password</Typography>
+      </div>
+
+      <div className={classes.card}>
+        {!validated ? (
+          <form onSubmit={handleVerify}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Mobile Number"
+              name="phone"
+              type="number"
+              className={classes.inputField}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <div className={classes.iconHighlight}>
+                      <PhoneIcon style={{ color: "#10B9B1", fontSize: "18px" }} />
+                    </div>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Verification Code"
+              name="code"
+              type="number"
+              className={classes.inputField}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <div className={classes.iconHighlight}>
+                      <SmsIcon style={{ color: "#10B9B1", fontSize: "18px" }} />
+                    </div>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Button
+                      className={classes.otpButton}
+                      disabled={canRun}
+                      onClick={sendOTP}
                     >
-                      <InputLabel  >
-                      Mobile number/Account
-                      </InputLabel>
-                      <FilledInput
-                       
-                        fullWidth='true'
-                        name="phone"
-                        type="number"
-                        id="filled"
-                        onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-              <Grid container direction="row" alignItems="center" style={{padding:'20px'}}>
-                    <Grid item xs={2}>
-                      <SmsIcon  />
-                    </Grid>
-                    <Grid item xs={8}>
-                    <FormControl
-                      fullWidth
-                      variant="filled"
-                    >
-                      <InputLabel htmlFor="filled-adornment-password">
-                        Verification Code
-                      </InputLabel>
-                      <FilledInput
-                        type="number"
-                        name="code"
-                        id="filled-adornment-password"
-                        min={6}
-                        max={6}
-                        onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
+                      {canRun ? `${counter}s` : "Get OTP"}
+                    </Button>
+                  </InputAdornment>
+                )
+              }}
+            />
 
-                        
-                      />
-                    </FormControl>
-                    </Grid>
-                    <Grid item xs={2}>
-                    <Container style={{backgroundColor: otp == null ? '#00b8a9' : 'green', height: '30px', width: '55px'}}>
-                      <Button onClick={counter === 0 ? sendOTP : otp != null ? null : sendOTP} style={{paddingTop: '1px',marginLeft: '-22px', color: 'white', textTransform: 'none'}}>{canRun ? counter === 0 ? 'Resend': counter : 'OTP'}</Button>
-                    </Container>
-                    </Grid>
-                  </Grid>
-                  <Container style={{backgroundColor: '#00b8a9', height: '50px', width: '220px', marginTop: '30px'}} onClick={handleVerify}>
-                <Typography  align="center" ><Button  style={{paddingTop: '12px',color: 'white', textTransform: 'none'}}>Verify</Button></Typography>
-              </Container>
-        </div>
-        :
-        <div>
-            <Typography align="center"  display="block" style={{paddingTop: '30px', paddingBottom: '30px',fontSize:'20px'}}>Reset Password</Typography>
-            <form  noValidate autoComplete="off" align="center" style={{padding: '15px'}}>
-            <FormControl fullWidth variant="outlined" >
-                      <InputLabel  >
-                      New Password
-                      </InputLabel>
-                      <FilledInput
-                        fullWidth='true'
-                        name="password"
-                        id="filled"
-                       onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
-                      />
-                    </FormControl> 
-                    <FormControl fullWidth variant="outlined" style={{marginTop: '20px'}}>
-                      <InputLabel  >
-                      Confirm New Password
-                      </InputLabel>
-                      <FilledInput
-                        fullWidth='true'
-                        name="new"
-                        id="filled"
-                       onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
-                      />
-                    </FormControl>            
-                     </form>
-            <Container align="center">
-            <Button variant="contained" onClick={handleSubmit} color="primary" style={{marginTop: '30px'}}> 
-            Modify Password
+            <Button
+              type="submit"
+              className={classes.actionBtn}
+              disabled={loader}
+            >
+              {loader ? <CircularProgress size={24} style={{ color: "#fff" }} /> : "Verify Identity"}
             </Button>
-            </Container>
-            </div>
-           }
-            
-        </div>
-        
-    )
-}
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="New Password"
+              name="password"
+              type="password"
+              className={classes.inputField}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <div className={classes.iconHighlight}>
+                      <LockIcon style={{ color: "#10B9B1", fontSize: "18px" }} />
+                    </div>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Confirm Password"
+              name="confirm"
+              type="password"
+              className={classes.inputField}
+              onChange={handleChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <div className={classes.iconHighlight}>
+                      <LockIcon style={{ color: "#10B9B1", fontSize: "18px" }} />
+                    </div>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            <Button
+              type="submit"
+              className={classes.actionBtn}
+              disabled={loader}
+            >
+              {loader ? <CircularProgress size={24} style={{ color: "#fff" }} /> : "Change Password"}
+            </Button>
+          </form>
+        )}
+      </div>
+
+      <Dialog
+        open={openDialog.open}
+        onClose={() => setDialog({ ...openDialog, open: false })}
+        PaperProps={{ style: { borderRadius: '25px', padding: '10px' } }}
+      >
+        <Box p={3} textAlign="center">
+          <Typography variant="h6" style={{ fontWeight: 800, color: "#10B9B1", marginBottom: "12px" }}>Notification</Typography>
+          <Typography style={{ color: "#475569", lineHeight: 1.6 }}>{openDialog.body}</Typography>
+          <Button
+            fullWidth
+            onClick={() => setDialog({ ...openDialog, open: false })}
+            style={{
+              marginTop: "25px",
+              backgroundColor: "#0F172A",
+              color: "#fff",
+              borderRadius: "15px",
+              padding: "12px",
+              fontWeight: 800,
+              textTransform: "none"
+            }}
+          >
+            Got it
+          </Button>
+        </Box>
+      </Dialog>
+    </div>
+  );
+};
 
 export default Forget;

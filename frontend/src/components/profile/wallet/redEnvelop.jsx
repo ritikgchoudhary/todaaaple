@@ -1,112 +1,172 @@
-import React, {useState, useEffect}from 'react';
-import {Typography, Grid,FormControl,InputLabel,FilledInput,Container,Button,MenuItem,Select,Dialog,CircularProgress} from '@material-ui/core/';
+import React, { useState, useEffect } from 'react';
+import {
+  Typography,
+  Grid,
+  FormControl,
+  InputLabel,
+  FilledInput,
+  Container,
+  Button,
+  MenuItem,
+  Select,
+  Dialog,
+  CircularProgress,
+  Paper
+} from '@material-ui/core/';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as api from "../../../api/auth";
 import axios from 'axios';
-import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  page: {
+    minHeight: "100vh",
+    backgroundColor: "#F1F5F9",
+    display: "flex",
+    justifyContent: "center",
+    paddingBottom: "calc(60px + env(safe-area-inset-bottom))",
+  },
+  frame: {
+    width: "100%",
+    maxWidth: 500,
+    minHeight: "100vh",
+    backgroundColor: "#fff",
+    position: 'relative',
+    paddingBottom: '20px'
+  },
+  header: {
+    backgroundColor: '#05c0b8',
+    padding: '15px 20px',
+    display: 'flex',
+    alignItems: 'center',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
+  },
+  headerTitle: {
+    color: 'white',
+    flexGrow: 1,
+    textAlign: 'center',
+    fontWeight: 600,
+    marginRight: '20px' // offset for back button
+  },
+  content: {
+    padding: '20px',
+  },
+  inputGroup: {
+    marginBottom: '20px',
+  },
+  actionBtn: {
+    width: "100%",
+    height: "50px",
+    borderRadius: "25px",
+    backgroundColor: "#05c0b8",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold",
+    textTransform: "none",
+    marginTop: "20px",
+    "&:hover": {
+      backgroundColor: "#04a09a",
+    },
+  },
+  historyBtn: {
+    width: "100%",
+    height: "50px",
+    borderRadius: "25px",
+    backgroundColor: "#757575",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold",
+    textTransform: "none",
+    marginTop: "15px",
+    "&:hover": {
+      backgroundColor: "#616161",
+    },
+  },
+  otpContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  otpBtn: {
+    backgroundColor: '#05c0b8',
+    color: 'white',
+    marginLeft: '10px',
+    height: '56px',
+    minWidth: '80px',
+    "&:hover": {
+      backgroundColor: '#04a09a',
+    }
+  }
+}));
 
 const MyRedEnvelop = () => {
-    const dispatch = useDispatch();
-    const [isAuth, setAuth] = useState(false);
-    const history = useHistory();
-    const URL =  api.url;
+  const classes = useStyles();
+  const dispatch = useDispatch();
+  const [isAuth, setAuth] = useState(false);
+  const history = useHistory();
+  const URL = api.url;
 
+  const [user, setUser] = useState([{ balance: 0.0 }]);
+  const [formData, setFormData] = useState({ amount: 0, type: 'Fixed Amount', qty: 0, auth: '' });
+  const [otp, setOtp] = useState();
+  const [canRun, setRun] = useState(false);
+  const [counter, setCounter] = useState(90);
+  const [openDialog, setDialog] = React.useState({ open: false, body: '' });
+  const [loader, setLoader] = React.useState(false);
 
-    const [user, setUser] = useState([{balance: 0.0}]);
-    const [formData, setFormData] = useState({amount: 0,type: 'Fixed Amount',qty: 0,auth:''});
-    const [otp, setOtp] = useState();
-    const [canRun, setRun] = useState(false);
-    const [counter, setCounter] = useState(90);
-    const [openDialog, setDialog] = React.useState({open: false, body: ''});
-    const [loader, setLoader] = React.useState(false);
-    //const SITE_KEY = "6Le-ej8mAAAAAL_Fl83Pp_iZ5ZLKpyQ8KWuTTF83";
-
- 
-// useEffect(() => {
-//   const loadScriptByURL = (id, url, callback) => {
-//     const isScriptExist = document.getElementById(id);
- 
-//     if (!isScriptExist) {
-//       var script = document.createElement("script");
-//       script.type = "text/javascript";
-//       script.src = url;
-//       script.id = id;
-//       script.onload = function () {
-//         if (callback) callback();
-//       };
-//       document.body.appendChild(script);
-//     }
- 
-//     if (isScriptExist && callback) callback();
-//   }
- 
-//   // load the script by passing the URL
-//   loadScriptByURL("recaptcha-key", `https://www.google.com/recaptcha/api.js?render=${SITE_KEY}`, function () {
-    
-//   });
-// }, []);
-
-    const dialogClose = () => {
-      setDialog({ ...openDialog, open: false});
-    };
-    
-    if(canRun) counter > 0 &&  setTimeout(() => setCounter(counter - 1), 1000) ;
-    const sendOTP = async(e) => {
-      setCounter(90);
-      setRun(true); 
-      const data = {
-        
-        phone: user[0].phone,
-      };
-      await axios.post(`${URL}/sendOTPEnv`, data);
-      
-      // window.grecaptcha.ready(() => {
-      //   window.grecaptcha.execute(SITE_KEY, { action: 'submit' }).then(async token => {
-          
-      //   });
-      // });
-      
-    
-    }
-   
+  const dialogClose = () => {
+    setDialog({ ...openDialog, open: false });
+  };
 
   useEffect(() => {
-
-    
-    
-    const loggedInUser =  localStorage.getItem("user");
-    if (loggedInUser) {
-       
-    const foundUser = JSON.parse(loggedInUser);
-    setAuth(foundUser);
-    const AuthStr = 'Bearer '.concat(foundUser.token);
-    axios.get(`${URL}/getUser/${foundUser.result.id}`, { headers: { Authorization: AuthStr } })
-      .then(response => {
-          setUser(response.data);
-          if(response.data[0].block){
-          }
-    })
-      .catch((error) => {
-        console.log(error);
-        history.push('/login');
-    });
-     
-    }else{
-      history.push('/login');
-
+    if (canRun && counter > 0) {
+      const timer = setTimeout(() => setCounter(counter - 1), 1000);
+      return () => clearTimeout(timer);
     }
-    
-  }, []); 
+  }, [canRun, counter]);
+
+  const sendOTP = async (e) => {
+    setCounter(90);
+    setRun(true);
+    const data = {
+      phone: user[0].phone,
+    };
+    try {
+      await axios.post(`${URL}/sendOTPEnv`, data);
+    } catch (e) {
+      console.log("Error sending OTP");
+    }
+  };
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("user");
+    if (loggedInUser) {
+      const foundUser = JSON.parse(loggedInUser);
+      setAuth(foundUser);
+      const AuthStr = 'Bearer '.concat(foundUser.token);
+      axios.get(`${URL}/getUser/${foundUser.result.id}`, { headers: { Authorization: AuthStr } })
+        .then(response => {
+          setUser(response.data);
+          if (response.data[0].block) {
+            // Handle block
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          history.push('/login');
+        });
+    } else {
+      history.push('/login');
+    }
+  }, []);
 
   const handleChange = (e) => {
     const AuthStr = 'Bearer '.concat(isAuth.token);
-    
- 
-      
-    setFormData({ ...formData, [e.target.name]: e.target.value, userId: isAuth.result.id,auth: AuthStr});
-    
+    setFormData({ ...formData, [e.target.name]: e.target.value, userId: isAuth.result.id, auth: AuthStr });
   };
 
   const handleSubmit = async (e) => {
@@ -114,255 +174,142 @@ const MyRedEnvelop = () => {
     setLoader(true);
 
     try {
-                    
       const { data } = await api.createEnvelop(formData);
       dispatch({ type: "createEnvelop", data: data });
       setLoader(false);
-      //setDialog({...openDialog, open: true, body: 'Red Envelope Created Successfuly'});
       history.push("/redEnvelopeHistory");
-  
-  } catch (error) {
-    
+    } catch (error) {
       setLoader(false);
-      setDialog({...openDialog, open: true, body: error.response.data.error});
-
-  }
-    
-
-   
-    
-    setLoader(false);
-
-    
+      setDialog({ ...openDialog, open: true, body: error.response?.data?.error || "Error creating envelope" });
+    }
   };
-    
-    return (
-        <div>
-           <Dialog
-                open={loader}
-                PaperProps={{
-                  style: {
-                    backgroundColor: 'transparent',
-                    boxShadow: 'none',
-                  },
-                }}
-              >
-                <Container  align="center" style={{backgroundColor: 'black', opacity: '0.6',height: '100px',paddingTop: "10px"}}>
-                <CircularProgress style={{color: 'white',}} />
-                <Typography style={{paddingTop: '10px', color: "white" }}>Please Wait!</Typography>
-                </Container>
-                
-                
-              </Dialog>
-          <Dialog
-                    open={openDialog.open}
-                    onClose={dialogClose}
-                    PaperProps={{
-                    style: {
-                        // backgroundColor: 'transparent',
-                        boxShadow: 'none',
-                    },
-                    }}
-                
-                    
-                >
-                    <Container style={{
-                      // backgroundColor: 'black', opacity: '0.6', height: '50px'
-                      }}>
-                <Typography style={{padding: '10px', color: "black" }}>{openDialog.body}</Typography>
-                </Container>
-                
-                
-              </Dialog>
-            
-            <Grid container direction="row" justify="" alignItems="center"style={{paddingLeft: '20px',paddingTop: '15px',paddingBottom: '15px',paddingRight: '20px', backgroundColor: 'white'}}>
-                <Grid item xs={4}>  
-                <Link to="../profile">
-                <ArrowBackIosIcon style={{fontSize:'20px', color:'black'}} />
-                </Link>
-                
-                                
-                 </Grid>
-                 <Grid item xs={4}>                    
-                <Typography align="center" style={{color: 'black'}}>Red Envelope</Typography>
-                 </Grid>
-            </Grid>
-            {/* <Typography style={{fontSize: '15px',align: 'center'}}>Available Balance ₹{user && user[0].balance.toFixed(2)}</Typography> */}
-            <Grid container direction="row" justify="space-around" alignItems="center"style={{paddingLeft: '20px',paddingTop: '30px',paddingBottom: '5px',paddingRight: '20px', backgroundColor: 'white'}}>
-            <Grid item  xs={4}>                    
-                <Typography style={{fontSize: '12px'}}>Red Envelope Type</Typography>
-                 </Grid>
-                 <Grid item xs={6}>
-                 <Container style={{ width: "150px" }}>
-                 <FormControl fullWidth variant="filled">
-                 <InputLabel id="demo-simple-select-label">Type</InputLabel>
+
+  return (
+    <div className={classes.page}>
+      <div className={classes.frame}>
+        <div className={classes.header}>
+          <ArrowBackIosIcon style={{ fontSize: '20px', color: 'white', cursor: 'pointer' }} onClick={history.goBack} />
+          <Typography className={classes.headerTitle}>Red Envelope</Typography>
+        </div>
+
+        <Container className={classes.content}>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <FormControl variant="filled" fullWidth className={classes.inputGroup}>
+                  <InputLabel>Type</InputLabel>
                   <Select
-                    displayEmpty
-                    fullWidth='true'
                     value={formData.type}
                     defaultValue="Fixed Amount"
                     name='type'
                     onChange={handleChange}
-                    style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
+                    disableUnderline
+                    style={{ backgroundColor: '#f5f5f5', borderRadius: '5px' }}
                   >
-                    
                     <MenuItem value='Fixed amount'>Fixed Amount</MenuItem>
                     <MenuItem value='Lucky Draw'>Lucky Draw</MenuItem>
-                  
                   </Select>
                 </FormControl>
-                </Container>
-             </Grid>
-                 
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControl variant="filled" fullWidth className={classes.inputGroup}>
+                  <InputLabel>Total Bonus Amount</InputLabel>
+                  <FilledInput
+                    type="number"
+                    name="amount"
+                    onChange={handleChange}
+                    disableUnderline
+                    style={{ backgroundColor: '#f5f5f5', borderRadius: '5px' }}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControl variant="filled" fullWidth className={classes.inputGroup}>
+                  <InputLabel>Number of Envelopes</InputLabel>
+                  <FilledInput
+                    type="number"
+                    name="qty"
+                    onChange={handleChange}
+                    disableUnderline
+                    style={{ backgroundColor: '#f5f5f5', borderRadius: '5px' }}
+                  />
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12}>
+                <div className={classes.otpContainer}>
+                  <FormControl variant="filled" fullWidth>
+                    <InputLabel>OTP</InputLabel>
+                    <FilledInput
+                      type="number"
+                      name="code"
+                      onChange={handleChange}
+                      disableUnderline
+                      style={{ backgroundColor: '#f5f5f5', borderRadius: '5px' }}
+                    />
+                  </FormControl>
+                  <Button
+                    className={classes.otpBtn}
+                    onClick={counter === 0 || !canRun ? sendOTP : null}
+                    disabled={canRun && counter > 0}
+                  >
+                    {canRun && counter > 0 ? counter : 'OTP'}
+                  </Button>
+                </div>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button type="submit" className={classes.actionBtn}>
+                  Create Envelope
+                </Button>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button
+                  className={classes.historyBtn}
+                  onClick={() => history.push("/redEnvelopeHistory")}
+                >
+                  Historical Records
+                </Button>
+              </Grid>
             </Grid>
-            <Grid container direction="row" justify="space-around" alignItems="center"style={{paddingLeft: '20px',paddingBottom: '5px',paddingRight: '20px', backgroundColor: 'white'}}>
-            <Grid item  xs={4}>                    
-                <Typography style={{fontSize: '12px'}}>Total Bonus Amount</Typography>
-                 </Grid>
-                 <Grid item  xs={6}>
-             <FormControl fullWidth
-                      
-                      variant="filled"
-                      
-                    >
-                      <InputLabel   >
-                      Bonus Amount
-                      </InputLabel>
-                      <FilledInput
-                        type="number"
-                        fullWidth='true'
-                        name="amount"
-                        id="filled"
-                        onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
-                      />
-                    </FormControl>
-             </Grid>
-                 
-            </Grid>
-            <Grid container direction="row" justify="space-around" alignItems="center"style={{paddingLeft: '20px',paddingBottom: '5px',paddingRight: '20px', backgroundColor: 'white'}}>
-            <Grid item  xs={4}>                    
-                <Typography style={{fontSize: '12px'}}>Number of Envelope</Typography>
-                 </Grid>
-                 <Grid item  xs={6}>
-             <FormControl fullWidth
-                      
-                      variant="filled"
-                      
-                    >
-                      <InputLabel   >
-                      Red Envelope Count
-                      </InputLabel>
-                      <FilledInput
-                        type="number"
-                        fullWidth='true'
-                        name="qty"
-                        id="filled"
-                        onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
-                      />
-                    </FormControl>
-             </Grid>
-                 
-            </Grid>
-            <Grid container direction="row" justify="space-around" alignItems="center"style={{paddingLeft: '20px',paddingBottom: '5px',paddingRight: '20px', backgroundColor: 'white'}}>
-            {/* <Grid item>                    
-                <Typography style={{fontSize: '15px'}}>Enter OTP</Typography>
-                 </Grid> */}
+          </form>
+        </Container>
 
-                 
-            <Grid item>
-                    <FormControl
-                      fullWidth
-                      variant="filled"
-                    >
-                      <InputLabel htmlFor="filled-adornment-password">
-                       OTP
-                      </InputLabel>
-                      <FilledInput
-                        type="number"
-                        name="code"
-                        id="filled-adornment-password"
-                        min={6}
-                        max={6}
-                        onChange={handleChange}
-                        style={{backgroundColor: 'white', textUnderlineOffset: 'none'}}
-
-                        
-                      />
-                    </FormControl>
-                    </Grid>
-                    <Grid item >
-                    <Container style={{backgroundColor: otp == null ? '#00b8a9' : 'green', height: '30px', width: '55px'}}>
-                      <Button onClick={counter === 0 ? sendOTP : otp != null ? null : sendOTP} style={{paddingTop: '1px',marginLeft: '-22px', color: 'white', textTransform: 'none'}}>{canRun ? counter === 0 ? 'Resend': counter : 'OTP'}</Button>
-                    </Container>
-                    </Grid>
-                 
-            </Grid>
-
-           
-
-           <Container style={{height: '100px'}}></Container>
-
-              <Container
-        style={{
-          backgroundColor: "#00b8a9",
-          height: "50px",
-          width: "100%",
-          borderRadius: "20px",
-        }}
-        onClick={handleSubmit}
-      >
-        <Typography align="center">
-          <Button
-            type="submit"
-            style={{
-              paddingTop: "12px",
-              color: "white",
-              textTransform: "none",
-            }}
-          >
-            Submit
-          </Button>
-        </Typography>
-      </Container>
-      {/* </form> */}
-      <Link
-        to="/redEnvelopeHistory"
-        style={{ textDecoration: "none", color: "black" }}
-      >
-        <Container
-          style={{
-            backgroundColor: "grey",
-            marginTop: "20px",
-            marginBottom: "100px",
-            height: "50px",
-            width: "100%",
-            borderRadius: "20px",
+        <Dialog
+          open={loader}
+          PaperProps={{
+            style: {
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+            },
           }}
         >
-          <Typography align="center">
-            <Button
-              type="submit"
-              style={{
-                paddingTop: "12px",
-                color: "white",
-                textTransform: "none",
-              }}
-            >
-              Historical Records
-            </Button>
-          </Typography>
-        </Container>
-      </Link>
-            
-        
-            
-           
+          <Container align="center" style={{ backgroundColor: 'black', opacity: '0.6', height: '100px', paddingTop: "10px", borderRadius: 10 }}>
+            <CircularProgress style={{ color: 'white' }} />
+            <Typography style={{ paddingTop: '10px', color: "white" }}>Please Wait!</Typography>
+          </Container>
+        </Dialog>
 
-            
-        </div>
-    )
-}
+        <Dialog
+          open={openDialog.open}
+          onClose={dialogClose}
+          PaperProps={{
+            style: {
+              borderRadius: '12px',
+              padding: '20px'
+            },
+          }}
+        >
+          <Container>
+            <Typography style={{ padding: '10px', color: "black" }}>{openDialog.body}</Typography>
+          </Container>
+        </Dialog>
+      </div>
+    </div>
+  );
+};
 
-export default MyRedEnvelop ; 
+export default MyRedEnvelop;

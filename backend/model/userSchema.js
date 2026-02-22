@@ -42,7 +42,7 @@ const userSchema = mongoose.Schema({
   },
   level4contribution: {
     type: Number,
-  },  
+  },
   level5contribution: {
     type: Number,
   },
@@ -91,7 +91,7 @@ const userSchema = mongoose.Schema({
   block: {
     type: Boolean
   },
-  temp:{
+  temp: {
     type: Boolean
   },
   exp: {
@@ -103,6 +103,10 @@ const userSchema = mongoose.Schema({
   },
   levelDown: {
     type: Boolean
+  },
+  isAgent: {
+    type: Boolean,
+    default: false
   }
 });
 

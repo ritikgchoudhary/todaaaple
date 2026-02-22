@@ -104,6 +104,8 @@ import {
   createUPIintent,
   getGateway,
   getGatewayOut,
+  getRechargeSettings,
+  updateRechargeSettings,
   getPayouts,
   getRecentRecharge,
   getShuffleUPI,
@@ -140,6 +142,21 @@ import {
   lgPayCallback,
   lgPayBalanceFetch,
 } from "../controller/gateways.js";
+import {
+  launchGame,
+  gameCallback
+} from "../controller/game.js";
+import {
+  getCarousel,
+  getCarouselAdmin,
+  uploadCarouselImage,
+  updateCarouselOrder,
+  deleteCarouselImage,
+} from "../controller/carousel.js";
+import { uploadSingle } from "../middleware/uploadCarousel.js";
+import { getSiteSettings, getSiteSettingsAdmin, uploadLogo, uploadApk } from "../controller/siteSettings.js";
+import { uploadLogoSingle } from "../middleware/uploadLogo.js";
+import { uploadApkSingle } from "../middleware/uploadApk.js";
 import Daily from "../model/daily.js";
 import Trans from "../model/transaction.js";
 import With from "../model/withdrawal.js";
@@ -202,6 +219,28 @@ import BidHistory5 from "../model/5minute/bidHistory.js";
 import toddUsers from "../model/toddUsers.js";
 import playHistory from "../model/playHistory.js";
 
+import {
+  createGameCatalogAdmin,
+  deleteGameCatalogAdmin,
+  getGamesCatalogAdmin,
+  getGamesCatalogPublic,
+  updateGameCatalogAdmin,
+} from "../controller/gameCatalog.js";
+import {
+  getAllUsersAdmin,
+  getAdminStats,
+  updateUserAdmin,
+} from "../controller/admin.js";
+import {
+  getCommissionConfigs,
+  updateCommissionConfig,
+  createCommissionConfig,
+  getAgentConfigs,
+  updateAgentConfig,
+  getAffiliateStats,
+} from "../controller/commission.js";
+
+
 // const successIMB = schedule.scheduleJob('*/3 * * * *', async function(){
 //   const date = new Date();
 //   const localDate = (date / 1000 + 19800) * 1000;
@@ -241,11 +280,11 @@ import playHistory from "../model/playHistory.js";
 //           {
 //             headers: {
 //               'Content-Type': "application/x-www-form-urlencoded"
-    
+
 //             }
 //           }
 //         );
-        
+
 //         if (getTransaction.data.result.status === "SUCCESS") {
 //           const findTrans = await Trans.findOne({id: element.id,status: 'created'});
 //           if(findTrans){
@@ -257,7 +296,7 @@ import playHistory from "../model/playHistory.js";
 //               {status: 'success',expired: true,$inc: {__v: 1}},
 //               { new: true, runValidators: true }
 //             );
-            
+
 //             if(updatedDoc){
 //               await daily.updateOne(
 //                 { id: newDate },
@@ -320,7 +359,7 @@ import playHistory from "../model/playHistory.js";
 //                   }
 //                 );
 //               }else{
-               
+
 //                 const bonus = (amount * 5) / 100;
 //                 amount = amount + bonus;
 //                 await User.updateOne(
@@ -346,7 +385,7 @@ import playHistory from "../model/playHistory.js";
 //                   { id: user.upLine[0] },
 //                   {
 //                     $inc: { balance: bonus },
-                    
+
 //                   }
 //                 );
 //                 await offerBonus.updateOne(
@@ -366,9 +405,9 @@ import playHistory from "../model/playHistory.js";
 //                   {upsert: true}
 //                 );
 //               }
-             
-              
-        
+
+
+
 //               const userDate = new Date(user.date);
 //               const userDateLocal = (userDate / 1000 + 19800) * 1000;
 //               const newuserDate = new Date(userDateLocal);
@@ -378,26 +417,26 @@ import playHistory from "../model/playHistory.js";
 //               const day = newabhirDate.getDate();
 //               const month = newabhirDate.getMonth() + 1;
 //               const year = newabhirDate.getFullYear();
-        
+
 //                 const dayMonth = `${day}/${month}/${year}`;
-        
+
 //                 const userday = newuserDate.getDate();
 //                 const usermonth = newuserDate.getMonth() + 1;
 //                 const useryear = newuserDate.getFullYear();
-        
+
 //                 const userdayMonth = `${userday}/${usermonth}/${useryear}`;
 //               const newphone0recharge = `newlevel0.${dayMonth}.${user.phone}.todayRecharge`;
 //               const newphone1recharge = `newlevel1.${dayMonth}.${user.phone}.todayRecharge`;
 //               const newphone2recharge = `newlevel2.${dayMonth}.${user.phone}.todayRecharge`;
-        
+
 //               const phone0recharge = `level0.${user.phone}.totalRecharge`;
 //               const phone1recharge = `level1.${user.phone}.totalRecharge`;
 //               const phone2recharge = `level2.${user.phone}.totalRecharge`;
-        
+
 //               const phone0first = `level0.${user.phone}.firstRecharge`;
 //               const phone1first = `level1.${user.phone}.firstRecharge`;
 //               const phone2first = `level2.${user.phone}.firstRecharge`;
-        
+
 //               if (dayMonth === userdayMonth) {
 //                 if (user.upLine !== null) {
 //                   if (user.upLine[0].length !== 0) {
@@ -439,7 +478,7 @@ import playHistory from "../model/playHistory.js";
 //                         { upsert: true }
 //                       );
 //                     }
-        
+
 //                     if (user.upLine[2].length !== 0) {
 //                       await promotion.updateOne(
 //                         { userId: user.upLine[2] ?? 1 },
@@ -455,7 +494,7 @@ import playHistory from "../model/playHistory.js";
 //                   }
 //                 }
 //               }
-        
+
 //               if (user.upLine !== null) {
 //                 if (user.upLine[0].length !== 0) {
 //                   await promotion.updateOne(
@@ -499,7 +538,7 @@ import playHistory from "../model/playHistory.js";
 //                       { upsert: true }
 //                     );
 //                   }
-        
+
 //                   if (user.upLine[2].length !== 0) {
 //                     await promotion.updateOne(
 //                       { userId: user.upLine[2] ?? 1 },
@@ -517,8 +556,8 @@ import playHistory from "../model/playHistory.js";
 //               }
 //             }
 //           }
-         
-         
+
+
 //         }else{
 //           var diff = 300;
 //           const lastTime = element.date / 1000;
@@ -532,16 +571,16 @@ import playHistory from "../model/playHistory.js";
 //             );
 //           }
 //         }
-        
+
 //       } catch (error) {
 //         console.log(error.message)
 //       }
-     
-     
-  
-  
+
+
+
+
 //     });
-    
+
 //   } catch (error) {
 //     console.log(error.message)
 //   }
@@ -550,12 +589,12 @@ import playHistory from "../model/playHistory.js";
 
 // });
 // const clearLimit = schedule.scheduleJob('*/5 * * * *', async function(){
-  
+
 
 //   const getCreatedTrans = await Trans.find({gateway: 'UPI',status: "created"},{_id: 1,date: 1,amount: 1,key: 1});
 //   getCreatedTrans.forEach(async element => {
 
-   
+
 //   const localDate = (element.date / 1000 + 19800) * 1000;
 //   const newDatefor = new Date(localDate);
 //   const day = newDatefor.getDate();
@@ -590,12 +629,12 @@ import playHistory from "../model/playHistory.js";
 //       );
 //       if(element.key){
 //         const field = `payment.${element.key.id}.limit`;
-        
+
 //         await daily.updateOne({id: dayMonth},{$inc: {[field] : - element.amount}})
 //       }
 //     }
 
-    
+
 //   });
 
 // });
@@ -665,6 +704,17 @@ router.post("/signup", signup); // secured
 router.post("/applyBonus", applyBonus); // secured
 router.post("/applyWithdrawal", applyWithdrawal);
 router.post("/applyWithdrawalUSDT", applyWithdrawalUSDT);
+
+// Games Catalog (public + master admin)
+import { getAllProviders } from "../controller/providerController.js";
+router.get("/getProviders", getAllProviders);
+
+router.get("/gamesCatalog", getGamesCatalogPublic);
+router.get("/gamesCatalogAdmin/:api", getGamesCatalogAdmin);
+router.post("/gamesCatalogAdmin/:api", createGameCatalogAdmin);
+router.put("/gamesCatalogAdmin/:id/:api", updateGameCatalogAdmin);
+router.delete("/gamesCatalogAdmin/:id/:api", deleteGameCatalogAdmin);
+
 router.post("/addBank", addBank);
 //router.post('/addUpi',  addUpi);
 router.post("/resetPassword", resetPassword); //secured
@@ -684,6 +734,22 @@ router.get("/getTimer", getTimer); // secured
 router.get("/getWithdrawal/:id/", checkAuth, getWithdrawal); //secured
 router.get("/getAllWithdrawal/:api", getAllWithdrawal); // secured
 router.get("/getAllWithdrawalUSDT/:api", getAllWithdrawalUSDT); // secured
+router.get("/admin/stats/:api", getAdminStats);
+router.get("/admin/users/:api", getAllUsersAdmin);
+router.post("/admin/updateUser/:api", updateUserAdmin);
+
+// Commission Management
+router.get("/admin/commission/configs/:api", getCommissionConfigs);
+router.post("/admin/commission/configs/:api", createCommissionConfig);
+router.put("/admin/commission/configs/:id/:api", updateCommissionConfig);
+router.get("/admin/commission/agents/:api", getAgentConfigs);
+router.post("/admin/commission/agents/:userId/:api", updateAgentConfig);
+router.get("/user/affiliate/stats/:id", checkAuth, getAffiliateStats);
+
+// Game Routes
+router.post("/game/launch/:id", checkAuth, launchGame);
+router.post("/api/gameCallback", gameCallback);
+
 router.get(
   "/processWithdrawal/:id/:status/:amount/:userId/:api/:_id",
   processWithdrawal
@@ -698,7 +764,7 @@ router.get("/updataUserBalancegyf46/:id/:api/:balance", updataUserBalance);
 router.get("/updataUserBonus/:id/:api/:bonus", updataUserBonus);
 router.get("/ClearUserContri/:id/:api", ClearUserContri);
 
- // secured// secured
+// secured// secured
 router.get("/getUserBonusHistory/:api/:id", getUserBonus)
 router.get("/setServerDown/:id/:api/:down", setServerDown); // secured// secured
 router.get("/viewDownUSers/:api", viewDownUsers);
@@ -718,7 +784,7 @@ router.get("/", async (req, res) => {
 
 router.post("/sendOTPEnv", [rateLimit()], async (req, res) => {
   const phone = req.body.phone;
-  
+
   try {
     const code = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
 
@@ -732,7 +798,7 @@ router.post("/sendOTPEnv", [rateLimit()], async (req, res) => {
 
     // Send OTP using the new API
     const apiUrl = `https://apihome.in/panel/api/bulksms/?key=${process.env.API_KEY}&mobile=${phone}&otp=${code}`;
-    
+
     try {
       const smsResponse = await axios.get(apiUrl, {
         headers: {
@@ -742,7 +808,7 @@ router.post("/sendOTPEnv", [rateLimit()], async (req, res) => {
       console.log('SMS Response:', smsResponse.data);
     } catch (smsError) {
       console.error('SMS Error:', smsError);
-     
+
     }
     res.send("Done");
   } catch (error) {
@@ -753,7 +819,7 @@ router.post("/sendOTPEnv", [rateLimit()], async (req, res) => {
 
 router.post("/sendOTPBank", [rateLimit()], async (req, res) => {
   const phone = req.body.phone.toString();
-  
+
   try {
     const code = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
 
@@ -767,7 +833,7 @@ router.post("/sendOTPBank", [rateLimit()], async (req, res) => {
 
     // Send OTP using the new API
     const apiUrl = `https://apihome.in/panel/api/bulksms/?key=${process.env.API_KEY}&mobile=${phone}&otp=${code}`;
-    
+
     try {
       const smsResponse = await axios.get(apiUrl, {
         headers: {
@@ -777,7 +843,7 @@ router.post("/sendOTPBank", [rateLimit()], async (req, res) => {
       console.log('SMS Response:', smsResponse.data);
     } catch (smsError) {
       console.error('SMS Error:', smsError);
-     
+
     }
     res.send("Done");
   } catch (error) {
@@ -788,7 +854,7 @@ router.post("/sendOTPBank", [rateLimit()], async (req, res) => {
 
 router.post("/sendOTPFor", [rateLimit()], async (req, res) => {
   const phone = req.body.phone.toString();
-  
+
   try {
     const code = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
 
@@ -802,7 +868,7 @@ router.post("/sendOTPFor", [rateLimit()], async (req, res) => {
 
     // Send OTP using the new API
     const apiUrl = `https://apihome.in/panel/api/bulksms/?key=${process.env.API_KEY}&mobile=${phone}&otp=${code}`;
-    
+
     try {
       const smsResponse = await axios.get(apiUrl, {
         headers: {
@@ -812,7 +878,7 @@ router.post("/sendOTPFor", [rateLimit()], async (req, res) => {
       console.log('SMS Response:', smsResponse.data);
     } catch (smsError) {
       console.error('SMS Error:', smsError);
-     
+
     }
     res.send("Done");
   } catch (error) {
@@ -826,7 +892,7 @@ router.post("/sendOTP", [rateLimit()], async (req, res) => {
   const phone = req.body.phone.toString();
   const secret_key = process.env.g_secret_key;
   const googleUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${token}`;
-  
+
   try {
     const response = await axios.post(googleUrl);
     if (response.data.success) {
@@ -842,7 +908,7 @@ router.post("/sendOTP", [rateLimit()], async (req, res) => {
 
       // Send OTP using the new API
       const apiUrl = `https://apihome.in/panel/api/bulksms/?key=${process.env.API_KEY}&mobile=${phone}&otp=${code}`;
-      
+
       try {
         const smsResponse = await axios.get(apiUrl, {
           headers: {
@@ -878,7 +944,7 @@ router.post("/upiPointWebhookjfhv8", upiPointGatewayWebhooktdv1);
 
 
 //router.post("/createFinflyOrder",finflyCreateOrder)
-router.post("/createIMBOrder",imbCreateOrder);
+router.post("/createIMBOrder", imbCreateOrder);
 
 router.post("/initiatePhonePePG/:id", checkAuth, phonepePG);
 router.post("/initiatePhonePeGatewayEcom", phonepePGEcom);
@@ -888,27 +954,27 @@ router.post("/phonepepgredirect/:id/:userId", phonepepgredirect);
 router.get("/checkPhonePeStatus/:id", checkPhonePeStatus);
 
 //Razorpay
-router.post("/razarpay/create-order/:id",checkAuth,razorpayCreateOrder);
-router.post('/razarpay/verify/:id',checkAuth, razorpayVerify);
+router.post("/razarpay/create-order/:id", checkAuth, razorpayCreateOrder);
+router.post('/razarpay/verify/:id', checkAuth, razorpayVerify);
 
 //Cashfree
-router.post("/cashfree/create-order/:id",checkAuth,cashfreeCreateOrder);
+router.post("/cashfree/create-order/:id", checkAuth, cashfreeCreateOrder);
 router.post('/cashfree/verify', cashfreeVerify);
 
 //Paygic Gateway
-router.post("/v2/createUPIintent/:id",checkAuth, createUPIintent);
+router.post("/v2/createUPIintent/:id", checkAuth, createUPIintent);
 router.post("/paygicUPICallbackuyefg7346/", paygicUPICallback);
 
 //Airpay Gateway
-router.post("/v2/createAirpayOrder/:id",checkAuth, createAirpayOrder);
+router.post("/v2/createAirpayOrder/:id", checkAuth, createAirpayOrder);
 
 //Crypto UPAY
-router.post("/createCryptoUpayOrder/:id",checkAuth, createCryptoUpayOrder); 
+router.post("/createCryptoUpayOrder/:id", checkAuth, createCryptoUpayOrder);
 router.post("/cryptoUpayCallback", verifyCryptoSign);
 
 //Paycial Gateway
-router.post("/paycialCreateOrder/:id",checkAuth,paycialCreateOrder );
-router.post("/paycialCallbackV1",paycialCallback);
+router.post("/paycialCreateOrder/:id", checkAuth, paycialCreateOrder);
+router.post("/paycialCallbackV1", paycialCallback);
 
 router.get("/getPromotionMembers/:id", checkAuth, promotionMembers);
 
@@ -921,10 +987,10 @@ router.get(
 );
 
 router.post("/createTransactionQR/:id/:amount", checkAuth, createQRTrans);
-router.get("/getShuffleUPI/:id",checkAuth,getShuffleUPI);
-router.get("/getShuffleUPIV4/:id",checkAuth,getShuffleUPIV4);
+router.get("/getShuffleUPI/:id", checkAuth, getShuffleUPI);
+router.get("/getShuffleUPIV4/:id", checkAuth, getShuffleUPIV4);
 router.post("/submitUTR/:id/:amount", checkAuth, submitUTR);
-router.get("/getRecentRecharges/:id",checkAuth,getRecentRecharge);
+router.get("/getRecentRecharges/:id", checkAuth, getRecentRecharge);
 
 
 //router.get("/getPendingTransactions/:api", getPendingTransaction);
@@ -1092,7 +1158,7 @@ router.get("/userLevelDataAdmin/:phone/:api", async (req, res) => {
 router.get("/chineaseRushPay", chineasePay);
 
 //Rupee Rush Gateway
-router.post("/rupeeRushCreateOrder/:id",checkAuth, rupeeRushCreateOrder);
+router.post("/rupeeRushCreateOrder/:id", checkAuth, rupeeRushCreateOrder);
 router.post("/rupeeRushCallback", rupeeRushCallback);
 router.post("/rupeeRushPayout/:api", rupeeRushPayout);
 router.post("/rupeeRushPayoutCallback", rupeeRushPayoutCallback);
@@ -1236,7 +1302,7 @@ router.get("/testRupeeRush", async (req, res) => {
 });
 
 // Get today's all transactions
-router.get("/getTodayTransactions/:api", async(req, res) => {
+router.get("/getTodayTransactions/:api", async (req, res) => {
   const api = req.params.api;
   if (!api || api === process.env.AdminAPI) {
     try {
@@ -1270,9 +1336,18 @@ router.get("/getTodayTransactions/:api", async(req, res) => {
   }
 });
 
-router.get("/getNotice", async(req,res) => {
-  const getNotice = await extra.findOne({id: 1},{notice: 1});
-  res.status(200).send({notice: getNotice.notice});
+router.get("/getNotice", async (req, res) => {
+  try {
+    const getNotice = await extra.findOne({ id: 1 }, { notice: 1 });
+    if (getNotice && getNotice.notice) {
+      res.status(200).send({ notice: getNotice.notice });
+    } else {
+      res.status(200).send({ notice: { heading: "Welcome", body: "Win Big Daily!" } });
+    }
+  } catch (err) {
+    console.error("Notice Error:", err.message);
+    res.status(200).send({ notice: { heading: "Welcome", body: "Win Big Daily!" } });
+  }
 });
 
 
@@ -1306,9 +1381,28 @@ router.post("/updateUpiV3/:api/:value", updateUpiV3);
 router.get("/getCurrentGatewayOut", getGatewayOut);
 router.post("/setCurrentGatewayOut/:api/:gateway", setGatewayOut);
 
+router.get("/admin/recharge-settings/:api", getRechargeSettings);
+router.post("/admin/recharge-settings/:api", updateRechargeSettings);
+
+router.get("/carousel", getCarousel);
+router.get("/admin/carousel/:api", getCarouselAdmin);
+router.post("/admin/carousel/upload/:api", (req, res, next) => {
+  uploadSingle(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message || "Upload failed" });
+    next();
+  });
+}, uploadCarouselImage);
+router.post("/admin/carousel/order/:api", updateCarouselOrder);
+router.post("/admin/carousel/delete/:api", deleteCarouselImage);
+
+router.get("/site-settings", getSiteSettings);
+router.get("/admin/site-settings/:api", getSiteSettingsAdmin);
+router.post("/admin/site-settings/logo/upload/:api", uploadLogoSingle, uploadLogo);
+router.post("/admin/site-settings/apk/upload/:api", uploadApkSingle, uploadApk);
+
 router.get("/getDailyData/:api", async (req, res) => {
   const api = req.params.api;
-  
+
   if (api === process.env.AdminAPI || api === process.env.ToddRecharge || api === process.env.ToddAgentRecharge) {
     const date = new Date();
     const localDate = (date / 1000 + 19800) * 1000;
@@ -1330,18 +1424,18 @@ router.get("/getDailyData/:api", async (req, res) => {
       monthSorted = `${month}`;
     }
     const newDate = `${daySorted}-${monthSorted}-${year}`;
-    
+
     const daily = await Daily.findOne({ id: newDate });
-    if(daily){
+    if (daily) {
       res.status(200).send(daily);
 
-    }else{
+    } else {
       res.status(200).send("no data");
 
     }
-    
+
   } else {
-    
+
     res.status(401).send({ msg: "Auth Failed" });
   }
 });
@@ -1433,14 +1527,14 @@ router.get("/getBidHistoryAdmin/:id/:api", async (req, res) => {
   const id = req.params.id;
   const api = req.params.api;
   if (!api || api === process.env.AdminAPI) {
-    
+
     bidHistory
       .find({ "bid.userId": parseInt(id) })
       .sort({ "bid.period": -1 })
       .then((result) => {
         if (result.length > 0) {
           var newBid = [];
-          
+
           for (var i = 0; i < result.length; i++) {
             result[i].bid.forEach((bid) => {
               if (bid.userId === parseInt(id)) {
@@ -1449,14 +1543,14 @@ router.get("/getBidHistoryAdmin/:id/:api", async (req, res) => {
             });
           }
         }
-        
-        res.status(200).send(newBid??[]);
+
+        res.status(200).send(newBid ?? []);
       })
       .catch((err) => {
         console.log(err);
       });
   } else {
-    
+
     res.status(401).send({ msg: "Auth Failed" });
   }
 });
@@ -1808,7 +1902,7 @@ router.get("/fastParity_getFullBidHistoryAdmin/:id/:api", async (req, res) => {
             });
           }
         }
-        res.status(200).send(newBid??[]);
+        res.status(200).send(newBid ?? []);
       })
       .catch((err) => {
         console.log(err);
@@ -1857,7 +1951,7 @@ router.get("/bigsmall_getFullBidHistoryAdmin/:id/:api", async (req, res) => {
             });
           }
         }
-        res.status(200).send(newBid??[]);
+        res.status(200).send(newBid ?? []);
       })
       .catch((err) => {
         console.log(err);
@@ -1885,7 +1979,7 @@ router.get("/minute1_getFullBidHistoryAdmin/:id/:api", async (req, res) => {
             });
           }
         }
-        res.status(200).send(newBid??[]);
+        res.status(200).send(newBid ?? []);
       })
       .catch((err) => {
         console.log(err);
@@ -1913,7 +2007,7 @@ router.get("/minute3_getFullBidHistoryAdmin/:id/:api", async (req, res) => {
             });
           }
         }
-        res.status(200).send(newBid??[]);
+        res.status(200).send(newBid ?? []);
       })
       .catch((err) => {
         console.log(err);
@@ -1941,7 +2035,7 @@ router.get("/minute5_getFullBidHistoryAdmin/:id/:api", async (req, res) => {
             });
           }
         }
-        res.status(200).send(newBid??[]);
+        res.status(200).send(newBid ?? []);
       })
       .catch((err) => {
         console.log(err);
@@ -1954,7 +2048,7 @@ router.get("/minute5_getFullBidHistoryAdmin/:id/:api", async (req, res) => {
 
 
 router.get("/claimContriBonus/:id", checkAuth, claimContriBonus);
-router.get("/claimPeriodStreakBonus/:id/:game",checkAuth, claimPeriodWonBonus);
+router.get("/claimPeriodStreakBonus/:id/:game", checkAuth, claimPeriodWonBonus);
 router.get("/claimPeriodStreakBonus/:id/:game/:tier", checkAuth, claimPeriodWonBonus);
 router.get("/getWinStreakData/:id/:game", checkAuth, getWinStreakData);
 
@@ -2018,17 +2112,17 @@ router.get(
 //   var amount = 0;
 //   var amountBook = 0;
 //   keys.forEach(async (element) => {
-   
+
 //       var _bid = [];
 //       var winningAmount = 0;
 //       var winningBook = 0;
-      
+
 //       var exp = 0;
 //       if(getBid.bid[`${element}`].exp){
 //         var matchExp = 0
 //         var bookExp = 0
 //         if(getBid.bid[`${element}`].exp.match){
-          
+
 //           matchExp = getBid.bid[`${element}`].exp.match;
 //           if( matchExp< 0){
 //             amount += Math.abs(matchExp);
@@ -2058,10 +2152,10 @@ router.get(
 //                 );
 //             }
 //           }
-          
-          
-        
-      
+
+
+
+
 //       }
 //       if (getBid.bid[`${element}`].finalBook) {
 //         console.log(element);
@@ -2131,7 +2225,7 @@ router.get(
 //           }
 //         );
 //       }
-    
+
 //   });
 //   // await CricketBid.updateOne(
 //   //   { matchId: 33214375 },
@@ -2160,7 +2254,7 @@ router.get(
 //   var amount = 0;
 //   var amountbook = 0;
 //   keys.forEach(async (element) => {
-   
+
 //       var _bid = [];
 //       var winningAmount = 0;
 //       var winningBook = 0;
@@ -2185,7 +2279,7 @@ router.get(
 //       }
 
 //       if (getBid.bid[`${element}`].final) {
-       
+
 //         if (getBid.bid[`${element}`].final.teamBAmount > 0) {
 //           if (getBid.bid[`${element}`].final.teamAAmount >= 0) {
 //             winningAmount = getBid.bid[`${element}`].final.teamBAmount;
@@ -2197,11 +2291,11 @@ router.get(
 //               );
 //           }
 //         } 
-       
+
 //         // if(getBid.bid[`${element}`].final.teamBAmount < 0 && getBid.bid[`${element}`].final.teamAAmount < 0)
-        
-        
-      
+
+
+
 //       }
 
 //       if (getBid.bid[`${element}`].finalBook) {
@@ -2217,8 +2311,8 @@ router.get(
 //               );
 //           }
 //         } 
-       
-      
+
+
 //       }
 //       if(getBid.bid[`${element}`].history){
 
@@ -2270,11 +2364,11 @@ router.get(
 //           { id: element },
 //           {
 //             $inc: { exp: exp},
-           
+
 //           }
 //         );
 //       }
-    
+
 //   });
 //   // await CricketBid.updateOne(
 //   //   { matchId: 33208913 },
@@ -2304,16 +2398,16 @@ router.get(
 //   var amount = 0;
 //   var amountBook = 0;
 //   keys.forEach(async (element) => {
-   
+
 //       var _bid = [];
-    
-      
+
+
 //       var exp = 0;
 //       if(getBid.bid[`${element}`].exp){
 //         var matchExp = 0
 //         var bookExp = 0
 //         if(getBid.bid[`${element}`].exp.match){
-          
+
 //           matchExp = getBid.bid[`${element}`].exp.match;
 //           if( matchExp< 0){
 //             exp += Math.abs(matchExp)
@@ -2327,14 +2421,14 @@ router.get(
 //             amountBook += Math.abs(bookExp);
 //           }
 //         }
-        
+
 //       }
-     
+
 //       returnAmount +=exp;
-      
+
 //       if(getBid.bid[`${element}`].history){
 //       getBid.bid[`${element}`].history.forEach((bid) => {
-         
+
 //         if (bid.bid === `Back ${winner}` || bid.bid === `Lay ${Loser}`) {
 //           if (bid.type === "match") {
 //             _bid.push({ ...bid, states: "Fail", winning: 0 });
@@ -2349,30 +2443,30 @@ router.get(
 //       }
 //       const userWinField = `bid.${element}.winning`;
 //       const userField = `bid.${element}.history`;
-      
-      
+
+
 //       await CricketBid.updateOne(
 //         { matchId: 33321208 },
 //         {
 //           [userField]: _bid,
 //           [userWinField]: 0,
 //           'calc.tied': true,
-          
+
 //         }
 //       );
 
 //       await User.updateOne(
 //             { id: element },
 //             {
-        
+
 //               $inc: {exp: exp},
 //             }
 //           );
 
-     
-    
+
+
 //   });
- 
+
 //    console.log(amount);
 //    console.log(amountBook);
 //    console.log(returnAmount);
@@ -2393,17 +2487,17 @@ router.get(
 //   var amount = 0;
 //   var amountBook = 0;
 //   keys.forEach(async (element) => {
-   
+
 //       var _bid = [];
 //       var winningAmount = 0;
 //       var winningBook = 0;
-      
+
 //       var exp = 0;
 //       if(getBid.bid[`${element}`].exp){
 //         var matchExp = 0
 //         var bookExp = 0
 //         if(getBid.bid[`${element}`].exp.match){
-          
+
 //           matchExp = getBid.bid[`${element}`].exp.match;
 //           if( matchExp< 0){
 //             exp += Math.abs(matchExp)
@@ -2417,12 +2511,12 @@ router.get(
 //             amountBook += Math.abs(bookExp);
 //           }
 //         }
-        
+
 //       }
-     
+
 //       returnAmount +=exp;
 //       if (getBid.bid[`${element}`].finalBook) {
-     
+
 //         if (getBid.bid[`${element}`].finalBook.teamBAmount > 0) {
 //           if (getBid.bid[`${element}`].finalBook.teamAAmount >= 0) {
 //             winningBook = getBid.bid[`${element}`].finalBook.teamBAmount;
@@ -2470,15 +2564,15 @@ router.get(
 //       await User.updateOne(
 //             { id: element },
 //             {
-        
+
 //               $inc: {balance: exp, exp: exp},
 //             }
 //           );
 
-     
-    
+
+
 //   });
- 
+
 //   console.log(winnningMatchAmount);
 //   console.log(winningBookmaker);
 //    console.log(amount);
@@ -2515,12 +2609,12 @@ router.get(
 //     var index = -1;
 //     getBid['bid'][`${element}`].fancyHistory.forEach(async ele => {
 //      index++
-    
+
 //       amount ++;
 //       if( ele.date < 1712671980000){
 //         const _field = `bid.${ele.userId}.fancyHistory.${index}.states`;
 //         const _field1 = `bid.${ele.userId}.fancyHistory.${index}.winning`;
-       
+
 //         if(ele.states === 'Success'){
 //           _bid.push(ele);
 //             await CricketBid.updateOne({matchId: 33160617},{[`${_field}`] : 'Refunded',[`${_field1}`] : 0});
@@ -2542,14 +2636,14 @@ router.get(
 //                           note: `Cricket Fancy Recovery: ${33160617}`,
 //                         },},})
 //           }
-       
+
 //         }else{
 
 //         }
 //       }
 //     });
 //     newBid[`${element}`] = _bid;
-  
+
 //   res.status(200).send(newBid);
 // });
 
@@ -2563,7 +2657,7 @@ router.get(
 //   var count = 0;
 //   console.log(user.length);
 //   user.forEach(element => {
-    
+
 //     if(element.status === 'success'){
 //       count++;
 //       if(element.gateway === "IMB"){
@@ -2576,16 +2670,16 @@ router.get(
 //         manual+=element.amount;
 //       }
 //     }
-  
-    
+
+
 //   });
-  
+
 
 //   res.send({amount,manual,count,upi,total: (upi+amount+manual)});
 // })
 // router.get('/checkStatus', async(req, res) => {
 
-  
+
 //   res.send({});
 // })
 
@@ -2622,19 +2716,19 @@ router.get(
 //   users.forEach(element => {
 //     var count = 0;
 //     if(rechargeUsers.includes(element.id)){
-        
+
 //         element.walletHistory.forEach(his => {
 //           transId.forEach(ele => {
 //             if(his.note.includes(ele)){
 //               count++
 //             }
 //           });
-          
-          
+
+
 //         });
 //         reUsers.push({id: element.id, count});
 //     }
-    
+
 //   });
 
 
@@ -2651,18 +2745,18 @@ router.get(
 //     element.walletHistory.forEach(ele => {
 //       if(ele.date > 1722537000000){
 //       if(ele.note.includes('Add money')){
-        
+
 //         recahrgeList.push(ele)
 //         var numfind = ele.note.split(": ")[1];
 //         nume.push(parseInt(numfind));
 //             }}
 //     });
-    
+
 //   });
 //    var amount = 0;
 //    recahrgeList.forEach(element => {
 //     amount+=element.amount;
-    
+
 //    });
 
 //    for (var ele of nume) {
@@ -2675,7 +2769,7 @@ router.get(
 //       }
 //     }
 
-    
+
 //    }
 //    const check_duplicate_in_array=(input_array)=>{
 //     const duplicates =input_array.filter((item, index) =>input_array.indexOf(item) !== index);
@@ -2716,7 +2810,7 @@ router.get(
 //         update: { level0contribution: 0,level1contribution: 0,level2contribution: 0},
 //       },
 //     });
-    
+
 //   }
 //   await User.bulkWrite(arrayList,{ ordered : false });
 //   console.log(user.length);
@@ -2725,7 +2819,7 @@ router.get(
 
 
 // router.get("/lastTrans", async(req,res) => {
- 
+
 //   const date = new Date();
 //   const localDate = (date / 1000 + 19800) * 1000;
 //   const newDatefor = new Date(localDate);
@@ -2752,7 +2846,7 @@ router.get(
 //     gateway: 'UPI',
 
 //     status: 'expired'
-    
+
 //   });
 //   console.log(getId.length);
 //   var success = 0;
@@ -2778,7 +2872,7 @@ router.get(
 //       const user = await User.findOne({ id: userId });
 //       if(!user.firstRecharge){
 //         console.log(`not recharged ${userId}`);
-        
+
 //       }
 //       //const tempTran = await Trans.findOne({ id: clientId, status: "success" });
 //       // if (!tempTran) {
@@ -2850,7 +2944,7 @@ router.get(
 //       //       }
 //       //     );
 //       //   }else{
-          
+
 //       //     const bonus = (amount * 5) / 100;
 //       //     amount = amount + 0;
 //       //     await User.updateOne(
@@ -2876,7 +2970,7 @@ router.get(
 //       //     //   { id: user.upLine[0] },
 //       //     //   {
 //       //     //     $inc: { balance: bonus },
-              
+
 //       //     //   }
 //       //     // );
 //       //     // await offerBonus.updateOne(
@@ -2896,7 +2990,7 @@ router.get(
 //       //     //   {upsert: true}
 //       //     // );
 //       //   }
-        
+
 //       //   const userDate = new Date(user.date);
 //       //   const userDateLocal = (userDate / 1000 + 19800) * 1000;
 //       //   const newuserDate = new Date(userDateLocal);
@@ -3048,39 +3142,39 @@ router.get(
 //        //res.redirect("https://game.toddapples.com");
 //       }
 //     } else {
-      
+
 //     }
-  
+
 //     }
 //     console.log(samount)
 //     console.log(success)
 //     res.status(200).send('done');
- 
+
 
 // })
 
 
-router.get("/ipProtectedRoute", async(req,res) => {
-   const clientIp = req.ip;
-   const getIp = await extra.findOne({id: 1}, {ip: 1});
-   if(getIp.ip.includes(clientIp)){
+router.get("/ipProtectedRoute", async (req, res) => {
+  const clientIp = req.ip;
+  const getIp = await extra.findOne({ id: 1 }, { ip: 1 });
+  if (getIp.ip.includes(clientIp)) {
     res.status(200).send({ status: 200, message: `Your IP ${clientIp} is autherized` });
 
-    
-  }else{
+
+  } else {
     res.status(200).send({ status: 401, message: `Your IP ${clientIp} is not autherized` });
   }
 });
 
-router.get("/getManualRecharge", async(req,res) => {
-  const getRech = await Trans.find({createDate: {$gt: 1748716200000}, id: "manual",status: "success"});
+router.get("/getManualRecharge", async (req, res) => {
+  const getRech = await Trans.find({ createDate: { $gt: 1748716200000 }, id: "manual", status: "success" });
   var amount = 0;
   var users = [];
-  getRech.forEach(async(element) => {
+  getRech.forEach(async (element) => {
     amount += element.amount;
-    users.push({userId: element.userId, amount: element.amount});
+    users.push({ userId: element.userId, amount: element.amount });
   });
-  res.status(200).send({status: 200, amount, users});
+  res.status(200).send({ status: 200, amount, users });
 });
 
 // router.get('/test', async(req,res) => {
@@ -3088,7 +3182,7 @@ router.get("/getManualRecharge", async(req,res) => {
 //   var count = 0
 //   for(var element of getofferBonus){
 //     count++
-    
+
 //     var totalReferral = 0;
 //     var totalDailyTask = 0;
 //     for(var history of element.history){
@@ -3099,7 +3193,7 @@ router.get("/getManualRecharge", async(req,res) => {
 //         totalDailyTask +=history.amount
 //       }
 //     }
-    
+
 //     await offerBonus.updateOne({userId: element.userId},{totalReferral,totalDailyTask});
 //     console.log(count);
 //   }
@@ -3122,16 +3216,16 @@ router.get("/getManualRecharge", async(req,res) => {
 //         totalWithdraw += parseFloat(history.amount);
 //       }
 //     });
-   
+
 //     users.push({phone: element.phone, name: element?.bank?.[0]?.name??'N/A', totalRecharge, totalWithdraw});
 //   });
-  
+
 //   users.sort((a,b) => b.totalRecharge - a.totalRecharge);
-  
+
 //   // Generate CSV data
 //   const csvFields = ['Phone', 'Name', 'Total Recharge', 'Total Withdraw'];
 //   let csvData = csvFields.join(',') + '\n';
-  
+
 //   users.forEach(user => {
 //     const row = [
 //       user.phone,
@@ -3145,7 +3239,7 @@ router.get("/getManualRecharge", async(req,res) => {
 //   // Set headers for CSV download
 //   res.setHeader('Content-Type', 'text/csv');
 //   res.setHeader('Content-Disposition', 'attachment; filename=users_recharge_data.csv');
-  
+
 //   res.status(200).send(csvData);
 // })
 
@@ -3161,7 +3255,7 @@ router.get("/getManualRecharge", async(req,res) => {
 //   var newBidHistoryData = [];
 //   var price = 0;
 //   var newId = 20250506239;
-  
+
 //    bidHistory.bid.forEach((doc) => {
 //       if (doc.select.includes(`${number}`)) {
 //         winnersNumber.push({ userId: doc.userId, price: doc.bidAmount || doc.amount });
@@ -3194,7 +3288,7 @@ router.get("/getManualRecharge", async(req,res) => {
 //             winnersBigSmall.push({ userId: doc.userId, price: doc.bidAmount || doc.amount });
 //          }
 //       }
-    
+
 //     });
 
 //     winnersNumber.forEach(async (doc) => {
@@ -3202,7 +3296,7 @@ router.get("/getManualRecharge", async(req,res) => {
 //       var newPrice = doc.price - commission;
 //       var amount = newPrice * 9;
 //       var fixedAmount = Math.round((amount + Number.EPSILON) * 100) / 100;
-  
+
 //       await User.updateOne(
 //         { id: doc.userId },
 //         { $inc: { balance: +fixedAmount } }
@@ -3224,11 +3318,11 @@ router.get("/getManualRecharge", async(req,res) => {
 //         },
 //         { upsert: true }
 //       );
-      
+
 //     });
-  
+
 //     // winners color
-  
+
 //     winnersColor.forEach(async (doc) => {
 //       var commission = (doc.price * 2) / 100;
 //       var newPrice = doc.price - commission;
@@ -3253,9 +3347,9 @@ router.get("/getManualRecharge", async(req,res) => {
 //           },
 //         }
 //       );
-      
+
 //     });
-  
+
 //     //winners BigSmall
 //     winnersBigSmall.forEach(async (doc) => {
 //         var commission = (doc.price * 7) / 100;
@@ -3281,11 +3375,11 @@ router.get("/getManualRecharge", async(req,res) => {
 //             },
 //           }
 //         );
-       
+
 //       });
-  
+
 //     // winners with Violet
-  
+
 //     winnersWithViolet.forEach(async (doc) => {
 //       var commission = (doc.price * 2) / 100;
 //       var newPrice = doc.price - commission;
@@ -3310,11 +3404,11 @@ router.get("/getManualRecharge", async(req,res) => {
 //           },
 //         }
 //       );
-      
+
 //     });
-  
+
 //     //winner Violet
-  
+
 //     winnersViolet.forEach(async (doc) => {
 //       var commission = (doc.price * 2) / 100;
 //       var newPrice = doc.price - commission;
@@ -3339,9 +3433,9 @@ router.get("/getManualRecharge", async(req,res) => {
 //           },
 //         }
 //       );
-     
+
 //     });
-  
+
 //     bidHistory.bid.forEach((doc) => {
 //       var newAmount = doc.amount - (doc.amount * 2) / 100;
 //       var status = "Fail";

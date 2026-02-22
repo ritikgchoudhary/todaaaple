@@ -1,9 +1,13 @@
 import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./router/routes.js";
+import providerRoutes from "./router/providerRoutes.js";
 import cors from "cors";
 import dotenv from "dotenv";
 import errorHandler from "./middleware/error.js";
+import { getCarousel, uploadCarouselImage, addCarouselImageByUrl } from "./controller/carousel.js";
+import { getSiteSettings } from "./controller/siteSettings.js";
+import { uploadSingle } from "./middleware/uploadCarousel.js";
 import Mines from "./model/mines/sessions.js";
 import User from "./model/userSchema.js";
 //import http from 'http';
@@ -16,39 +20,31 @@ import bodyParser from "body-parser";
 import salary from "./model/salary.js";
 import helmet from "helmet";
 import crypto from "crypto";
-//console.log(crypto.randomUUID());
-// import fs from 'fs'
-// import path from 'path';
-dotenv.config({ path: "./config.env" });
+import path from "path";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, "config.env") });
 const DB = process.env.DATABASE;
 var mongoConnected = false;
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    mongoConnected = true;
-    console.log("Connection Successful");
-    
-    // TODO: Create MongoDB indexes
-    // createIndexes()
-    //   .then(result => {
-    //     if (result) {
-    //       console.log("MongoDB indexes created successfully");
-    //     } else {
-    //       console.log("Failed to create some MongoDB indexes");
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.error("Error while creating indexes:", err);
-    //   });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+if (DB) {
+  mongoose
+    .connect(DB, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+    })
+    .then(() => {
+      mongoConnected = true;
+      console.log("MongoDB connected");
+    })
+    .catch((err) => {
+      console.warn("MongoDB Connection Error:", err.message, "- Server will run but DB features may fail.");
+    });
+} else {
+  console.warn("DATABASE not set in config.env - server will run but DB features may fail.");
+}
 
 const app = express();
 // app.use(checkJwt);
@@ -74,38 +70,54 @@ app.use(express.json({ limit: "20kb" }));
 app.use(cors());
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Public API routes on app so they always work (avoid Cannot GET/POST)
+app.get("/site-settings", getSiteSettings);
+app.get("/carousel", getCarousel);
+app.get("/health", (req, res) => res.json({ ok: true, message: "Backend is running" }));
+
+// Carousel upload - registered on app so it always matches
+app.post("/admin/carousel/upload/:api", (req, res, next) => {
+  uploadSingle(req, res, (err) => {
+    if (err) return res.status(400).json({ error: err.message || "Upload failed" });
+    next();
+  });
+}, uploadCarouselImage);
+// Optional: test that backend receives carousel path (GET /admin/carousel/upload/check)
+app.get("/admin/carousel/upload/check", (req, res) => res.json({ ok: true, message: "carousel upload route is live" }));
+// Carousel: add image by URL (CDN) - no file upload
+app.post("/admin/carousel/add-url/:api", addCarouselImageByUrl);
+
 app.use("/user/", authRoutes);
+app.use("/admin", providerRoutes);
 app.use("/", authRoutes);
 
 app.use(errorHandler);
-const port = process.env.PORT || 4001;
 
-const localServ = app.listen(port, () => {
-  console.log(port);
-});
+const port = Number(process.env.PORT) || 4001;
+const MAX_PORT_TRY = 4010;
 
-
-
-
-const io = new Server(localServ, { pingTimeout: 60000, cors: { origin: "*" } });
-global.socket = io;
-io.use(async(socket,next) => {
+function attachSocketIo(server) {
+  const io = new Server(server, { pingTimeout: 60000, cors: { origin: "*" } });
+  global.socket = io;
+  io.use(async (socket, next) => {
   const id = socket.handshake.headers.user_id;
   const token = socket.handshake.headers.token;
 
-  const user = await User.findOne({id: id});
-       
-        if(token === user?.token){
-          next();
-        }else{
-          next(new Error());
-        }
+  const user = await User.findOne({ id: id });
 
- 
+  if (token === user?.token) {
+    next();
+  } else {
+    next(new Error());
+  }
+
+
 });
 io.on("connection", (socket) => {
   // app.set('socket', socket);
-  
+
 
   socket.on("setup", (user) => {
     socket.join(user);
@@ -412,17 +424,16 @@ io.on("connection", (socket) => {
     // }
 
     //user level
-    
+
     const date = new Date();
     const localDate = (date / 1000 + 19800) * 1000;
     const newDate = new Date(localDate);
-    const dateFormated = `${
-      newDate.getDate() +
+    const dateFormated = `${newDate.getDate() +
       "/" +
       (newDate.getMonth() + 1) +
       "/" +
       newDate.getFullYear()
-    }`;
+      }`;
 
 
 
@@ -491,16 +502,16 @@ io.on("connection", (socket) => {
       },
       { upsert: true }
     );
-    var withWalletAmount = user.withWallet??0;
-          var newWithWallet = withWalletAmount + amount;
-          if((user.balance - amount) < newWithWallet){
-            newWithWallet = (user.balance - amount);
-          }
-          
+    var withWalletAmount = user.withWallet ?? 0;
+    var newWithWallet = withWalletAmount + amount;
+    if ((user.balance - amount) < newWithWallet) {
+      newWithWallet = (user.balance - amount);
+    }
+
     await User.updateOne(
       { id: user.id },
-      {withWallet: newWithWallet},
-      { $inc: { balance: -amount, [bidToday]: +amount} }
+      { withWallet: newWithWallet },
+      { $inc: { balance: -amount, [bidToday]: +amount } }
     );
     if (!user.demo)
       await reports.updateOne(
@@ -513,7 +524,7 @@ io.on("connection", (socket) => {
         },
         { upsert: true }
       );
- 
+
     socket.emit("created", {
       id: lastSes.id + 1,
       currentReward: amount - (amount * 2) / 100,
@@ -1139,3 +1150,24 @@ io.on("connection", (socket) => {
     }
   });
 });
+}
+
+function tryListen(attemptPort) {
+  if (attemptPort > MAX_PORT_TRY) {
+    console.error("No free port between " + port + " and " + MAX_PORT_TRY + ". Free port 4001 and try again.");
+    process.exit(1);
+  }
+  const server = app.listen(attemptPort, () => {
+    console.log("Backend running on http://localhost:" + attemptPort);
+    attachSocketIo(server);
+  });
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.warn("Port " + attemptPort + " in use, trying " + (attemptPort + 1) + "...");
+      tryListen(attemptPort + 1);
+    } else {
+      throw err;
+    }
+  });
+}
+tryListen(port);

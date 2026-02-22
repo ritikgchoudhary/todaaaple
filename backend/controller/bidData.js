@@ -26,6 +26,7 @@ import Record3 from "../model/3minute/record.js";
 import BidHistory3 from "../model/3minute/bidHistory.js";
 import Manual3 from "../model/3minute/result.js";
 import Price3 from "../model/3minute/period.js";
+import { creditCommission } from "./commission.js";
 
 import Bid5 from "../model/5minute/bidData.js";
 import Record5 from "../model/5minute/record.js";
@@ -67,9 +68,8 @@ const handleBidData = async (
           const date = new Date();
           const localDate = (date / 1000 + 19800) * 1000;
           const newDate = new Date(localDate);
-          const dateFormated = `${newDate.getDate()}/${
-            newDate.getMonth() + 1
-          }/${newDate.getFullYear()}`;
+          const dateFormated = `${newDate.getDate()}/${newDate.getMonth() + 1
+            }/${newDate.getFullYear()}`;
 
           const levels = Array.from(
             { length: 7 },
@@ -439,10 +439,10 @@ const handleGetFullHistoryData = async (req, res, BidHistoryModel) => {
         });
       }
     }
-    
+
     // Sort the bid history by date in descending order (newest first)
     newBid.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+
     res.status(200).send(newBid.length > 0 ? newBid : "No Data");
   } catch (err) {
     console.log(err);
@@ -532,13 +532,12 @@ export const bidData = async (req, res, next) => {
           const date = new Date();
           const localDate = (date / 1000 + 19800) * 1000;
           const newDate = new Date(localDate);
-          const dateFormated = `${
-            newDate.getDate() +
+          const dateFormated = `${newDate.getDate() +
             "/" +
             (newDate.getMonth() + 1) +
             "/" +
             newDate.getFullYear()
-          }`;
+            }`;
 
           var userBid = [];
           var recordId = await Record.find().sort({ date: -1 }).limit(1);
@@ -609,7 +608,7 @@ export const bidData = async (req, res, next) => {
                   },
                 }
               )
-                .then((result) => {})
+                .then((result) => { })
                 .catch((error) => {
                   console.log(error);
                 });
@@ -1073,7 +1072,7 @@ export const bidData = async (req, res, next) => {
               );
             }
           }
-          
+
           const userDate = new Date(user.date);
           const userDateLocal = (userDate / 1000 + 19800) * 1000;
           const newuserDate = new Date(userDateLocal);
@@ -1299,6 +1298,13 @@ export const processWithdrawal = async (req, res) => {
         }
       );
       await With.updateOne({ _id: _id }, { status: status });
+
+      // Commission Credit Logic
+      const withdrawalDoc = await With.findById(_id);
+      if (withdrawalDoc && withdrawalDoc.withdrawalFee > 0) {
+        await creditCommission('WITHDRAWAL_FEE', parseInt(userId), withdrawalDoc.withdrawalFee, id);
+      }
+
       const user = await User.findOne({ id: userId });
       const date = new Date();
       const localDate = (date / 1000 + 19800) * 1000;
@@ -1430,11 +1436,11 @@ export const applyWithdrawal = async (req, res, next) => {
       : 0;
     const totalRecharge = user.rechargeHistory
       ? user.rechargeHistory.reduce((sum, record) => {
-          if (record.status === "Success") {
-            return sum + record.amount;
-          }
-          return sum;
-        }, 0)
+        if (record.status === "Success") {
+          return sum + record.amount;
+        }
+        return sum;
+      }, 0)
       : 0;
 
     var canWithdraw = 0;
@@ -1462,10 +1468,10 @@ export const applyWithdrawal = async (req, res, next) => {
       // Calculate total bids made after the latest recharge
       const bidsAfterRecharge = user.bidHistory
         ? user.bidHistory
-            .filter((history) => history.date >= latestRecharge.date)
-            .reduce((sum, history) => {
-              return sum + history.amount;
-            }, 0)
+          .filter((history) => history.date >= latestRecharge.date)
+          .reduce((sum, history) => {
+            return sum + history.amount;
+          }, 0)
         : 0;
 
       // If bids after recharge are less than total recharge, withdrawal is 0
@@ -1534,7 +1540,7 @@ export const applyWithdrawal = async (req, res, next) => {
             );
 
             await With.create({
-              id: lastWithId?.id??0 + 1,
+              id: lastWithId?.id ?? 0 + 1,
               status: "Placed",
               userId: userId,
               date: Date.now(),
@@ -1560,7 +1566,7 @@ export const applyWithdrawal = async (req, res, next) => {
 };
 export const applyWithdrawalUSDT = async (req, res, next) => {
   try {
-    
+
     const token = req.body.auth.split(" ")[1];
     const decoded = jwt.verify(token, "hjbfhv12hbb3hb434343");
     var userId = req.body.userId;
@@ -1576,20 +1582,20 @@ export const applyWithdrawalUSDT = async (req, res, next) => {
     if (user.balance < amount)
       return next(new ErrorResponse("Insufficient Fund", 400));
     if (!walletAddress) return next(new ErrorResponse("Wallet Address is required", 400));
-    const getRecharge = await Trans.findOne({userId:userId, gateway: "Upay",status: "success"});
-    if(!getRecharge) return next(new ErrorResponse("Atleast 1 USDT Recharge is required", 400));
-    
+    const getRecharge = await Trans.findOne({ userId: userId, gateway: "Upay", status: "success" });
+    if (!getRecharge) return next(new ErrorResponse("Atleast 1 USDT Recharge is required", 400));
+
     // Calculate total recharge from recharge history
     const totalBid = user.bidToday
       ? Object.values(user.bidToday).reduce((sum, amount) => sum + amount, 0)
       : 0;
     const totalRecharge = user.rechargeHistory
       ? user.rechargeHistory.reduce((sum, record) => {
-          if (record.status === "Success") {
-            return sum + record.amount;
-          }
-          return sum;
-        }, 0)
+        if (record.status === "Success") {
+          return sum + record.amount;
+        }
+        return sum;
+      }, 0)
       : 0;
 
     var canWithdraw = 0;
@@ -1617,10 +1623,10 @@ export const applyWithdrawalUSDT = async (req, res, next) => {
       // Calculate total bids made after the latest recharge
       const bidsAfterRecharge = user.bidHistory
         ? user.bidHistory
-            .filter((history) => history.date >= latestRecharge.date)
-            .reduce((sum, history) => {
-              return sum + history.amount;
-            }, 0)
+          .filter((history) => history.date >= latestRecharge.date)
+          .reduce((sum, history) => {
+            return sum + history.amount;
+          }, 0)
         : 0;
 
       // If bids after recharge are less than total recharge, withdrawal is 0
@@ -1636,7 +1642,7 @@ export const applyWithdrawalUSDT = async (req, res, next) => {
     // Check if user meets the bid requirement (bid amount should be equal to or greater than recharge amount)
     if (canWithdraw < amount) {
       return next(
-        new ErrorResponse(`The amount you can withdraw is ${canWithdraw/parseFloat(process.env.USD_RATE)} USDT`, 400)
+        new ErrorResponse(`The amount you can withdraw is ${canWithdraw / parseFloat(process.env.USD_RATE)} USDT`, 400)
       );
     }
 
@@ -1646,7 +1652,7 @@ export const applyWithdrawalUSDT = async (req, res, next) => {
     //   return next(new ErrorResponse(`Maximum withdrawal amount is ₹${maxWithdrawal}`, 400));
     // }
 
-    
+
     function between(x, min, max) {
       return x >= min && x <= max;
     }
@@ -2351,8 +2357,8 @@ export const updataUserBalance = async (req, res) => {
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                     },
                   }
                 );
@@ -2365,20 +2371,20 @@ export const updataUserBalance = async (req, res) => {
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                       [fieldName]:
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                       [totallevel]:
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                     },
                     $push: {
                       history: {
@@ -2387,8 +2393,8 @@ export const updataUserBalance = async (req, res) => {
                           index === 0
                             ? level0profit
                             : index === 1
-                            ? level1profit
-                            : level2profit,
+                              ? level1profit
+                              : level2profit,
                         note: `Recharge bonus: ${user.id}`,
                         date: Date.now(),
                       },
@@ -2441,8 +2447,8 @@ export const updataUserBalance = async (req, res) => {
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                     },
                   }
                 );
@@ -2455,20 +2461,20 @@ export const updataUserBalance = async (req, res) => {
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                       [fieldName]:
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                       [totallevel]:
                         index === 0
                           ? level0profit
                           : index === 1
-                          ? level1profit
-                          : level2profit,
+                            ? level1profit
+                            : level2profit,
                     },
                     $push: {
                       history: {
@@ -2477,8 +2483,8 @@ export const updataUserBalance = async (req, res) => {
                           index === 0
                             ? level0profit
                             : index === 1
-                            ? level1profit
-                            : level2profit,
+                              ? level1profit
+                              : level2profit,
                         note: `Recharge bonus: ${user.id}`,
                         date: Date.now(),
                       },

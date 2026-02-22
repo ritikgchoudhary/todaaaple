@@ -1,12 +1,14 @@
 import axios from 'axios';
 
+const API_PORT = process.env.REACT_APP_API_PORT || "4001";
 const production = "https://vgaserver3-147401630703.asia-south1.run.app";
-const testing = "http://localhost:4001";
-
-const cricketTesting = "http://localhost:4001";
+const testing = "http://localhost:" + API_PORT;
+const cricketTesting = "http://localhost:" + API_PORT;
 const cricketProduction = "https://api.truewin.club";
 
-export const url = testing;
+// Dev on 3000: use "" so CRA proxy (package.json "proxy") sends API to backend 4001
+const apiBase = typeof window !== "undefined" && window.location.port === "3000" ? "" : testing;
+export const url = apiBase;
 ;
 export const cricket = cricketTesting;
 

@@ -4,21 +4,86 @@ import {
   Grid,
   Container,
   Chip,
-  List,
-  ListItem,
   Dialog,
   DialogContent,
   DialogActions,
   Button,
   CircularProgress,
+  Paper,
+  Box
 } from "@material-ui/core/";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as api from "../../api/auth";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  page: {
+    minHeight: "100vh",
+    backgroundColor: "#F1F5F9",
+    display: "flex",
+    justifyContent: "center",
+    paddingBottom: "calc(60px + env(safe-area-inset-bottom))",
+  },
+  frame: {
+    width: "100%",
+    maxWidth: 500,
+    minHeight: "100vh",
+    backgroundColor: "#fff",
+    position: 'relative',
+    paddingBottom: '20px'
+  },
+  header: {
+    backgroundColor: '#05c0b8',
+    padding: '15px 20px',
+    display: 'flex',
+    alignItems: 'center',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
+  },
+  headerTitle: {
+    color: 'white',
+    flexGrow: 1,
+    textAlign: 'center',
+    fontWeight: 600,
+    marginRight: '20px'
+  },
+  bonusCard: {
+    backgroundColor: '#05c0b8',
+    color: 'white',
+    padding: '20px',
+    borderRadius: '15px',
+    margin: '20px',
+    boxShadow: '0 4px 10px rgba(5, 192, 184, 0.3)'
+  },
+  section: {
+    margin: '0 20px 20px',
+    padding: '15px',
+    backgroundColor: 'white',
+    borderRadius: '10px',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+  },
+  levelBtn: {
+    textTransform: 'none',
+    fontWeight: 'bold',
+    borderRadius: '8px',
+    padding: '8px 5px',
+    fontSize: '12px'
+  },
+  actionChip: {
+    backgroundColor: 'white',
+    color: '#05c0b8',
+    fontWeight: 'bold',
+    '&:hover': {
+      backgroundColor: '#f5f5f5'
+    }
+  }
+}));
 
 const MyPromotion = () => {
+  const classes = useStyles();
   const [isAuth, setAuth] = useState(false);
   const history = useHistory();
   const URL = api.url;
@@ -26,6 +91,10 @@ const MyPromotion = () => {
     level0: { active: 0, total: 0 },
     level1: { active: 0, total: 0 },
     level2: { active: 0, total: 0 },
+    level3: { active: 0, total: 0 },
+    level4: { active: 0, total: 0 },
+    level5: { active: 0, total: 0 },
+    level6: { active: 0, total: 0 },
   });
   const [openDialog, setDialog] = React.useState({ open: false, body: "" });
   const [openDialogBonus, setDialogBonus] = React.useState({ open: false, body: "" });
@@ -34,29 +103,8 @@ const MyPromotion = () => {
 
   const [levelData, setLevelData] = React.useState({});
   const [loader, setLoader] = React.useState(false);
-
-  const showDialog = (phone) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setLoader(true);
-    const AuthStr = "Bearer ".concat(user[0].token);
-    axios
-      .get(`${URL}/userLevelData/${user[0].id}/${phone}`, {
-        headers: { Authorization: AuthStr },
-      })
-      .then((response) => {
-        setLevelData(response.data);
-        setLoader(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    setDialog({ ...openDialog, open: true });
-  };
+  const [user, setUser] = useState([{ bonus: 0.0 }]);
+  const [level, setLevel] = React.useState(0);
 
   const dialogClose = () => {
     setDialog({ ...openDialog, open: false });
@@ -69,7 +117,7 @@ const MyPromotion = () => {
   const ruleClose = () => {
     setRuleDialog(false);
   };
-  
+
 
   const setDialogHow = (e) => {
     e.preventDefault();
@@ -81,23 +129,20 @@ const MyPromotion = () => {
     setLoader(true);
     const loggedInUser = localStorage.getItem("user");
     const foundUser = JSON.parse(loggedInUser);
-      
-      const AuthStr = "Bearer ".concat(foundUser.token);
-    
+
+    const AuthStr = "Bearer ".concat(foundUser.token);
+
     axios
-    .get(`${URL}/claimContriBonus/${foundUser.result.id}`, {
-      headers: { Authorization: AuthStr },
-    })
-    .then((response) => {
-      setLoader(false);
-      setDialogBonus({open: true, body: response.data})
-      
-      
-    })
-    .catch((error) => {
-      
-      
-    });
+      .get(`${URL}/claimContriBonus/${foundUser.result.id}`, {
+        headers: { Authorization: AuthStr },
+      })
+      .then((response) => {
+        setLoader(false);
+        setDialogBonus({ open: true, body: response.data })
+      })
+      .catch((error) => {
+        setLoader(false);
+      });
   }
 
   useEffect(() => {
@@ -114,7 +159,7 @@ const MyPromotion = () => {
         .then((response) => {
           setMembers(response.data)
         })
-        .catch((error) => {});
+        .catch((error) => { });
       axios
         .get(`${URL}/getUser/${foundUser.result.id}`, {
           headers: { Authorization: AuthStr },
@@ -123,6 +168,7 @@ const MyPromotion = () => {
           setUser(response.data);
           setLoader(false);
           if (response.data[0].block) {
+            // handle block
           }
         })
         .catch((error) => {
@@ -133,165 +179,117 @@ const MyPromotion = () => {
       history.push("/login");
     }
   }, []);
-  const [user, setUser] = useState([{ bonus: 0.0 }]);
 
-  const [level, setLevel] = React.useState(0);
-  const handleLevel = (level) => async (event) => {
-    setLevel(level);
+  const handleLevel = (newLevel) => (event) => {
+    setLevel(newLevel);
   };
+
   return (
-    <div style={{ backgroundColor: "#f2f2f2", minHeight: "100vh" }}>
-      <Dialog
-                    open={openDialogBonus.open}
-                    onClose={dialogCloseBonus}
-                    PaperProps={{
-                    style: {
-                        // backgroundColor: 'transparent',
-                        boxShadow: 'none',
-                    },
-                    }}
-                
-                    
-                >
-                    <Container style={{
-                      // backgroundColor: 'black', opacity: '0.6', height: '50px'
-                      }}>
-                <Typography style={{padding: '10px', color: "black" }}>{openDialogBonus.body}</Typography>
-                </Container>
-                
-                
-              </Dialog>
-       <Dialog
-        open={ruleDialog}
-        onClose={ruleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        
-      >
-       
-        <DialogContent>
-        <Typography align="center" style={{ fontSize: '20px',fontWeight: 'bold',paddingBottom: '20px'}}>How to Claim Contibution Bonus</Typography>
-       
-          <Typography align="left" style={{ fontSize: '16px',fontWeight: 'bold',paddingBottom: '20px',paddingTop: '20px'}}>If level 1 contribution reaches 10,000 and above you will get 25% extra bonus.</Typography>
-           </DialogContent>
-       
-      </Dialog>
-      <Grid
-        container
-        direction="row"
-        justify=""
-        alignItems="center"
-        style={{
-          paddingLeft: "20px",
-          paddingTop: "15px",
-          paddingBottom: "15px",
-          paddingRight: "20px",
-          backgroundColor: "white",
-        }}
-      >
-        <Grid item xs={4}>
-          <Link to="../profile">
-            <ArrowBackIosIcon style={{ fontSize: "20px" }} />
-          </Link>
-        </Grid>
-        <Grid item xs={4}>
-          <Typography align="center" st>
-            My Promotion
-          </Typography>
-        </Grid>
-      </Grid>
-      <Container style={{ backgroundColor: "#00b8a9", height: "100px" }}>
-        <Grid
-          container
-          direction="row"
-          justify="space-between"
-          alignItems="center"
-        >
-          <Grid item style={{ paddingTop: "20px" }}>
-            <Typography style={{ color: "white", fontSize: "28px" }}>
-              ₹ {user && user[0].bonus.toFixed(2)}
-            </Typography>
-            <Typography style={{ color: "white", fontSize: "16px" }}>
-              My Bonus
-            </Typography>
-          </Grid>
+    <div className={classes.page}>
+      <div className={classes.frame}>
+        <div className={classes.header}>
+          <ArrowBackIosIcon style={{ fontSize: '20px', color: 'white', cursor: 'pointer' }} onClick={() => history.push('../profile')} />
+          <Typography className={classes.headerTitle}>My Promotion</Typography>
+        </div>
 
-          <Grid item style={{ paddingTop: "20px" }}>
-            <Link
-              to="/mypromotion/apply"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              <Chip
-                label="Apply to Balance"
-                style={{ backgroundColor: "white", color: "#00b8a9" }}
-              ></Chip>
-            </Link>
-          </Grid>
-        </Grid>
-      </Container>
-      <Container style={{ backgroundColor: "white" }}>
-        <Grid
-          container
-          direction="row"
-          justify="space-evenly"
-          style={{ padding: "25px" }}
+        <Dialog
+          open={openDialogBonus.open}
+          onClose={dialogCloseBonus}
+          PaperProps={{
+            style: {
+              boxShadow: 'none',
+              borderRadius: '10px'
+            },
+          }}
         >
-          {/* <Grid item>
-                    <Typography>Bonus Record</Typography>
-                </Grid> */}
-          <Link
-            to="/applyRecord"
-            style={{ textDecoration: "none", color: "black" }}
-          >
+          <Container style={{ padding: '20px' }}>
+            <Typography style={{ color: "black", textAlign: 'center' }}>{openDialogBonus.body}</Typography>
+          </Container>
+        </Dialog>
+
+        <Dialog
+          open={ruleDialog}
+          onClose={ruleClose}
+          fullWidth
+          maxWidth="xs"
+        >
+          <DialogContent>
+            <Typography align="center" style={{ fontSize: '18px', fontWeight: 'bold', paddingBottom: '10px', color: '#05c0b8' }}>
+              Bonus Rules
+            </Typography>
+            <Typography align="left" style={{ fontSize: '14px', color: '#333' }}>
+              If level 1 contribution reaches 10,000 and above you will get 25% extra bonus.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={ruleClose} color="primary">Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Bonus Card */}
+        <div className={classes.bonusCard}>
+          <Grid container direction="row" justify="space-between" alignItems="center">
             <Grid item>
-              <Typography>Apply Record</Typography>
+              <Typography style={{ fontSize: "28px", fontWeight: 'bold' }}>
+                ₹ {user && user[0].bonus ? user[0].bonus.toFixed(2) : '0.00'}
+              </Typography>
+              <Typography style={{ fontSize: "14px", opacity: 0.9 }}>
+                My Bonus
+              </Typography>
             </Grid>
-          </Link>
-        </Grid>
-      </Container>
-      <Container
-        style={{ padding: "15px", marginTop: "10px", backgroundColor: "white" }}
-      >
-        <Grid container direction="row" justify="space-between">
-          <Grid item>
-            <Typography style={{ color: "#05c0b8" }}>Invite Friends</Typography>
+            <Grid item>
+              <Link to="/mypromotion/apply" style={{ textDecoration: "none" }}>
+                <Chip label="Apply to Balance" className={classes.actionChip} />
+              </Link>
+            </Grid>
+          </Grid>
+        </div>
+
+        {/* Action Links */}
+        <Paper className={classes.section} style={{ padding: '10px' }}>
+          <Grid container justify="space-around" spacing={2}>
+            <Grid item>
+              <Link to="/applyRecord" style={{ textDecoration: "none", color: "#333", fontSize: '14px', fontWeight: 'bold' }}>
+                Apply Record
+              </Link>
+            </Grid>
+            <Grid item>
+              <span style={{ color: '#ddd' }}>|</span>
+            </Grid>
+            <Grid item>
+              <Link to="/invite" style={{ textDecoration: "none", color: "#333", fontSize: '14px', fontWeight: 'bold' }}>
+                Invite Friends
+              </Link>
+            </Grid>
+          </Grid>
+        </Paper>
+
+        {/* Members Stats */}
+        <Paper className={classes.section}>
+          <Grid container justify="space-between" alignItems="flex-end" style={{ marginBottom: '15px' }}>
+            <Grid item>
+              <Typography style={{ color: "#05c0b8", fontSize: "16px", fontWeight: 'bold' }}>
+                Team Data
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography style={{ fontSize: "12px", color: '#666' }}>
+                Active Today: <span style={{ color: '#05c0b8', fontWeight: 'bold' }}>{members[`level${level}`] ? members[`level${level}`]["active"] : 0}</span>
+              </Typography>
+            </Grid>
           </Grid>
 
-          <Grid item>
-            <Link
-              to="/invite"
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              <Chip
-                label="Go Now"
-                style={{ backgroundColor: "#00b8a9", color: "white" }}
-              ></Chip>
-            </Link>
-          </Grid>
-        </Grid>
-      </Container>
-      <Container
-        style={{ backgroundColor: "white", padding: "15px", marginTop: "10px" }}
-      >
-        <Typography style={{ color: "#05c0b8", fontSize: "18px" }}>
-          Active members today:{" "}
-          {members[`level${level}`]["active"]}
-        </Typography>
-
-        <Grid container spacing={1}>
+          {/* Level Selector */}
+          <Grid container spacing={1} style={{ marginBottom: '20px' }}>
             {[...Array(7)].map((_, index) => (
-              <Grid item xs={index === 0 ? 12 : 6} sm={4} md={3} key={index}>
+              <Grid item xs={3} key={index}>
                 <Button
                   fullWidth
+                  className={classes.levelBtn}
                   onClick={handleLevel(index)}
                   style={{
-                    backgroundColor: level === index ? '#05c0b8' : 'transparent',
-                    border: '1px solid #05c0b8',
-                    borderRadius: '8px',
-                    padding: '8px',
-                    color: level === index ? 'black' : 'black',
-                    textTransform: 'none',
-                    transition: 'all 0.3s ease'
+                    backgroundColor: level === index ? '#05c0b8' : '#f5f5f5',
+                    color: level === index ? 'white' : '#666',
                   }}
                 >
                   Level {index + 1}
@@ -299,322 +297,102 @@ const MyPromotion = () => {
               </Grid>
             ))}
           </Grid>
-        <Grid container direction="row" style={{ paddingTop: "20px" }}>
-          <Grid item xs={6}>
-            <Typography style={{ color: "grey", fontSize: "14px" }}>
-              Total People
-            </Typography>
-            <Typography style={{ fontSize: "18px" }}>
-              {members[`level${level}`]["total"]}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography style={{ color: "grey", fontSize: "14px" }}>
-              Contribution(Rupees)
-            </Typography>
-            <Typography style={{ fontSize: "18px" }}>
-              ₹
-              {user && user[0][`level${level}contribution`]
-                ? user &&
-                  user[0][`level${level}contribution`] &&
-                  user[0][`level${level}contribution`].toFixed(2)
-                : "0"}
-            </Typography>
-            {
-              level === 0 ?  <Grid container direction="row">
-              <Grid item>
-              <Chip
-                onClick={(e) => handleClaimBonus(e)}
-                label="Claim"
-                style={{ backgroundColor: "#00b8a9", color: "white" }}
-              ></Chip>
-              </Grid>
-              <Grid item style={{paddingLeft: '5px'}}>
-              <Chip
-                onClick={(e) => setDialogHow(e)}
-                label="How ?"
-                style={{ backgroundColor: "grey", color: "white" }}
-              ></Chip>
-              </Grid>
 
-            </Grid> : <div></div>
-            }
-           
-          
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Paper elevation={0} style={{ backgroundColor: '#f9f9f9', padding: '10px', borderRadius: '8px' }}>
+                <Typography style={{ color: "grey", fontSize: "12px" }}>
+                  Total People
+                </Typography>
+                <Typography style={{ fontSize: "18px", fontWeight: 'bold', color: '#333' }}>
+                  {members[`level${level}`] ? members[`level${level}`]["total"] : 0}
+                </Typography>
+              </Paper>
+            </Grid>
+            <Grid item xs={6}>
+              <Paper elevation={0} style={{ backgroundColor: '#f9f9f9', padding: '10px', borderRadius: '8px' }}>
+                <Typography style={{ color: "grey", fontSize: "12px" }}>
+                  Contribution
+                </Typography>
+                <Typography style={{ fontSize: "18px", fontWeight: 'bold', color: '#333' }}>
+                  ₹
+                  {user && user[0][`level${level}contribution`]
+                    ? user[0][`level${level}contribution`].toFixed(2)
+                    : "0"}
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
-        </Grid>
 
-      </Container>
-      <Container
-        style={{ backgroundColor: "white", padding: "15px", marginTop: "10px" }}
-      >
-        <Grid container direction="row" justifyContent="space-between">
-          <Grid item>
-            <Link
-              to={`/promotionRecord/${user[0].id}`}
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              <Chip
-                label="View full members"
-                style={{ backgroundColor: "#00b8a9", color: "white" }}
-              ></Chip>
-            </Link>
+          {level === 0 && (
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+              <Button
+                variant="contained"
+                style={{ backgroundColor: '#05c0b8', color: 'white', marginRight: '10px', textTransform: 'none' }}
+                onClick={handleClaimBonus}
+              >
+                Claim Bonus
+              </Button>
+              <Button
+                variant="outlined"
+                style={{ borderColor: '#05c0b8', color: '#05c0b8', textTransform: 'none' }}
+                onClick={setDialogHow}
+              >
+                How?
+              </Button>
+            </div>
+          )}
+        </Paper>
+
+        {/* View Details Links */}
+        <div style={{ padding: '0 20px' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Link to={`/promotionRecord/${user[0].id}`} style={{ textDecoration: "none" }}>
+                <Button fullWidth variant="contained" style={{ backgroundColor: '#333', color: 'white', textTransform: 'none' }}>
+                  View All Members
+                </Button>
+              </Link>
+            </Grid>
+            <Grid item xs={6}>
+              <Link to={`/promotionRecordNew/${user[0].id}`} style={{ textDecoration: "none" }}>
+                <Button fullWidth variant="outlined" style={{ borderColor: '#333', color: '#333', textTransform: 'none' }}>
+                  View Today's
+                </Button>
+              </Link>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Link
-              to={`/promotionRecordNew/${user[0].id}`}
-              style={{ textDecoration: "none", color: "black" }}
-            >
-              <Chip
-                label="View today members"
-                style={{ backgroundColor: "#00b8a9", color: "white" }}
-              ></Chip>
-            </Link>
-          </Grid>
-        </Grid>
-        {
-          // user[0][`level${level}`] &&
-          //   user[0][`level${level}`].map((member) => (
-          //     <List component="nav" aria-label="main mailbox folders">
-          //       <ListItem>
-          //         <Grid
-          //           container
-          //           alignItems="center"
-          //           justify="space-between"
-          //           direction="row"
-          //         >
-          //           <Grid item>
-          //             <Typography variant="p">{member.mobile}</Typography>
-          //             {/* <Typography style={{fontSize: 12, color: 'blue'}} onClick={getRecharge(member.phone)}>View Details</Typography> */}
-          //           </Grid>
-          //           <Grid item>
-          //             <Typography variant="p">
-          //               {new Date(member.datetime).toLocaleString()}
-          //             </Typography>
-          //           </Grid>
-          //           <Grid item onClick={showDialog(member.mobile)}>
-          //             <Typography
-          //               variant="p"
-          //               style={{ color: "#05c0b8", fontWeight: "bold" }}
-          //             >
-          //               View Profile
-          //             </Typography>
-          //           </Grid>
-          //         </Grid>
-          //       </ListItem>
-          //       <Container
-          //         style={{
-          //           backgroundColor: "grey",
-          //           padding: "0.5px",
-          //           marginTop: "10px",
-          //         }}
-          //       ></Container>
-          //     </List>
-          //   ))
-        }
-      </Container>
-      <Container style={{ height: "50px" }}></Container>
-      <Dialog
-        open={loader}
-        PaperProps={{
-          style: {
-            backgroundColor: "transparent",
-            boxShadow: "none",
-          },
-        }}
-      >
-        <Container
-          align="center"
-          style={{
-            backgroundColor: "black",
-            opacity: "0.6",
-            height: "100px",
-            paddingTop: "10px",
+        </div>
+
+
+        {/* Loading Overlay */}
+        <Dialog
+          open={loader}
+          PaperProps={{
+            style: {
+              backgroundColor: "transparent",
+              boxShadow: "none",
+            },
           }}
         >
-          <CircularProgress style={{ color: "white" }} />
-          <Typography style={{ paddingTop: "10px", color: "white" }}>
-            Please Wait!
-          </Typography>
-        </Container>
-      </Dialog>
-
-      <Dialog
-        open={openDialog.open}
-        onClose={dialogClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogContent>
-          <Container style={{ padding: "10px" }}>
-            {loader ? (
-              <Container
-                style={{
-                  height: "100px",
-                  width: "250px",
-                  alignContent: "center",
-                }}
-              >
-                <CircularProgress style={{ color: "grey" }} />
-              </Container>
-            ) : (
-              <Container disableGutters style={{ width: "300px" }}>
-                <Typography
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                    color: "#05c0b8",
-                  }}
-                >
-                  Member Profile
-                </Typography>
-                <Container style={{ height: "20px" }}></Container>
-                <Grid container direction="row">
-                  <Grid item xs={10}>
-                    <Typography style={{ fontSize: "18px" }}>
-                      Live Balance
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      ₹{levelData.balance}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Container
-                  style={{
-                    backgroundColor: "grey",
-                    padding: "0.5px",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                ></Container>
-                <Grid container justify="space-between" direction="row">
-                  <Grid item xs={10}>
-                    <Typography style={{ fontSize: "18px" }}>
-                      Today Bet
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      ₹{levelData.todayBet}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Container
-                  style={{
-                    backgroundColor: "grey",
-                    padding: "0.5px",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                ></Container>
-                <Grid container justify="space-between" direction="row">
-                  <Grid item xs={10}>
-                    <Typography style={{ fontSize: "18px" }}>
-                      Today Recharge
-                    </Typography>
-                    {/* <Typography style={{fontSize: 12, color: 'blue'}} onClick={getRecharge(member.phone)}>View Details</Typography> */}
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography
-                      style={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      ₹{levelData.todayRecharge}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Container
-                  style={{
-                    backgroundColor: "grey",
-                    padding: "0.5px",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                ></Container>
-                <Grid container justify="space-between" direction="row">
-                  <Grid item xs={10}>
-                    <Typography style={{ fontSize: "18px" }}>
-                      Last Withdraw
-                    </Typography>
-                    {/* <Typography style={{fontSize: 12, color: 'blue'}} onClick={getRecharge(member.phone)}>View Details</Typography> */}
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography
-                      style={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      ₹{levelData.todayWithdrawal}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Container
-                  style={{
-                    backgroundColor: "grey",
-                    padding: "0.5px",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                ></Container>
-                <Grid container justify="space-between" direction="row">
-                  <Grid item xs={10}>
-                    <Typography style={{ fontSize: "18px" }}>
-                      First Recharge
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography
-                      style={{
-                        fontSize: "18px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      ₹{levelData.firstRecharge}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <Container
-                  style={{
-                    backgroundColor: "grey",
-                    padding: "0.5px",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                ></Container>
-                <Grid container justify="space-between" direction="row">
-                  <Grid item xs={10}>
-                    <Typography style={{ fontSize: "18px" }}>
-                      Total Recharge
-                    </Typography>
-                    {/* <Typography style={{fontSize: 12, color: 'blue'}} onClick={getRecharge(member.phone)}>View Details</Typography> */}
-                  </Grid>
-                  <Grid item xs={2}>
-                    <Typography
-                      style={{ fontSize: "18px", fontWeight: "bold" }}
-                    >
-                      ₹{levelData.totalRecharge}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Container>
-            )}
+          <Container
+            align="center"
+            style={{
+              backgroundColor: "black",
+              opacity: "0.6",
+              height: "100px",
+              width: "100px",
+              paddingTop: "10px",
+              borderRadius: '10px'
+            }}
+          >
+            <CircularProgress style={{ color: "white" }} />
+            <Typography style={{ paddingTop: "10px", color: "white", fontSize: '12px' }}>
+              Please Wait...
+            </Typography>
           </Container>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={dialogClose} color="primary" variant="filled">
-            Back
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Dialog>
+      </div>
     </div>
   );
 };

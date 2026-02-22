@@ -1,0 +1,133 @@
+import crypto from "crypto";
+import axios from "axios";
+import User from "../model/userSchema.js";
+import Game from "../model/Game.js";
+import ErrorResponse from "../utils/error.js";
+import Dotenv from "dotenv";
+Dotenv.config({ path: "./config.env" });
+
+const TOKEN = process.env.SOFTAPI_TOKEN || "d94a7c3de0426e03bdce4ebee34da50d";
+const SECRET = process.env.SOFTAPI_SECRET || "12345678901234567890123456789012"; // 32 chars
+const SERVER_URL = "https://igamingapis.live/api/v1";
+
+// Helper for AES-256-ECB encryption (matching PHP openssl_encrypt)
+function encryptPayload(data, key) {
+    if (key.length !== 32) throw new Error("Key must be 32 bytes long");
+    const json = JSON.stringify(data);
+    const cipher = crypto.createCipheriv('aes-256-ecb', key, null);
+    cipher.setAutoPadding(true);
+    let encrypted = cipher.update(json, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+    return encrypted;
+}
+
+export const launchGame = async (req, res, next) => {
+    const { id: userId } = req.params;
+    const { game_uid } = req.body;
+
+    if (!userId || !game_uid) {
+        return next(new ErrorResponse("Missing userId or game_uid", 400));
+    }
+
+    try {
+        const user = await User.findOne({ id: userId });
+        if (!user) return next(new ErrorResponse("User not found", 404));
+
+        // Look up the actual Game to get its numeric ID (or other correct identifier)
+        // User requested to send the 'id' field (e.g. 6510) instead of the 'game_code' (e.g. MD5 hash)
+        const game = await Game.findOne({ game_code: game_uid });
+        const finalGameUid = game ? game.id : game_uid;
+
+        console.log(`Launching Game: Code=${game_uid} -> ID=${finalGameUid}`);
+
+        const payload = {
+            user_id: user.id,
+            balance: user.balance,
+            game_uid: finalGameUid, // Send the ID
+            token: TOKEN,
+            timestamp: Date.now(),
+            return: process.env.CLIENT_URL || "https://toddapple.live",
+            callback: `${process.env.SERVER_URL}/api/gameCallback`
+        };
+
+        console.log("Full Launch Payload:", JSON.stringify(payload, null, 2));
+
+        const encrypted = encryptPayload(payload, SECRET);
+        const url = `${SERVER_URL}?payload=${encodeURIComponent(encrypted)}&token=${encodeURIComponent(TOKEN)}`;
+
+        const response = await axios.get(url);
+
+        // console.log("Full API Response:", JSON.stringify(response.data, null, 2));
+
+        // DEBUG MODE: Return response to frontend but do NOT launch (success: false)
+        /*
+        res.status(200).json({
+            success: false,
+            msg: "DEBUG MODE: Check Network Tab for payload & response",
+            api_response: response.data,
+            payload_sent: payload // Send back what we sent too
+        });
+        */
+
+        if (response.data.code === 0) {
+            res.status(200).json({
+                success: true,
+                url: response.data.data.url
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                msg: response.data.msg
+            });
+        }
+    } catch (error) {
+        console.error("Launch Game Error:", error.message);
+        next(new ErrorResponse(error.message, 500));
+    }
+};
+
+export const gameCallback = async (req, res) => {
+    const data = req.body;
+    console.log("Game Callback Received:", data);
+
+    if (!data) {
+        return res.status(200).json({
+            credit_amount: -1,
+            error: 'Invalid JSON'
+        });
+    }
+
+    const { game_uid, member_account, bet_amount, win_amount } = data;
+
+    try {
+        const user = await User.findOne({ id: member_account });
+        if (!user) {
+            return res.status(200).json({
+                credit_amount: -1,
+                error: 'User not found'
+            });
+        }
+
+        // Logic: new_balance = current_balance - bet_amount + win_amount
+        const bet = parseFloat(bet_amount || 0);
+        const win = parseFloat(win_amount || 0);
+        const netChange = win - bet;
+
+        const updatedUser = await User.findOneAndUpdate(
+            { id: member_account },
+            { $inc: { balance: netChange } },
+            { new: true }
+        );
+
+        res.status(200).json({
+            credit_amount: updatedUser.balance,
+            timestamp: Date.now()
+        });
+    } catch (error) {
+        console.error("Callback Error:", error.message);
+        res.status(200).json({
+            credit_amount: -1,
+            error: error.message
+        });
+    }
+};

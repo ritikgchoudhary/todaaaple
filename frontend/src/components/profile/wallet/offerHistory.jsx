@@ -33,118 +33,61 @@ import axios from 'axios';
 import useAuth from '../../../hooks/useAuth';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: 'white',
-    minHeight: '100vh',
-    paddingBottom: theme.spacing(8)
+  page: {
+    minHeight: "100vh",
+    backgroundColor: "#F1F5F9",
+    display: "flex",
+    justifyContent: "center",
+    paddingBottom: "calc(60px + env(safe-area-inset-bottom))",
+  },
+  frame: {
+    width: "100%",
+    maxWidth: 500,
+    minHeight: "100vh",
+    backgroundColor: "#fff",
+    position: 'relative',
+    paddingBottom: '20px'
   },
   header: {
     backgroundColor: '#05c0b8',
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(3)
-  },
-  title: {
-    color: 'white',
-    fontWeight: 500,
+    padding: '15px 20px',
     display: 'flex',
     alignItems: 'center',
-    '& svg': {
-      marginRight: theme.spacing(1),
-      fontSize: 24
-    }
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
   },
-  tableContainer: {
-    backgroundColor: 'white',
-    borderRadius: theme.spacing(2),
-    '& .MuiTableCell-root': {
-      borderBottom: '1px solid rgba(0,0,0,0.1)'
-    }
-  },
-  tableHeader: {
-    backgroundColor: '#f5f5f5',
-    '& .MuiTableCell-head': {
-      color: '#05c0b8',
-      fontWeight: 600,
-      fontSize: '0.9rem'
-    }
-  },
-  tableCell: {
-    color: 'black',
-    fontSize: '0.9rem'
-  },
-  statusChip: {
-    padding: '4px 12px',
-    borderRadius: '12px',
-    fontWeight: 500,
-    fontSize: '0.8rem'
+  headerTitle: {
+    color: 'white',
+    flexGrow: 1,
+    textAlign: 'center',
+    fontWeight: 600,
+    marginRight: '20px' // offset for back button
   },
   filterContainer: {
     backgroundColor: 'white',
     borderRadius: theme.spacing(2),
     padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    margin: theme.spacing(2),
     boxShadow: '0px 2px 8px rgba(0,0,0,0.1)'
   },
-  formControl: {
-    width: '100%',
-    '& .MuiInputBase-root': {
-      color: 'black',
-    },
-    '& .MuiInputLabel-root': {
-      color: 'rgba(0,0,0,0.7)',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'rgba(0,0,0,0.3)',
-      },
-      '&:hover fieldset': {
-        borderColor: 'rgba(0,0,0,0.5)',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#05c0b8',
-      },
-    },
-    '& .MuiSelect-icon': {
-      color: 'black',
-    }
+  tableContainer: {
+    marginTop: '10px',
+    paddingLeft: '10px',
+    paddingRight: '10px'
+  },
+  statusChip: {
+    padding: '4px 8px',
+    borderRadius: '4px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    textTransform: 'uppercase'
   },
   dateButton: {
-    margin: theme.spacing(0.5),
-    color: 'black',
-    borderColor: 'rgba(0,0,0,0.3)',
-    '&.active': {
-      backgroundColor: 'rgba(5,192,184,0.1)',
-      borderColor: '#05c0b8',
-    }
-  },
-  datePickerContainer: {
-    padding: theme.spacing(2),
-    marginTop: theme.spacing(1),
-    backgroundColor: '#f5f5f5',
-    borderRadius: theme.spacing(1)
-  },
-  datePicker: {
-    width: '100%',
-    marginBottom: theme.spacing(1),
-    '& .MuiInputBase-root': {
-      color: 'black',
-    },
-    '& .MuiInputLabel-root': {
-      color: 'rgba(0,0,0,0.7)',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'rgba(0,0,0,0.3)',
-      },
-    },
-    '& .MuiIconButton-root': {
-      color: 'black',
-    }
-  },
-  noDataMessage: {
-    color: 'black',
-    textAlign: 'center',
-    padding: theme.spacing(3)
+    margin: '2px',
+    fontSize: '10px',
+    padding: '4px 8px',
+    minWidth: 'auto'
   }
 }));
 
@@ -157,7 +100,7 @@ const OfferHistory = () => {
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState({ open: false, message: '' });
-  
+
   // Filter states
   const [category, setCategory] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
@@ -219,7 +162,7 @@ const OfferHistory = () => {
 
     // Apply category filter
     if (category !== 'all') {
-      result = result.filter(transaction => 
+      result = result.filter(transaction =>
         transaction.type && transaction.type.toLowerCase().includes(category.toLowerCase())
       );
     }
@@ -228,15 +171,15 @@ const OfferHistory = () => {
     if (dateFilter !== 'all') {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      
+
       const thisWeekStart = new Date(today);
       thisWeekStart.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
-      
+
       const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-      
+
       const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
       const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
       lastMonthEnd.setHours(23, 59, 59, 999);
@@ -248,48 +191,48 @@ const OfferHistory = () => {
             return txDate >= today;
           });
           break;
-          
+
         case 'yesterday':
           result = result.filter(transaction => {
             const txDate = new Date(transaction.date);
             return txDate >= yesterday && txDate < today;
           });
           break;
-          
+
         case 'thisWeek':
           result = result.filter(transaction => {
             const txDate = new Date(transaction.date);
             return txDate >= thisWeekStart;
           });
           break;
-          
+
         case 'thisMonth':
           result = result.filter(transaction => {
             const txDate = new Date(transaction.date);
             return txDate >= thisMonthStart;
           });
           break;
-          
+
         case 'lastMonth':
           result = result.filter(transaction => {
             const txDate = new Date(transaction.date);
             return txDate >= lastMonthStart && txDate <= lastMonthEnd;
           });
           break;
-          
+
         case 'custom':
           if (startDate && endDate) {
             const startDateTime = new Date(startDate);
             const endDateTime = new Date(endDate);
             endDateTime.setHours(23, 59, 59, 999);
-            
+
             result = result.filter(transaction => {
               const txDate = new Date(transaction.date);
               return txDate >= startDateTime && txDate <= endDateTime;
             });
           }
           break;
-          
+
         default:
           break;
       }
@@ -301,13 +244,13 @@ const OfferHistory = () => {
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return { background: 'rgba(76, 175, 80, 0.1)', color: '#4CAF50' };
+        return { background: '#e8f5e9', color: '#2e7d32' };
       case 'pending':
-        return { background: 'rgba(255, 172, 62, 0.1)', color: '#FFAC3E' };
+        return { background: '#fff3e0', color: '#ef6c00' };
       case 'failed':
-        return { background: 'rgba(244, 67, 54, 0.1)', color: '#F44336' };
+        return { background: '#ffebee', color: '#c62828' };
       default:
-        return { background: 'rgba(0, 0, 0, 0.1)', color: 'black' };
+        return { background: '#f5f5f5', color: '#616161' };
     }
   };
 
@@ -320,23 +263,14 @@ const OfferHistory = () => {
   };
 
   return (
-    <div className={classes.root}>
-      {/* Header */}
-      <Box className={classes.header}>
-        <Container maxWidth="sm">
-          <Box display="flex" alignItems="center">
-            <IconButton onClick={history.goBack} style={{ color: 'white' }}>
-              <ArrowBackIosIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-              <HistoryIcon />
-              Reward Transaction History
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
+    <div className={classes.page}>
+      <div className={classes.frame}>
+        {/* Header */}
+        <div className={classes.header}>
+          <ArrowBackIosIcon style={{ fontSize: '20px', color: 'white', cursor: 'pointer' }} onClick={history.goBack} />
+          <Typography className={classes.headerTitle}>Offer History</Typography>
+        </div>
 
-      <Container maxWidth="sm">
         {/* Filters */}
         <Paper className={classes.filterContainer}>
           <Grid container spacing={2}>
@@ -350,7 +284,7 @@ const OfferHistory = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <FormControl variant="outlined" className={classes.formControl}>
+              <FormControl variant="outlined" fullWidth size="small">
                 <InputLabel id="category-label">Category</InputLabel>
                 <Select
                   labelId="category-label"
@@ -376,60 +310,52 @@ const OfferHistory = () => {
                   Date Range
                 </Typography>
               </Box>
-              
+
               <Box display="flex" flexWrap="wrap">
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'all' ? 'active' : ''}`}
+                <Button
+                  variant={dateFilter === 'all' ? "contained" : "outlined"}
+                  className={classes.dateButton}
+                  style={dateFilter === 'all' ? { backgroundColor: '#05c0b8', color: 'white' } : {}}
                   onClick={() => handleDateFilterChange('all')}
                 >
-                  All Time
+                  All
                 </Button>
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'today' ? 'active' : ''}`}
+                <Button
+                  variant={dateFilter === 'today' ? "contained" : "outlined"}
+                  className={classes.dateButton}
+                  style={dateFilter === 'today' ? { backgroundColor: '#05c0b8', color: 'white' } : {}}
                   onClick={() => handleDateFilterChange('today')}
                 >
                   Today
                 </Button>
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'yesterday' ? 'active' : ''}`}
+                <Button
+                  variant={dateFilter === 'yesterday' ? "contained" : "outlined"}
+                  className={classes.dateButton}
+                  style={dateFilter === 'yesterday' ? { backgroundColor: '#05c0b8', color: 'white' } : {}}
                   onClick={() => handleDateFilterChange('yesterday')}
                 >
                   Yesterday
                 </Button>
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'thisWeek' ? 'active' : ''}`}
+                <Button
+                  variant={dateFilter === 'thisWeek' ? "contained" : "outlined"}
+                  className={classes.dateButton}
+                  style={dateFilter === 'thisWeek' ? { backgroundColor: '#05c0b8', color: 'white' } : {}}
                   onClick={() => handleDateFilterChange('thisWeek')}
                 >
-                  This Week
+                  Week
                 </Button>
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'thisMonth' ? 'active' : ''}`}
+                <Button
+                  variant={dateFilter === 'thisMonth' ? "contained" : "outlined"}
+                  className={classes.dateButton}
+                  style={dateFilter === 'thisMonth' ? { backgroundColor: '#05c0b8', color: 'white' } : {}}
                   onClick={() => handleDateFilterChange('thisMonth')}
                 >
-                  This Month
+                  Month
                 </Button>
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'lastMonth' ? 'active' : ''}`}
-                  onClick={() => handleDateFilterChange('lastMonth')}
-                >
-                  Last Month
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  size="small"
-                  className={`${classes.dateButton} ${dateFilter === 'custom' ? 'active' : ''}`}
+                <Button
+                  variant={dateFilter === 'custom' ? "contained" : "outlined"}
+                  className={classes.dateButton}
+                  style={dateFilter === 'custom' ? { backgroundColor: '#05c0b8', color: 'white' } : {}}
                   onClick={() => handleDateFilterChange('custom')}
                 >
                   Custom
@@ -440,169 +366,120 @@ const OfferHistory = () => {
             {showCustomDatePicker && (
               <Grid item xs={12}>
                 <Fade in={showCustomDatePicker}>
-                  <Box className={classes.datePickerContainer}>
+                  <Box p={1} bgcolor="#f5f5f5" borderRadius={1}>
                     <Grid container spacing={2}>
                       <Grid item xs={6}>
                         <TextField
-                          label="Start Date"
+                          label="Start"
                           type="date"
                           value={startDate}
                           onChange={(e) => setStartDate(e.target.value)}
-                          className={classes.datePicker}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
+                          InputLabelProps={{ shrink: true }}
                           variant="outlined"
                           size="small"
+                          fullWidth
                         />
                       </Grid>
                       <Grid item xs={6}>
                         <TextField
-                          label="End Date"
+                          label="End"
                           type="date"
                           value={endDate}
                           onChange={(e) => setEndDate(e.target.value)}
-                          className={classes.datePicker}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
+                          InputLabelProps={{ shrink: true }}
                           variant="outlined"
                           size="small"
+                          fullWidth
                         />
                       </Grid>
                       <Grid item xs={12}>
-                        <Box display="flex" justifyContent="flex-end">
-                          <Button 
-                            variant="outlined" 
-                            size="small" 
-                            style={{ marginRight: 8, color: 'black' }}
-                            onClick={() => setShowCustomDatePicker(false)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button 
-                            variant="contained" 
-                            size="small"
-                            style={{ backgroundColor: '#05c0b8', color: 'white' }}
-                            onClick={applyCustomDateFilter}
-                            disabled={!startDate || !endDate}
-                          >
-                            Apply
-                          </Button>
-                        </Box>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          fullWidth
+                          style={{ backgroundColor: '#05c0b8', color: 'white' }}
+                          onClick={applyCustomDateFilter}
+                          disabled={!startDate || !endDate}
+                        >
+                          Apply Range
+                        </Button>
                       </Grid>
                     </Grid>
                   </Box>
                 </Fade>
               </Grid>
             )}
-
-            <Grid item xs={12}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography style={{ color: 'black', fontSize: '0.9rem' }}>
-                  {filteredTransactions.length} transactions found
-                </Typography>
-                <Button 
-                  variant="text" 
-                  size="small" 
-                  style={{ color: '#05c0b8' }}
-                  onClick={resetFilters}
-                >
-                  Reset Filters
-                </Button>
-              </Box>
-            </Grid>
           </Grid>
         </Paper>
 
-        {/* Transactions Table */}
-        <TableContainer component={Paper} className={classes.tableContainer} style={{marginBottom: "60px"}}>
-          <Table>
-            <TableHead className={classes.tableHeader}>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredTransactions.length > 0 ? (
-                filteredTransactions.map((transaction, index) => (
-                  <TableRow key={index} hover>
-                    <TableCell className={classes.tableCell}>
-                      {new Date(transaction.date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className={classes.tableCell}>
-                      ₹ {transaction.amount}
-                    </TableCell>
-                    <TableCell className={classes.tableCell}>
+        {/* Transactions list */}
+        <Container className={classes.tableContainer}>
+          {filteredTransactions.length > 0 ? (
+            filteredTransactions.map((transaction, index) => (
+              <Paper key={index} style={{ marginBottom: '10px', padding: '15px', borderRadius: '10px' }}>
+                <Grid container alignItems="center" justify="space-between">
+                  <Grid item xs={8}>
+                    <Typography variant="body1" style={{ fontWeight: 'bold', color: '#333' }}>
                       {transaction.type}
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        component="span"
-                        className={classes.statusChip}
-                        style={getStatusColor(transaction.status)}
-                      >
-                        {transaction.status}
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className={classes.noDataMessage}>
-                    No transactions found matching your filters
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
+                    </Typography>
+                    <Typography variant="caption" style={{ color: '#666' }}>
+                      {new Date(transaction.date).toLocaleString()}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4} style={{ textAlign: 'right' }}>
+                    <Typography variant="body1" style={{ fontWeight: 'bold', color: '#05c0b8' }}>
+                      ₹ {transaction.amount}
+                    </Typography>
+                    <span style={getStatusColor(transaction.status)} className={classes.statusChip}>
+                      {transaction.status}
+                    </span>
+                  </Grid>
+                </Grid>
+              </Paper>
+            ))
+          ) : (
+            <Paper style={{ padding: '30px', textAlign: 'center' }}>
+              <Typography color="textSecondary">
+                No transactions found.
+              </Typography>
+            </Paper>
+          )}
+        </Container>
 
-      {/* Loading Dialog */}
-      <Dialog
-        open={loading}
-        PaperProps={{
-          style: {
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-          },
-        }}
-      >
-        <Box style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: '20px',
-          borderRadius: '12px',
-          textAlign: 'center'
-        }}>
-          <CircularProgress style={{ color: 'white' }} />
-          <Typography style={{ color: 'white', marginTop: '10px' }}>
-            Loading transactions...
+        {/* Loading Dialog */}
+        <Dialog
+          open={loading}
+          PaperProps={{
+            style: {
+              backgroundColor: 'transparent',
+              boxShadow: 'none',
+            },
+          }}
+        >
+          <Container align="center" style={{ backgroundColor: 'black', opacity: '0.6', height: '100px', paddingTop: "10px", borderRadius: 10 }}>
+            <CircularProgress style={{ color: 'white' }} />
+            <Typography style={{ paddingTop: '10px', color: "white" }}>Loading...</Typography>
+          </Container>
+        </Dialog>
+
+        {/* Error Dialog */}
+        <Dialog
+          open={error.open}
+          onClose={() => setError({ ...error, open: false })}
+          PaperProps={{
+            style: {
+              borderRadius: '12px',
+              padding: '20px',
+            },
+          }}
+        >
+          <Typography align="center" style={{ color: 'black' }}>
+            {error.message}
           </Typography>
-        </Box>
-      </Dialog>
-
-      {/* Error Dialog */}
-      <Dialog
-        open={error.open}
-        onClose={() => setError({ ...error, open: false })}
-        PaperProps={{
-          style: {
-            backgroundColor: 'white',
-            borderRadius: '12px',
-            padding: '20px',
-          },
-        }}
-      >
-        <Typography style={{ color: 'black' }}>
-          {error.message}
-        </Typography>
-      </Dialog>
+        </Dialog>
+      </div>
     </div>
   );
 };
 
-export default OfferHistory; 
+export default OfferHistory;
