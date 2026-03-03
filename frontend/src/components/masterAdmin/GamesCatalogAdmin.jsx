@@ -869,7 +869,8 @@ export default function GamesCatalogAdmin() {
               <TextField
                 fullWidth
                 variant="outlined"
-                label="SoftAPI game_uid (optional)"
+                label="iGaming Game ID (for launch)"
+                placeholder="e.g. 4-GP9W or numeric id"
                 value={form.softapiGameUid}
                 onChange={(e) => setForm((p) => ({ ...p, softapiGameUid: e.target.value }))}
               />

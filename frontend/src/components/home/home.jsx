@@ -234,6 +234,70 @@ const useStyles = makeStyles((theme) => ({
     WebkitMaskImage: "linear-gradient(to left, black 60%, transparent 100%)",
   },
 
+  // Sports section – reference layout (gt-wrapper / game-item)
+  gtWrapper: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: 10,
+    padding: "0 15px 15px",
+  },
+  // Live Casino – all cards full width (card-b), vertical stack like HTML
+  gtWrapperCasino: {
+    display: "grid",
+    gridTemplateColumns: "1fr",
+    gap: 10,
+    padding: "0 15px 15px",
+  },
+  gameItem: {
+    position: "relative",
+    borderRadius: 12,
+    overflow: "hidden",
+    minHeight: 100,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    cursor: "pointer",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+  },
+  gameItemCardB: {
+    gridColumn: "1 / -1",
+    minHeight: 130,
+  },
+  characterBg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundSize: "contain",
+    backgroundPosition: "right bottom",
+    backgroundRepeat: "no-repeat",
+    pointerEvents: "none",
+  },
+  gameItemContent: {
+    position: "relative",
+    zIndex: 2,
+    padding: "10px 12px",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+  gameItemTextContent: {},
+  gameItemName: {
+    fontWeight: "bold",
+    fontSize: "14px",
+    color: "#0F172A",
+    textShadow: "0 1px 2px rgba(255,255,255,0.8)",
+  },
+  gameItemImgContent: {
+    "& img": {
+      height: 28,
+      maxWidth: "90%",
+      objectFit: "contain",
+      display: "block",
+    },
+  },
   gridList: {
     padding: "0 15px",
   },
@@ -385,6 +449,31 @@ const CATEGORIES = [
   { id: 'slot', label: 'Slot Game', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2.png" },
   { id: 'lottery', label: 'Lottery', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/5.png" },
   { id: 'cards', label: 'Card Game', icon: "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/6.png" },
+];
+
+// Sports section – exact same images/structure as provided HTML (jo HTML diya uski images)
+const CARD_BG = "https://img.bzvm68.com/site_common/H5_7_mobile/game_item_background/bg-4.png";
+const HALL_PICS_BASE = "https://img.bzvm68.com/site_common/H5_7_mobile/hall_pics/gowin11/";
+const GAME_LOGO_BASE = "https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/";
+const SPORTS_SECTION_ITEMS = [
+  { key: "9wickets", name: "9WICKETS", charImg: `${HALL_PICS_BASE}4-GP9W.png`, logoImg: `${GAME_LOGO_BASE}4-GP9W.png` },
+  { key: "lucky-sports", name: "Lucky Sports", charImg: `${HALL_PICS_BASE}4-GPLS.png`, logoImg: `${GAME_LOGO_BASE}4-GPLS.png` },
+  { key: "saba", name: "SABA", charImg: `${HALL_PICS_BASE}4-GPOW.png`, logoImg: `${GAME_LOGO_BASE}4-GPOW-en_US.png` },
+  { key: "newbb", name: "NewBB", charImg: `${HALL_PICS_BASE}4-GPNBB.png`, logoImg: `${GAME_LOGO_BASE}4-GPBB-new bb.png` },
+  { key: "sbo", name: "SBO", charImg: `${HALL_PICS_BASE}4-GPSB2.png`, logoImg: `${GAME_LOGO_BASE}4-GPSB2.png` },
+  { key: "fb", name: "FB", charImg: `${HALL_PICS_BASE}4-GPFB.png`, logoImg: `${GAME_LOGO_BASE}4-GPFB-en_US.png` },
+];
+
+// Live Casino section – exact same as provided HTML (bg-3, hall_pics 3-x, game_logo 3-GPxx)
+const CARD_BG_CASINO = "https://img.bzvm68.com/site_common/H5_7_mobile/game_item_background/bg-3.png";
+const LIVE_CASINO_SECTION_ITEMS = [
+  { key: "evo", name: "EVO", charImg: `${HALL_PICS_BASE}3-1.png`, logoImg: `${GAME_LOGO_BASE}3-GPEV.png` },
+  { key: "pt", name: "PT", charImg: `${HALL_PICS_BASE}3-2.png`, logoImg: `${GAME_LOGO_BASE}3-GPPT3.png` },
+  { key: "ezugi", name: "Ezugi", charImg: `${HALL_PICS_BASE}3-3.png`, logoImg: `${GAME_LOGO_BASE}3-GPEZ.png` },
+  { key: "sexy", name: "SEXY", charImg: `${HALL_PICS_BASE}3-4.png`, logoImg: `${GAME_LOGO_BASE}3-GPSX2.png` },
+  { key: "ssg", name: "SSG", charImg: `${HALL_PICS_BASE}3-5.png`, logoImg: `${GAME_LOGO_BASE}3-GPSS.png` },
+  { key: "mg", name: "MG", charImg: "", logoImg: `${GAME_LOGO_BASE}3-GPMG2.png` },
+  { key: "pa", name: "PA", charImg: "", logoImg: `${GAME_LOGO_BASE}3-GPAG2.png` },
 ];
 
 const Home = () => {
@@ -725,7 +814,62 @@ const Home = () => {
           ))}
         </div>
 
-        {/* 6. Featured Game (Big Card) */}
+        {/* 6. Sports Section – exact same as provided HTML (same images, same structure) */}
+        {selectedCat === 'sports' ? (
+          <div className={classes.gtWrapper}>
+            {SPORTS_SECTION_ITEMS.map((item, idx) => {
+              const apiGame = games.find(g => (g.key || "").toLowerCase() === item.key || (g.name || "").toLowerCase().replace(/\s+/g, "-") === item.key);
+              const launchGame = apiGame ? { ...apiGame, name: item.name } : { key: item.key, name: item.name, category: "sports", softapiGameUid: item.key };
+              const isFirst = idx === 0;
+              return (
+                <div
+                  key={item.key}
+                  className={`${classes.gameItem} ${isFirst ? classes.gameItemCardB : ""}`}
+                  style={{ backgroundImage: `url(${CARD_BG})` }}
+                  onClick={() => openGame(launchGame)}
+                >
+                  <div className={classes.characterBg} style={{ backgroundImage: `url(${item.charImg})` }} />
+                  <div className={classes.gameItemContent}>
+                    <div className={classes.gameItemTextContent}>
+                      <div className={classes.gameItemName}>{item.name}</div>
+                    </div>
+                    <div className={classes.gameItemImgContent}>
+                      <img src={item.logoImg} alt="" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : selectedCat === 'casino' ? (
+          /* 6b. Live Casino Section – exact same as provided HTML (bg-3, all card-b full width) */
+          <div className={classes.gtWrapperCasino}>
+            {LIVE_CASINO_SECTION_ITEMS.map((item) => {
+              const apiGame = games.find(g => (g.key || "").toLowerCase() === item.key || (g.name || "").toLowerCase().replace(/\s+/g, "") === item.key.toLowerCase());
+              const launchGame = apiGame ? { ...apiGame, name: item.name } : { key: item.key, name: item.name, category: "casino", softapiGameUid: item.key };
+              return (
+                <div
+                  key={item.key}
+                  className={`${classes.gameItem} ${classes.gameItemCardB}`}
+                  style={{ backgroundImage: `url(${CARD_BG_CASINO})`, minHeight: 120 }}
+                  onClick={() => openGame(launchGame)}
+                >
+                  {item.charImg ? <div className={classes.characterBg} style={{ backgroundImage: `url(${item.charImg})` }} /> : <div className={classes.characterBg} />}
+                  <div className={classes.gameItemContent}>
+                    <div className={classes.gameItemTextContent}>
+                      <div className={classes.gameItemName}>{item.name}</div>
+                    </div>
+                    <div className={classes.gameItemImgContent}>
+                      <img src={item.logoImg} alt="" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <>
+        {/* 6b. Featured Game (Big Card) – non-sports */}
         {featuredGame && (
           <div className={classes.featuredCard} onClick={() => openGame(featuredGame)}>
             <div className={classes.featuredContent}>
@@ -833,6 +977,8 @@ const Home = () => {
           <Box p={3} textAlign="center">
             <Typography variant="body2" color="textSecondary">No games found in this category.</Typography>
           </Box>
+        )}
+          </>
         )}
       </div>
 

@@ -22,23 +22,32 @@ function encryptPayload(data, key) {
 }
 
 export const launchGame = async (req, res, next) => {
-    const { id: userId } = req.params;
-    const { game_uid } = req.body;
+    const userId = req.params.id || req.body.userId;
+    const { game_uid, game_id } = req.body || {};
 
-    if (!userId || !game_uid) {
-        return next(new ErrorResponse("Missing userId or game_uid", 400));
+    if (!userId) {
+        return next(new ErrorResponse("Missing userId (use URL /game/launch/:userId or body.userId)", 400));
+    }
+    const hasGameId = game_id != null && game_id !== "" && Number.isFinite(Number(game_id));
+    const hasGameUid = game_uid != null && game_uid !== "";
+    if (!hasGameId && !hasGameUid) {
+        return next(new ErrorResponse("Missing game_id or game_uid in request body", 400));
     }
 
     try {
         const user = await User.findOne({ id: userId });
         if (!user) return next(new ErrorResponse("User not found", 404));
 
-        // Look up the actual Game to get its numeric ID (or other correct identifier)
-        // User requested to send the 'id' field (e.g. 6510) instead of the 'game_code' (e.g. MD5 hash)
-        const game = await Game.findOne({ game_code: game_uid });
-        const finalGameUid = game ? game.id : game_uid;
+        // Prefer numeric game_id if sent; else look up by game_code (game_uid)
+        let finalGameUid;
+        if (hasGameId) {
+            finalGameUid = Number(game_id);
+        } else {
+            const game = await Game.findOne({ game_code: game_uid });
+            finalGameUid = game ? game.id : game_uid;
+        }
 
-        console.log(`Launching Game: Code=${game_uid} -> ID=${finalGameUid}`);
+        console.log(`Launching Game: userId=${userId}, game_uid=${game_uid}, game_id=${game_id} -> finalGameUid=${finalGameUid}`);
 
         const payload = {
             user_id: user.id,

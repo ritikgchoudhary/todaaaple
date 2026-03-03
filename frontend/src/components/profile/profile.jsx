@@ -1,17 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Container, Grid, Typography, List, ListItem, makeStyles } from "@material-ui/core";
+import { Container, Grid, Typography, List, ListItem, makeStyles, IconButton, Box } from "@material-ui/core";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import SettingsIcon from "@material-ui/icons/Settings";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import TrendingUpIcon from "@material-ui/icons/TrendingUp";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import CardGiftcardIcon from "@material-ui/icons/CardGiftcard";
+import HistoryIcon from "@material-ui/icons/History";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
+import LocalOfferIcon from "@material-ui/icons/LocalOffer";
+import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
+import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
+import SecurityIcon from "@material-ui/icons/Security";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import HeadsetMicOutlinedIcon from "@material-ui/icons/HeadsetMicOutlined";
+import CodeIcon from "@material-ui/icons/Code";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Header from "../../images/myHeader.jpg";
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 import { Link } from "react-router-dom";
 import * as api from "../../api/auth";
-import axios from 'axios';
+import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,43 +33,112 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#F1F5F9",
     display: "flex",
     justifyContent: "center",
-    paddingBottom: "calc(60px + env(safe-area-inset-bottom))", // Space for bottom nav
+    paddingBottom: "calc(68px + env(safe-area-inset-bottom))",
   },
   frame: {
     width: "100%",
     maxWidth: 500,
     minHeight: "100vh",
     backgroundColor: "#fff",
-    position: 'relative',
-    paddingBottom: '20px'
+    position: "relative",
+    paddingBottom: 32,
   },
   headerContainer: {
     backgroundImage: `url(${Header})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     minHeight: "160px",
-    padding: "20px",
-    color: 'white',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
+    padding: "20px 20px 24px",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
   userInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  userAvatar: {
+    fontSize: "44px !important",
+    marginRight: 14,
+    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
+  },
+  userName: {
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontSize: "1.125rem",
+    fontWeight: 700,
+    letterSpacing: "0.01em",
+    textShadow: "0 1px 2px rgba(0,0,0,0.2)",
+  },
+  settingsBtn: {
+    color: "rgba(255,255,255,0.95)",
+    padding: 8,
+    "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" },
   },
   balanceSection: {
-    marginTop: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    alignItems: 'center'
+    marginTop: 24,
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  balanceAmount: {
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontSize: "1.75rem",
+    fontWeight: 700,
+    letterSpacing: "-0.02em",
+    textShadow: "0 1px 3px rgba(0,0,0,0.25)",
+  },
+  balanceLabel: {
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontSize: "0.8125rem",
+    fontWeight: 500,
+    opacity: 0.9,
+    marginTop: 4,
   },
   listFullWidth: {
-    marginLeft: '-15px',
-    marginRight: '-15px'
-  }
+    paddingTop: 20,
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
+  listItem: {
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingLeft: 20,
+    paddingRight: 20,
+    borderBottom: "1px solid #F1F5F9",
+  },
+  listItemIcon: {
+    minWidth: 40,
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 16,
+    color: "#0F766E",
+    backgroundColor: "rgba(15, 118, 110, 0.08)",
+  },
+  listItemText: {
+    fontFamily: "system-ui, -apple-system, sans-serif",
+    fontSize: "0.9375rem",
+    fontWeight: 600,
+    color: "#0F172A",
+  },
+  listItemArrow: {
+    color: "#94A3B8",
+    fontSize: "18px !important",
+  },
+  signOutIcon: {
+    color: "#DC2626",
+    backgroundColor: "rgba(220, 38, 38, 0.08)",
+  },
+  signOutText: {
+    color: "#DC2626",
+    fontWeight: 600,
+  },
 }));
 
 const Profile = () => {
@@ -147,272 +229,129 @@ const Profile = () => {
 
         <div className={classes.headerContainer}>
           <div className={classes.userInfo}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <AccountCircleIcon style={{ fontSize: '40px', marginRight: '10px' }} />
-              <Typography variant="h6" style={{ fontWeight: "bold" }}>
-                {user && user[0].username}
+            <div style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+              <AccountCircleIcon className={classes.userAvatar} />
+              <Typography className={classes.userName} noWrap>
+                {user && user[0] && user[0].username}
               </Typography>
             </div>
-            <SettingsIcon />
+            <IconButton className={classes.settingsBtn} aria-label="Settings" component={Link} to="/accountSecurity">
+              <SettingsIcon style={{ fontSize: 24 }} />
+            </IconButton>
           </div>
 
           <div className={classes.balanceSection}>
-            <Typography variant="h4" style={{ fontWeight: "bold" }}>
-              ₹ {user && user[0].balance.toFixed(2)}
+            <Typography className={classes.balanceAmount}>
+              ₹ {user && user[0] && user[0].balance != null ? Number(user[0].balance).toFixed(2) : "0.00"}
             </Typography>
-            <Typography variant="body2" style={{ opacity: 0.8 }}>Account Balance</Typography>
+            <Typography className={classes.balanceLabel}>Account Balance</Typography>
           </div>
         </div>
 
-        <Container>
-          <List component="nav" aria-label="main mailbox folders" className={classes.listFullWidth} >
-            <Link to='/agent-earning' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>Earning as a Agent</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+        <Container disableGutters>
+          <List component="nav" aria-label="Profile menu" className={classes.listFullWidth}>
+            <Link to="/agent-earning" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><TrendingUpIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>Earning as an Agent</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/mySalary' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>My Daily Salary</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/mySalary" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><AttachMoneyIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>My Daily Salary</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/invitationBonus' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>My Invitation Bonus</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/invitationBonus" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><CardGiftcardIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>My Invitation Bonus</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/offer-history' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>My Offer history</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/offer-history" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><HistoryIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>My Offer History</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-
-            <Link to='/redenvelope' style={{ textDecoration: 'none', color: 'black' }}>
-
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>Red Envelope</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/redenvelope" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><MailOutlineIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>Red Envelope</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-            <Link to='/mypromotion' style={{ textDecoration: 'none', color: 'black' }}>
-
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>My Promotion</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/mypromotion" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><LocalOfferIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>My Promotion</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-            <Link to='/wallet' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-
-                  <Grid item>
-                    <Typography>My Wallet</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/wallet" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><AccountBalanceWalletIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>My Wallet</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-            <Link to='/bank' style={{ textDecoration: 'none', color: 'black' }}>
-
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>My bank</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/bank" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><AccountBalanceIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>My Bank</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/accountSecurity' style={{ textDecoration: 'none', color: 'black' }}>
-
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>Account Security</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/accountSecurity" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><SecurityIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>Account Security</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/about-us' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>About us</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
-
+            <Link to="/about-us" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><InfoOutlinedIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>About Us</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/help' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>Customer Service</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
+            <Link to="/help" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><HeadsetMicOutlinedIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>Customer Service</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <Link to='/api-docs' style={{ textDecoration: 'none', color: 'black' }}>
-              <ListItem button>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify="space-between"
-                  direction="row"
-                >
-                  <Grid item>
-                    <Typography>API Docs</Typography>
-                  </Grid>
-                  <Grid item>
-                    <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                  </Grid>
-                </Grid>
+            <Link to="/api-docs" style={{ textDecoration: "none", color: "inherit" }}>
+              <ListItem button className={classes.listItem}>
+                <Box className={classes.listItemIcon}><CodeIcon style={{ fontSize: 22 }} /></Box>
+                <Typography className={classes.listItemText}>API Docs</Typography>
+                <Box flex={1} />
+                <ArrowForwardIosIcon className={classes.listItemArrow} />
               </ListItem>
             </Link>
-
-            <ListItem button style={{ marginBottom: '50px' }} onClick={logOut}>
-              <Grid
-                container
-                alignItems="center"
-                justify="space-between"
-                direction="row"
-              >
-                <Grid item>
-                  <Typography>Sign out</Typography>
-                </Grid>
-                <Grid item>
-                  <ArrowForwardIosIcon style={{ color: "grey", fontSize: "15px" }} />
-                </Grid>
-              </Grid>
-
+            <ListItem button className={classes.listItem} style={{ marginBottom: 32 }} onClick={logOut}>
+              <Box className={`${classes.listItemIcon} ${classes.signOutIcon}`}><ExitToAppIcon style={{ fontSize: 22 }} /></Box>
+              <Typography className={`${classes.listItemText} ${classes.signOutText}`}>Sign Out</Typography>
+              <Box flex={1} />
+              <ArrowForwardIosIcon className={classes.listItemArrow} />
             </ListItem>
-
-
           </List>
         </Container>
         <Dialog

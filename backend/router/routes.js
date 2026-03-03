@@ -734,16 +734,16 @@ router.get("/getTimer", getTimer); // secured
 router.get("/getWithdrawal/:id/", checkAuth, getWithdrawal); //secured
 router.get("/getAllWithdrawal/:api", getAllWithdrawal); // secured
 router.get("/getAllWithdrawalUSDT/:api", getAllWithdrawalUSDT); // secured
-router.get("/admin/stats/:api", getAdminStats);
-router.get("/admin/users/:api", getAllUsersAdmin);
-router.post("/admin/updateUser/:api", updateUserAdmin);
+router.get("/admin-api/stats/:api", getAdminStats);
+router.get("/admin-api/users/:api", getAllUsersAdmin);
+router.post("/admin-api/updateUser/:api", updateUserAdmin);
 
 // Commission Management
-router.get("/admin/commission/configs/:api", getCommissionConfigs);
-router.post("/admin/commission/configs/:api", createCommissionConfig);
-router.put("/admin/commission/configs/:id/:api", updateCommissionConfig);
-router.get("/admin/commission/agents/:api", getAgentConfigs);
-router.post("/admin/commission/agents/:userId/:api", updateAgentConfig);
+router.get("/admin-api/commission/configs/:api", getCommissionConfigs);
+router.post("/admin-api/commission/configs/:api", createCommissionConfig);
+router.put("/admin-api/commission/configs/:id/:api", updateCommissionConfig);
+router.get("/admin-api/commission/agents/:api", getAgentConfigs);
+router.post("/admin-api/commission/agents/:userId/:api", updateAgentConfig);
 router.get("/user/affiliate/stats/:id", checkAuth, getAffiliateStats);
 
 // Game Routes
@@ -778,8 +778,8 @@ router.get("/claimEnvelop/:id/:userId", claimEnvelop);
 router.get("/getUserEnvelop/:id", getUserEnvelop);
 router.get("/redeemEnvelop/:redId/:id", checkAuth, redeemEnvelop);
 
-router.get("/", async (req, res) => {
-  res.status(200).send("hey");
+router.get("/health-check", async (req, res) => {
+  res.status(200).json({ ok: true });
 });
 
 router.post("/sendOTPEnv", [rateLimit()], async (req, res) => {

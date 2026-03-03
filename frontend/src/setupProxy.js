@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     createProxyMiddleware(
       (pathname) =>
-        pathname.startsWith("/admin") ||
+        pathname.startsWith("/admin-api") ||
         pathname.startsWith("/carousel") ||
         pathname.startsWith("/user") ||
         pathname.startsWith("/uploads") ||

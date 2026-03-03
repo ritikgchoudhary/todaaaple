@@ -46,9 +46,9 @@ const CommissionManagement = () => {
     const fetchConfigs = async () => {
         try {
             const adminApi = localStorage.getItem("MASTER_ADMIN_API") || "test";
-            const res = await axios.get(`${URL}/admin/commission/configs/${adminApi}`);
+            const res = await axios.get(`${URL}/admin-api/commission/configs/${adminApi}`);
             setConfigs(res.data.data);
-            const agentRes = await axios.get(`${URL}/admin/commission/agents/${adminApi}`);
+            const agentRes = await axios.get(`${URL}/admin-api/commission/agents/${adminApi}`);
             setAgentConfigs(agentRes.data.data);
         } catch (error) {
             console.error("Error fetching configs:", error);
@@ -59,9 +59,9 @@ const CommissionManagement = () => {
         try {
             const adminApi = localStorage.getItem("MASTER_ADMIN_API") || "test";
             if (editingConfig) {
-                await axios.put(`${URL}/admin/commission/configs/${editingConfig._id}/${adminApi}`, editingConfig);
+                await axios.put(`${URL}/admin-api/commission/configs/${editingConfig._id}/${adminApi}`, editingConfig);
             } else {
-                await axios.post(`${URL}/admin/commission/configs/${adminApi}`, newConfig);
+                await axios.post(`${URL}/admin-api/commission/configs/${adminApi}`, newConfig);
             }
             setOpenDialog(false);
             setEditingConfig(null);
@@ -74,7 +74,7 @@ const CommissionManagement = () => {
     const toggleConfigStatus = async (id, currentStatus) => {
         try {
             const adminApi = localStorage.getItem("MASTER_ADMIN_API") || "test";
-            await axios.put(`${URL}/admin/commission/configs/${id}/${adminApi}`, { isActive: !currentStatus });
+            await axios.put(`${URL}/admin-api/commission/configs/${id}/${adminApi}`, { isActive: !currentStatus });
             fetchConfigs();
         } catch (error) {
             console.error("Error toggling status:", error);

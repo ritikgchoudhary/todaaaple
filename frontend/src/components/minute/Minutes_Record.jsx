@@ -6,63 +6,100 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Grid,
-  Avatar
+  Box,
 } from "@material-ui/core";
 
-const Minutes_Record = ({record}) => {
-  
+const tableStyles = {
+  container: { padding: "0 0 4px", marginTop: 8 },
+  table: { minWidth: 260 },
+  headCell: {
+    color: "#64748B",
+    fontWeight: 600,
+    fontSize: 12,
+    borderBottom: "2px solid #E2E8F0",
+    padding: "12px 8px",
+  },
+  bodyCell: {
+    borderBottom: "1px solid #F1F5F9",
+    padding: "10px 8px",
+    fontSize: 13,
+  },
+  numberBig: { color: "#16A34A", fontWeight: 700, fontSize: 13 },
+  numberSmall: { color: "#DC2626", fontWeight: 700, fontSize: 13 },
+  resultDot: {
+    height: 14,
+    width: 14,
+    minWidth: 14,
+    borderRadius: "50%",
+    flexShrink: 0,
+  },
+  resultWrap: { display: "flex", justifyContent: "center", alignItems: "center", width: "100%", gap: 6 },
+};
+
+const COLORS = {
+  red: "#f84350",
+  green: "#28c04c",
+  violet: "#8c6ceb",
+  grey: "#94a3b8",
+};
+
+const Minutes_Record = ({ record, fullPage }) => {
+  const isBig = (num) => num >= 5;
+  const getNumberStyle = (row) => {
+    const big = isBig(row.number);
+    return big ? tableStyles.numberBig : tableStyles.numberSmall;
+  };
+
+  const containerStyle = fullPage
+    ? { ...tableStyles.container, padding: "12px 0 8px", marginTop: 4 }
+    : tableStyles.container;
+
   return (
-    <div>
-      <TableContainer >
-        <Table aria-label="simple table">
+    <div style={containerStyle}>
+      <TableContainer style={fullPage ? { overflowX: "auto", WebkitOverflowScrolling: "touch" } : undefined}>
+        <Table aria-label="game record" style={tableStyles.table} size="small">
           <TableHead>
             <TableRow>
-              <TableCell align="center" style={{ color: "#dbdbdb",}}>Period</TableCell>
-              <TableCell align="center" style={{ color: "#dbdbdb"}}>Price</TableCell>
-              <TableCell align="center" style={{ color: "#dbdbdb" }}>Number</TableCell>
-              <TableCell style={{ color: "#dbdbdb" }}>Result</TableCell>
+              <TableCell align="center" style={tableStyles.headCell}>Period</TableCell>
+              <TableCell align="center" style={tableStyles.headCell}>Price</TableCell>
+              <TableCell align="center" style={tableStyles.headCell}>Number</TableCell>
+              <TableCell align="center" style={tableStyles.headCell}>Result</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody >
-            {record && record.map(row => (
-              <TableRow key={row.name} >
-              <TableCell align='center' component="th" scope="row" style={{ paddingTop: '8px'}}>
-                {row.id}
-              </TableCell>
-              <TableCell align="center" style={{ paddingTop: '5px'}}>{row.price}</TableCell>
-              {(row.color.toLowerCase() === "red violet") ? 
-               <TableCell align="start" style={{ color: 'red' , fontWeight: 'bold',paddingTop: '8px'}}>{`${row.number} ${row.number >= 5 ? 'Big' : 'Small'}`}</TableCell>
-
-               : row.color.toLowerCase() === "green violet" ? <TableCell align="start" style={{color: '#28c04c' , fontWeight: 'bold',paddingTop: '8px' }}>{`${row.number} ${row.number >= 5 ? 'Big' : 'Small'}`}</TableCell>
-               : <TableCell align="start" style={{ color: row.color === 'Green' ? '#28c04c' : row.color , fontWeight: 'bold',paddingTop: '8px' }}>{`${row.number} ${row.number >= 5 ? 'Big' : 'Small'}`}</TableCell>
-
-            }
-              <TableCell style={{ paddingTop: '8px'}}>
-                {(row.color.toLowerCase() === "red violet") ? (
-                  <Grid container direction="row" alignItems='center' justify="flex-start">
-                    <Grid item>
-                    <Avatar style={{backgroundColor: 'red', height: '15px', width: '15px', marginRight: '2px'}}> </Avatar>
-                    </Grid>
-                    <Grid item>
-                    <Avatar style={{backgroundColor: '#8c6ceb', height: '15px', width: '15px'}}> </Avatar>
-                    </Grid>
-                  </Grid>
-                ) : row.color.toLowerCase() === "green violet" ? <Grid container direction="row" alignItems='center' justify='flex-start'>
-                <Grid item >
-                <Avatar style={{backgroundColor: '#28c04c', height: '15px', width: '15px', marginRight: '2px'}}> </Avatar>
-                </Grid>
-                <Grid item>
-                <Avatar style={{backgroundColor: '#8c6ceb', height: '15px', width: '15px'}}> </Avatar>
-                </Grid>
-              </Grid> :
-                 
-                <Avatar style={{backgroundColor:  row.color === 'Green' ? '#28c04c' : row.color, height: '15px', width: '15px'}}> </Avatar>}
-                
-              </TableCell>
-            </TableRow>
+          <TableBody>
+            {record && record.map((row, idx) => (
+              <TableRow key={row.id != null ? row.id : idx}>
+                <TableCell align="center" component="th" scope="row" style={tableStyles.bodyCell}>
+                  {row.id}
+                </TableCell>
+                <TableCell align="center" style={tableStyles.bodyCell}>{row.price}</TableCell>
+                <TableCell align="center" style={{ ...tableStyles.bodyCell, ...getNumberStyle(row) }}>
+                  {`${row.number} ${isBig(row.number) ? "Big" : "Small"}`}
+                </TableCell>
+                <TableCell align="center" style={tableStyles.bodyCell}>
+                  <Box style={tableStyles.resultWrap}>
+                    {row.color && row.color.toLowerCase() === "red violet" ? (
+                      <>
+                        <Box style={{ ...tableStyles.resultDot, backgroundColor: COLORS.red }} />
+                        <Box style={{ ...tableStyles.resultDot, backgroundColor: COLORS.violet }} />
+                      </>
+                    ) : row.color && row.color.toLowerCase() === "green violet" ? (
+                      <>
+                        <Box style={{ ...tableStyles.resultDot, backgroundColor: COLORS.green }} />
+                        <Box style={{ ...tableStyles.resultDot, backgroundColor: COLORS.violet }} />
+                      </>
+                    ) : (
+                      <Box
+                        style={{
+                          ...tableStyles.resultDot,
+                          backgroundColor: row.color === "Green" ? COLORS.green : (row.color === "Red" ? COLORS.red : COLORS.grey),
+                        }}
+                      />
+                    )}
+                  </Box>
+                </TableCell>
+              </TableRow>
             ))}
-            
           </TableBody>
         </Table>
       </TableContainer>

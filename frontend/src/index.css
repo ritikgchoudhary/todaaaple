@@ -4,9 +4,23 @@
 :root {
   --bg: #F9FAFB;
   --text: #0F172A;
+  --accent: #0F766E;
+  --accent-dark: #115E59;
+  --accent-gradient: linear-gradient(135deg, #0F766E 0%, #115E59 100%);
+  /* Compact scaling: smaller base so more fits in less space (phone + normal) */
+  --scale: 0.9;
 }
 
-html,
+/* Compact: smaller base = more content in same space */
+html {
+  font-size: 13px;
+  height: 100%;
+}
+@media (max-width: 600px) {
+  html {
+    font-size: 12px;
+  }
+}
 body {
   height: 100%;
 }
@@ -96,4 +110,36 @@ canvas {
 
 .frame-fixed--top {
   top: 0;
+}
+
+/* Bottom nav: no underline/line on hover (actions are Links) */
+.MuiBottomNavigationAction-root,
+.MuiBottomNavigationAction-root:hover,
+.MuiBottomNavigationAction-root:focus,
+.MuiBottomNavigationAction-root:focus-visible,
+.MuiBottomNavigationAction-root.Mui-focusVisible {
+  text-decoration: none !important;
+  border: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.MuiBottomNavigationAction-root *,
+.MuiBottomNavigationAction-root:hover *,
+.MuiBottomNavigationAction-root:focus * {
+  text-decoration: none !important;
+}
+.MuiBottomNavigation .MuiBottomNavigationAction-root {
+  text-decoration: none !important;
+}
+
+/* Wingo: number buttons pure circle */
+.wingo-number-circle {
+  border-radius: 100% !important;
+}
+
+/* Global fade-in for content appearance */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

@@ -1,189 +1,203 @@
-import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import BottomNavigation from "@material-ui/core/BottomNavigation";
-import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import { Link } from "react-router-dom";
-import {
-  PersonOutline as AccountIcon,
-  AccountBalanceWalletOutlined as DepositIcon,
-  HomeOutlined as HomeIcon,
-  Home as HomeIconSelected,
-  CardGiftcardOutlined as BonusIcon,
-  HeadsetMicOutlined as SupportIcon
-} from "@material-ui/icons";
-import WhatsApp from "../images/whatsapp.png";
-import Telegram from "../images/telegram.png";
+import React from "react";
+import { useLocation, Link } from "react-router-dom";
+import { makeStyles } from "@material-ui/core";
+
+const FOOTER_ICON_BASE = "https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-    maxWidth: "500px",
+  FooterDiv: {
     position: "fixed",
+    left: 0,
+    right: 0,
     bottom: 0,
-    left: "50%",
-    transform: "translateX(-50%)",
-    backgroundColor: "transparent",
-    zIndex: 2000,
-    display: 'flex',
-    justifyContent: 'center', // Center on PC
-    paddingBottom: "env(safe-area-inset-bottom)",
+    zIndex: 1000,
+    display: "flex",
+    justifyContent: "center",
+    // Phone safe area: notch/home indicator (iPhone X+, Android gesture)
+    paddingBottom: "max(env(safe-area-inset-bottom), 8px)",
+    paddingLeft: "env(safe-area-inset-left)",
+    paddingRight: "env(safe-area-inset-right)",
+    maxWidth: "100vw",
   },
-  navContainer: {
-    width: '100%',
-    backgroundColor: '#fff',
-    borderTop: '1px solid #f0f2f5',
-    boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
+  footerInner: {
+    width: "100%",
+    maxWidth: 480,
   },
-  navAction: {
-    minWidth: 'auto',
-    padding: '8px 0',
-    color: '#999',
-    '&.Mui-selected': {
-      color: '#05c0b8',
+  mobile_footer__background: {
+    display: "flex",
+    alignItems: "stretch",
+    justifyContent: "space-around",
+    background: "#fff",
+    boxShadow: "0 -2px 12px rgba(0,0,0,0.08)",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    padding: "10px 4px 8px",
+    minHeight: "56px",
+    "@media (max-width: 360px)": {
+      padding: "8px 2px 6px",
+      minHeight: "52px",
     },
-    '& .MuiBottomNavigationAction-label': {
-      fontSize: '10px !important',
-      fontWeight: '600',
-    }
   },
-  homeAction: {
-    color: '#05c0b8',
-    '& .MuiBottomNavigationAction-wrapper': {
-      transform: 'translateY(-12px)',
-      backgroundColor: '#fff',
-      borderRadius: '50%',
-      width: '58px',
-      height: '58px',
-      boxShadow: '0 -4px 12px rgba(0,0,0,0.08)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      border: '1px solid #f0f2f5',
-    }
-  }
+  linkItem: {
+    flex: 1,
+    minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    textDecoration: "none",
+    color: "rgba(0,0,0,0.85)",
+    cursor: "pointer",
+    // Min 44px tap target (Apple HIG)
+    minHeight: 44,
+    "& a": {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+      minHeight: 44,
+      textDecoration: "none",
+      color: "inherit",
+      padding: "4px 0",
+    },
+  },
+  linkItemActive: {
+    color: "#1976d2",
+    "& $footer_icon img": {
+      opacity: 1,
+    },
+  },
+  footer_icon: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+    flexShrink: 0,
+    "& img": {
+      width: 26,
+      height: 26,
+      objectFit: "contain",
+      display: "block",
+    },
+    "@media (max-width: 360px)": {
+      "& img": {
+        width: 24,
+        height: 24,
+      },
+    },
+  },
+  ellipsis: {
+    width: "100%",
+    textAlign: "center",
+    fontSize: "clamp(10px, 2.5vw, 12px)",
+    fontWeight: 500,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    paddingLeft: 4,
+    paddingRight: 4,
+    lineHeight: 1.2,
+  },
+  badge: {
+    position: "relative",
+    "& sup": {
+      position: "absolute",
+      top: -2,
+      right: -8,
+      minWidth: 14,
+      height: 14,
+      borderRadius: 7,
+      fontSize: 10,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#f44336",
+      color: "#fff",
+    },
+  },
 }));
 
 export default function NavBar() {
   const classes = useStyles();
-  const pathname = window.location.pathname; // in case user visits the path directly. The BottomNavBar is able to follow suit.
-  const [value, setValue] = useState(pathname);
-  const [isAuth, setAuth] = useState(false);
-  const handleChange = (event, newValue) => {
-    const loggedInUser = localStorage.getItem("user");
-    if (loggedInUser) {
-      setAuth(true)
+  const location = useLocation();
+  const pathname = location.pathname || "/";
 
+  const isHome = pathname === "/";
+  const isAccount = pathname === "/profile" || pathname.startsWith("/accountSecurity") || pathname === "/bank" || pathname === "/address" || pathname === "/financial";
+  const isDeposit = pathname === "/recharge" || pathname === "/wallet" || pathname === "/preOrder";
+  const isBonus = pathname === "/mypromotion" || pathname === "/discount" || pathname.startsWith("/invitation");
+  const isChat = pathname === "/help" || pathname === "/contact";
 
-    } else {
-      setAuth(false)
-
-    }
-    setValue(newValue);
-  };
-
-  useEffect(() => {
-
-    const interval = setInterval(() => {
-
-      const loggedInUser = localStorage.getItem("user");
-      if (loggedInUser) {
-        setAuth(true)
-
-
-      } else {
-        setAuth(false)
-
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-
-
+  const items = [
+    {
+      symbol: "account",
+      label: "Account",
+      to: "/profile",
+      icon: `${FOOTER_ICON_BASE}/footer_account.png`,
+      active: isAccount,
+      badge: 0,
+    },
+    {
+      symbol: "deposit",
+      label: "Deposit",
+      to: "/recharge",
+      icon: `${FOOTER_ICON_BASE}/footer_deposit.png`,
+      active: isDeposit,
+    },
+    {
+      symbol: "home",
+      label: "Home",
+      to: "/",
+      icon: isHome ? `${FOOTER_ICON_BASE}/footer_home_active.png` : `${FOOTER_ICON_BASE}/footer_home.png`,
+      active: isHome,
+      isMain: true,
+    },
+    {
+      symbol: "discount",
+      label: "Bonus",
+      to: "/discount",
+      icon: `${FOOTER_ICON_BASE}/footer_discount.png`,
+      active: isBonus,
+    },
+    {
+      symbol: "customService",
+      label: "Online Chat",
+      to: "/help",
+      icon: `${FOOTER_ICON_BASE}/footer_customService.png`,
+      active: isChat,
+    },
+  ];
 
   return (
-
-    <div className={classes.root}>
-      <BottomNavigation
-        value={value}
-        onChange={handleChange}
-        showLabels={true}
-        className={classes.navContainer}
-      >
-        <BottomNavigationAction
-          label="Account"
-          value={isAuth ? "/profile" : "/login"}
-          icon={<AccountIcon />}
-          component={Link}
-          to={isAuth ? "/profile" : '/login'}
-          className={classes.navAction}
-        />
-        <BottomNavigationAction
-          label="Deposit"
-          value="/recharge"
-          icon={<DepositIcon />}
-          component={Link}
-          to="/preOrder"
-          className={classes.navAction}
-        />
-        <BottomNavigationAction
-          label="Home"
-          value="/"
-          icon={value === '/' ? <HomeIconSelected /> : <HomeIcon />}
-          component={Link}
-          to="/"
-          className={classes.homeAction}
-        />
-        <BottomNavigationAction
-          label="Bonus"
-          value="/invitationBonus"
-          icon={<BonusIcon />}
-          component={Link}
-          to="/invitationBonus"
-          className={classes.navAction}
-        />
-        <BottomNavigationAction
-          label="Online Chat"
-          value="/help"
-          icon={<SupportIcon />}
-          component={Link}
-          to="/help"
-          className={classes.navAction}
-        />
-      </BottomNavigation>
-
-      <a href="https://wa.me/message/6F6ZZQERITWCK1">
-        <div style={{
-          position: "fixed",
-          bottom: 130,
-          right: "max(20px, calc(50% - 250px + 20px))",
-          width: '50px',
-          height: '50px',
-          borderRadius: '50px',
-          backgroundImage: `url(${WhatsApp})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: 1000
-        }}>
+    <div className={classes.FooterDiv}>
+      <div className={classes.footerInner}>
+        <div className={classes.mobile_footer__background}>
+          {items.map((item) => (
+            <div
+              key={item.symbol}
+              className={`${classes.linkItem} ${item.active ? `${classes.linkItemActive} isActive` : ""} ${item.isMain ? "linkMain" : ""}`}
+              data-symbol={item.symbol}
+            >
+              <Link to={item.to}>
+                {item.symbol === "account" ? (
+                  <div className={classes.badge}>
+                    <div className={classes.footer_icon}>
+                      <img src={item.icon} alt="" />
+                    </div>
+                    {item.badge > 0 && <sup className="el-badge__content el-badge__content--danger is-fixed">{item.badge}</sup>}
+                  </div>
+                ) : (
+                  <div className={classes.footer_icon}>
+                    <img src={item.icon} alt="" />
+                  </div>
+                )}
+                <div className={classes.ellipsis}>{item.label}</div>
+              </Link>
+            </div>
+          ))}
         </div>
-      </a>
-      <a href="https://t.me/earningsource111">
-        <div style={{
-          position: "fixed",
-          bottom: 70,
-          right: "max(20px, calc(50% - 250px + 20px))",
-          width: '50px',
-          height: '50px',
-          borderRadius: '50px',
-          backgroundImage: `url(${Telegram})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: 1000
-        }}>
-        </div>
-      </a>
+      </div>
     </div>
-
   );
 }

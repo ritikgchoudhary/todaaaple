@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Switch, Route, useLocation, Redirect } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from '@material-ui/core';
 import { createTheme } from '@material-ui/core/styles';
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -15,7 +15,7 @@ import NavBar from "./components/nav";
 import Home from "./components/home/home";
 import MinutesGamePage from './components/minute/game.jsx';
 import GamePlayer from './components/home/GamePlayer.jsx';
-
+import LuckySportsPage from './components/sports/LuckySportsPage';
 
 // History Component
 import MinutesFullRecord from './components/minute/Minutes_fullRecord.js';
@@ -84,11 +84,26 @@ import SiteSettings from "./components/admin/SiteSettings";
 const App = () => {
   const darkTheme = createTheme({
     palette: {
-      // v4 uses "type"; keep existing behavior if "mode" is ignored.
       mode: 'dark',
     },
     shape: {
       borderRadius: 0,
+    },
+    spacing: 5,
+    typography: {
+      fontSize: 12,
+      body1: { fontSize: '0.8125rem' },
+      body2: { fontSize: '0.75rem' },
+      subtitle1: { fontSize: '0.8125rem' },
+      subtitle2: { fontSize: '0.75rem' },
+      caption: { fontSize: '0.6875rem' },
+      button: { fontSize: '0.75rem' },
+      h1: { fontSize: '1.5rem' },
+      h2: { fontSize: '1.25rem' },
+      h3: { fontSize: '1.125rem' },
+      h4: { fontSize: '1rem' },
+      h5: { fontSize: '0.9375rem' },
+      h6: { fontSize: '0.875rem' },
     },
     overrides: {
       MuiCssBaseline: {
@@ -103,32 +118,59 @@ const App = () => {
       MuiCard: { root: { borderRadius: 6 } },
       MuiChip: { root: { borderRadius: 6 } },
       MuiDialog: { paper: { borderRadius: 6 } },
-      MuiBottomNavigation: { root: { borderRadius: 0 } }, // Bottom nav should stay flat
-      MuiBottomNavigationAction: { root: { borderRadius: 0 } },
+      MuiBottomNavigation: { root: { borderRadius: 0 } },
+      MuiBottomNavigationAction: {
+        root: {
+          borderRadius: 0,
+          outline: 'none',
+          textDecoration: 'none',
+          border: 'none',
+          borderBottom: 'none',
+          boxShadow: 'none',
+          '&::before': { display: 'none' },
+          '&::after': { display: 'none' },
+          '&:hover': {
+            backgroundColor: 'transparent',
+            textDecoration: 'none',
+            border: 'none',
+            borderBottom: 'none',
+            boxShadow: 'none',
+          },
+          '&:focus': {
+            outline: 'none',
+            textDecoration: 'none',
+            border: 'none',
+            borderBottom: 'none',
+          },
+          '&:focus-visible': { outline: 'none' },
+        },
+        label: {
+          textDecoration: 'none',
+          '&:hover': { textDecoration: 'none' },
+        },
+        wrapper: {
+          textDecoration: 'none',
+        },
+      },
       MuiOutlinedInput: { root: { borderRadius: 6 } },
       MuiFilledInput: { root: { borderRadius: 6 } },
-    },
-    palette: {
-      // v4 uses "type"; keep existing behavior if "mode" is ignored.
-      mode: 'dark',
     },
   });
 
   const location = useLocation();
-  const hideNavBarPaths = ["/login", "/resetPassword", "/admin", "/master-admin"];
+  const hideNavBarPaths = ["/login", "/resetPassword", "/admin", "/master-admin", "/play"];
   const shouldHideNavBar = hideNavBarPaths.some(path => location.pathname.startsWith(path));
 
   return (
 
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+      <div style={{ minHeight: "100vh" }}>
       <Switch>
-        {/* Public Routes */}
-        <Route exact path="/login/:id" component={AuthForm} />
-        <Route exact path="/login" component={AuthForm} />
-        <Route exact path="/resetPassword" component={Forget} />
-        <Route exact path="/about-us" component={About} />
-        <Route exact path="/shipping-policy" component={PrivacyPolicy} />
+        {/* Admin Routes */}
+        <Route exact path="/admin">
+          <Redirect to="/admin/dashboard" />
+        </Route>
         <Route exact path="/admin/dashboard" component={AdminDashboard} />
         <Route exact path="/admin/users" component={UserManagement} />
         <Route exact path="/admin/withdrawals" component={WithdrawalManagement} />
@@ -140,9 +182,18 @@ const App = () => {
         <Route exact path="/admin/carousel" component={CarouselManagement} />
         <Route exact path="/admin/site-settings" component={SiteSettings} />
 
+        {/* Public Routes */}
+        <Route exact path="/login/:id" component={AuthForm} />
+        <Route exact path="/login" component={AuthForm} />
+        <Route exact path="/resetPassword" component={Forget} />
+        <Route exact path="/about-us" component={About} />
+        <Route exact path="/shipping-policy" component={PrivacyPolicy} />
+
+
 
         {/* Protected Routes */}
         <ProtectedRoute exact path="/" component={Home} />
+        <ProtectedRoute exact path="/sports" component={LuckySportsPage} />
 
         {/* Game Routes */}
         <ProtectedRoute path="/wingo/:id" component={NewGamePage} />
@@ -203,6 +254,7 @@ const App = () => {
         <ProtectedRoute exact path="/accountSecurity/name" component={ModifyName} />
         <ProtectedRoute exact path="/accountSecurity/password" component={ModifyPassword} />
         <ProtectedRoute exact path="/accountSecurityhttps://pay.toddapple.live/placeOrder3" component={ModifyPayment} />
+        <ProtectedRoute exact path="/discount" component={MyPromotion} />
         <ProtectedRoute exact path="/mypromotion" component={MyPromotion} />
         <ProtectedRoute exact path="/mypromotion/apply" component={ApplyPromotion} />
         <ProtectedRoute exact path="/address" component={MyAddress} />
@@ -210,6 +262,7 @@ const App = () => {
         <ProtectedRoute exact path="/promotionRecordNew/:id" component={PromotionRecordNew} />
         <ProtectedRoute exact path="/getRedEnvelop/:id" component={Envelope} />
       </Switch>
+      </div>
       {!shouldHideNavBar && <NavBar />}
     </ThemeProvider>
 

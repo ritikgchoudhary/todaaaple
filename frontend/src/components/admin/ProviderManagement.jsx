@@ -25,7 +25,7 @@ const ProviderManagement = () => {
 
     const fetchProviders = async () => {
         try {
-            const { data } = await axios.get(`${url}/admin/providers`);
+            const { data } = await axios.get(`${url}/admin-api/providers`);
             setProviders(data);
             setLoading(false);
         } catch (error) {
@@ -41,7 +41,7 @@ const ProviderManagement = () => {
     const toggleStatus = async (id, currentStatus) => {
         try {
             const newStatus = currentStatus === 1 ? 0 : 1;
-            await axios.put(`${url}/admin/providers/${id}/status`, { status: newStatus });
+            await axios.put(`${url}/admin-api/providers/${id}/status`, { status: newStatus });
             fetchProviders();
         } catch (error) {
             console.error("Error updating status", error);

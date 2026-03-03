@@ -68,7 +68,7 @@ const gameCatalogSchema = new mongoose.Schema(
       trim: true,
     },
     softapiGameUid: {
-      // optional: for SoftAPI launch
+      // iGaming Game ID – used for game/launch (admin panel: "iGaming Game ID")
       type: String,
       default: "",
       trim: true,
