@@ -9,11 +9,13 @@ import {
     Divider,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 import {
     TrendingUp as TrendingUpIcon,
     People as PeopleIcon,
     AccountBalance as BankIcon,
     Payment as PaymentIcon,
+    SportsEsports as SlotsIcon,
 } from "@material-ui/icons";
 import axios from "axios";
 import AdminLayout from "./AdminLayout";
@@ -173,6 +175,11 @@ const AdminDashboard = () => {
                                 <Typography variant="body2">Gateways</Typography>
                                 <Typography variant="body2" style={{ color: "#10B9B1", fontWeight: "bold" }}>3 Active</Typography>
                             </Box>
+                            <Divider style={{ margin: "16px 0" }} />
+                            <Typography variant="subtitle2" style={{ fontWeight: 600, marginBottom: 8 }}>Quick links</Typography>
+                            <Link to="/admin/slots" style={{ display: "flex", alignItems: "center", gap: 8, color: "#10B9B1", textDecoration: "none", marginBottom: 8 }}>
+                                <SlotsIcon fontSize="small" /> Edit Slots JSON
+                            </Link>
                         </Box>
                     </Paper>
                 </Grid>

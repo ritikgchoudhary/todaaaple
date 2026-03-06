@@ -79,6 +79,7 @@ import CategoryManagement from "./components/admin/CategoryManagement";
 import RechargeSettings from "./components/admin/RechargeSettings";
 import CarouselManagement from "./components/admin/CarouselManagement";
 import SiteSettings from "./components/admin/SiteSettings";
+import SlotsJsonEditor from "./components/admin/SlotsJsonEditor";
 
 
 const App = () => {
@@ -181,6 +182,7 @@ const App = () => {
         <Route exact path="/admin/recharge-settings" component={RechargeSettings} />
         <Route exact path="/admin/carousel" component={CarouselManagement} />
         <Route exact path="/admin/site-settings" component={SiteSettings} />
+        <Route exact path="/admin/slots" component={SlotsJsonEditor} />
 
         {/* Public Routes */}
         <Route exact path="/login/:id" component={AuthForm} />
