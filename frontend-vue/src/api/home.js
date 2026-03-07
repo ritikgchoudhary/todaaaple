@@ -4,9 +4,17 @@ import { url } from './auth'
 const API = axios.create({ baseURL: url })
 
 API.interceptors.request.use((req) => {
-  const profile = localStorage.getItem('user')
-  if (profile) {
-    req.headers.authorization = `Bearer ${JSON.parse(profile).token}`
+  const token = localStorage.getItem('auth_token')
+  if (token) {
+    req.headers.authorization = `Bearer ${token}`
+  } else {
+    const profile = localStorage.getItem('user')
+    if (profile) {
+      try {
+        const parsed = JSON.parse(profile)
+        if (parsed.token) req.headers.authorization = `Bearer ${parsed.token}`
+      } catch (e) {}
+    }
   }
   return req
 })
