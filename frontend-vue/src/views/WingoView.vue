@@ -262,11 +262,13 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useUiStore } from '../stores/ui'
 import * as wingoApi from '../api/wingo'
 
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const ui = useUiStore()
 
 const gameId = computed(() => route.params.id || '1')
 const gameType = computed(() => gameId.value)
@@ -314,6 +316,15 @@ const cutoffSeconds = computed(() => (gameId.value === '1' ? 10 : 30))
 
 watch(() => drawer.value.selectedBase, (val) => { drawer.value.totalAmount = val * drawer.value.multiplier })
 watch(() => drawer.value.multiplier, (val) => { drawer.value.totalAmount = val * drawer.value.selectedBase })
+
+// Hide bottom nav when drawer is open
+watch(() => drawer.value.show, (isOpen) => {
+  if (isOpen) {
+    ui.hideBottomNav()
+  } else {
+    ui.showBottomNav()
+  }
+})
 
 function openBetDrawer(color, title, bgOverride = null) {
   if (!auth.isLoggedIn) { router.push('/login'); return }

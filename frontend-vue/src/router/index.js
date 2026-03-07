@@ -11,6 +11,7 @@ import WingoView from '../views/WingoView.vue'
 import AgentEarningView from '../views/AgentEarningView.vue'
 import MySalaryView from '../views/MySalaryView.vue'
 import InvitationBonusView from '../views/InvitationBonusView.vue'
+import OfferHistoryView from '../views/OfferHistoryView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -24,6 +25,7 @@ const routes = [
   { path: '/agent-earning', name: 'AgentEarning', component: AgentEarningView, meta: { title: 'Agent Earning', requiresAuth: true, showNav: false } },
   { path: '/mySalary', name: 'MySalary', component: MySalaryView, meta: { title: 'My Daily Salary', requiresAuth: true, showNav: false } },
   { path: '/invitationBonus', name: 'InvitationBonus', component: InvitationBonusView, meta: { title: 'Invitation Bonus', requiresAuth: true, showNav: false } },
+  { path: '/offer-history', name: 'OfferHistory', component: OfferHistoryView, meta: { title: 'Offer History', requiresAuth: true, showNav: false } },
   { path: '/help', name: 'Help', component: HelpView, meta: { title: 'Help', showNav: true } },
 ]
 
