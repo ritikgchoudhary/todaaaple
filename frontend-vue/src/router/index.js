@@ -12,6 +12,9 @@ import AgentEarningView from '../views/AgentEarningView.vue'
 import MySalaryView from '../views/MySalaryView.vue'
 import InvitationBonusView from '../views/InvitationBonusView.vue'
 import OfferHistoryView from '../views/OfferHistoryView.vue'
+import RedEnvelopeView from '../views/RedEnvelopeView.vue'
+import RedEnvelopeHistoryView from '../views/RedEnvelopeHistoryView.vue'
+import ReceiveEnvelopeView from '../views/ReceiveEnvelopeView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -26,6 +29,9 @@ const routes = [
   { path: '/mySalary', name: 'MySalary', component: MySalaryView, meta: { title: 'My Daily Salary', requiresAuth: true, showNav: false } },
   { path: '/invitationBonus', name: 'InvitationBonus', component: InvitationBonusView, meta: { title: 'Invitation Bonus', requiresAuth: true, showNav: false } },
   { path: '/offer-history', name: 'OfferHistory', component: OfferHistoryView, meta: { title: 'Offer History', requiresAuth: true, showNav: false } },
+  { path: '/redenvelope', name: 'RedEnvelope', component: RedEnvelopeView, meta: { title: 'Red Envelope', requiresAuth: true, showNav: false } },
+  { path: '/redEnvelopeHistory', name: 'RedEnvelopeHistory', component: RedEnvelopeHistoryView, meta: { title: 'Red Envelope History', requiresAuth: true, showNav: false } },
+  { path: '/getRedEnvelop/:id', name: 'ReceiveEnvelope', component: ReceiveEnvelopeView, meta: { title: 'Receive Envelope', requiresAuth: true, showNav: false } },
   { path: '/help', name: 'Help', component: HelpView, meta: { title: 'Help', showNav: true } },
 ]
 

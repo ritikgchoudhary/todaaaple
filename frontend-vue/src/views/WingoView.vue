@@ -447,7 +447,10 @@ onMounted(() => {
   }, 1000)
 })
 
-onUnmounted(() => { if (timerInterval) clearInterval(timerInterval) })
+onUnmounted(() => { 
+  if (timerInterval) clearInterval(timerInterval)
+  ui.showBottomNav() // Ensure nav is restored if user navigates away
+})
 watch(() => route.params.id, () => { updateTimer(); fetchData() })
 </script>
 
