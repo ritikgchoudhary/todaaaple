@@ -971,4 +971,89 @@ onMounted(async () => {
   object-fit: contain;
 }
 
+.homeUserWidget {
+  background: linear-gradient(135deg, #05c0b8 0%, #0d9488 100%);
+  margin: 10px 12px 15px;
+  border-radius: 16px;
+  padding: 16px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2);
+}
+
+.huTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.huLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.huAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.huDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.huId {
+  font-size: 13px;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.huBal {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+}
+
+.huRight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.huBtn {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.huDeposit {
+  background: white;
+  color: #0d9488;
+}
+
+.huDeposit:active {
+  background: #f0f0f0;
+}
+
+.huWithdraw {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.huWithdraw:active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 </style>
