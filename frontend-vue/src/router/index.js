@@ -22,6 +22,11 @@ import ApplyPromotionView from '../views/ApplyPromotionView.vue'
 import ApplyRecordView from '../views/ApplyRecordView.vue'
 import PromotionRecordView from '../views/PromotionRecordView.vue'
 import PromotionRecordNewView from '../views/PromotionRecordNewView.vue'
+import WalletView from '../views/WalletView.vue'
+import BankView from '../views/BankView.vue'
+import AccountSecurityView from '../views/AccountSecurityView.vue'
+import AboutUsView from '../views/AboutUsView.vue'
+import ApiDocsView from '../views/ApiDocsView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -47,6 +52,14 @@ const routes = [
   { path: '/promotionRecord/:id', name: 'PromotionRecord', component: PromotionRecordView, meta: { title: 'Promotion Record', requiresAuth: true, showNav: false } },
   { path: '/promotionRecordNew/:id', name: 'PromotionRecordNew', component: PromotionRecordNewView, meta: { title: 'Promotion Record New', requiresAuth: true, showNav: false } },
   { path: '/help', name: 'Help', component: HelpView, meta: { title: 'Help', showNav: true } },
+  { path: '/wallet', name: 'Wallet', component: WalletView, meta: { title: 'Wallet', requiresAuth: true, showNav: true } },
+  { path: '/bank', name: 'Bank', component: BankView, meta: { title: 'Bank', requiresAuth: true, showNav: false } },
+  { path: '/accountSecurity', name: 'AccountSecurity', component: AccountSecurityView, meta: { title: 'Security', requiresAuth: true, showNav: false } },
+  { path: '/accountSecurity/name', name: 'ModifyName', component: PlaceholderView, meta: { requiresAuth: true } },
+  { path: '/accountSecurity/password', name: 'ModifyPassword', component: PlaceholderView, meta: { requiresAuth: true } },
+  { path: '/accountSecurity/payment', name: 'ModifyPayment', component: PlaceholderView, meta: { requiresAuth: true } },
+  { path: '/about-us', name: 'AboutUs', component: AboutUsView, meta: { title: 'About Us', showNav: true } },
+  { path: '/api-docs', name: 'ApiDocs', component: ApiDocsView, meta: { title: 'API Docs', requiresAuth: true, showNav: false } },
 ]
 
 const router = createRouter({
