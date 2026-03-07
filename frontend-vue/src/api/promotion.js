@@ -13,7 +13,7 @@ API.interceptors.request.use((req) => {
 
 export const getPromotionMembers = (id) => API.get(`/getPromotionMembers/${id}`)
 export const claimContriBonus = (id) => API.get(`/claimContriBonus/${id}`)
-export const applyPromotion = (id, data) => API.post(`/applyPromotion/${id}`, data)
+export const applyBonus = (data) => API.post(`/applyBonus/`, data)
 export const getPromotionFull = (id) => API.get(`/getPromotionFull/${id}`)
 export const getPromotionNew = (id) => API.get(`/getPromotionNew/${id}`)
 export const getPromotionLiveBalance = (id, phone) => API.get(`/getPromotionLiveBalance/${id}/${phone}`)

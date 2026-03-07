@@ -15,6 +15,13 @@ import OfferHistoryView from '../views/OfferHistoryView.vue'
 import RedEnvelopeView from '../views/RedEnvelopeView.vue'
 import RedEnvelopeHistoryView from '../views/RedEnvelopeHistoryView.vue'
 import ReceiveEnvelopeView from '../views/ReceiveEnvelopeView.vue'
+import WingoFullRecordView from '../views/WingoFullRecordView.vue'
+import WingoFullHistoryView from '../views/WingoFullHistoryView.vue'
+import MyPromotionView from '../views/MyPromotionView.vue'
+import ApplyPromotionView from '../views/ApplyPromotionView.vue'
+import ApplyRecordView from '../views/ApplyRecordView.vue'
+import PromotionRecordView from '../views/PromotionRecordView.vue'
+import PromotionRecordNewView from '../views/PromotionRecordNewView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -32,6 +39,13 @@ const routes = [
   { path: '/redenvelope', name: 'RedEnvelope', component: RedEnvelopeView, meta: { title: 'Red Envelope', requiresAuth: true, showNav: false } },
   { path: '/redEnvelopeHistory', name: 'RedEnvelopeHistory', component: RedEnvelopeHistoryView, meta: { title: 'Red Envelope History', requiresAuth: true, showNav: false } },
   { path: '/getRedEnvelop/:id', name: 'ReceiveEnvelope', component: ReceiveEnvelopeView, meta: { title: 'Receive Envelope', requiresAuth: true, showNav: false } },
+  { path: '/wingo-record/:id', name: 'WingoFullRecord', component: WingoFullRecordView, meta: { title: 'Record History', requiresAuth: true, showNav: false } },
+  { path: '/wingo-history/:id', name: 'WingoFullHistory', component: WingoFullHistoryView, meta: { title: 'Bid History', requiresAuth: true, showNav: false } },
+  { path: '/mypromotion', name: 'MyPromotion', component: MyPromotionView, meta: { title: 'My Promotion', requiresAuth: true, showNav: false } },
+  { path: '/mypromotion/apply', name: 'ApplyPromotion', component: ApplyPromotionView, meta: { title: 'Apply Promotion', requiresAuth: true, showNav: false } },
+  { path: '/applyRecord', name: 'ApplyRecord', component: ApplyRecordView, meta: { title: 'Apply Record', requiresAuth: true, showNav: false } },
+  { path: '/promotionRecord/:id', name: 'PromotionRecord', component: PromotionRecordView, meta: { title: 'Promotion Record', requiresAuth: true, showNav: false } },
+  { path: '/promotionRecordNew/:id', name: 'PromotionRecordNew', component: PromotionRecordNewView, meta: { title: 'Promotion Record New', requiresAuth: true, showNav: false } },
   { path: '/help', name: 'Help', component: HelpView, meta: { title: 'Help', showNav: true } },
 ]
 

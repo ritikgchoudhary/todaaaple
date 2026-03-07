@@ -33,6 +33,9 @@ export const placeBid = (id, data) => {
   })
 }
 
+export const getFullRecords = (id) => API.get(`/minute${id}_getFullRecordData`)
+export const getFullHistory = (id, userId) => API.get(`/minute${id}_getFullHistoryData/${userId}`)
+
 // Legacy exports for backward compatibility if any
 export const getTimer1 = () => getTimer(1)
 export const getRecords1 = () => getRecords(1)
