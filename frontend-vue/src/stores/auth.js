@@ -1,0 +1,38 @@
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+export const useAuthStore = defineStore('auth', () => {
+  const token = ref(localStorage.getItem('auth_token') || '')
+  const user = ref(null)
+
+  try {
+    const raw = localStorage.getItem('user')
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (parsed.token) token.value = parsed.token
+      if (parsed.result) user.value = parsed.result
+    }
+  } catch (_) {}
+
+  const isLoggedIn = computed(() => !!token.value)
+
+  function setUser(data) {
+    if (data?.token) {
+      token.value = data.token
+      localStorage.setItem('auth_token', data.token)
+    }
+    if (data?.result) user.value = data.result
+    if (data?.token || data?.result) {
+      localStorage.setItem('user', JSON.stringify({ result: data.result || user.value, token: data.token || token.value }))
+    }
+  }
+
+  function logout() {
+    token.value = ''
+    user.value = null
+    localStorage.removeItem('user')
+    localStorage.removeItem('auth_token')
+  }
+
+  return { token, user, isLoggedIn, setUser, logout }
+})

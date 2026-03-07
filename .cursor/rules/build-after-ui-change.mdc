@@ -1,0 +1,34 @@
+---
+description: After any frontend/UI change, run the production build and optionally commit & remind to push.
+alwaysApply: true
+---
+
+# Build and sync after UI changes
+
+## After frontend/UI changes
+
+1. **Always run the frontend build** so the user can see/deploy the result:
+   ```bash
+   cd /www/wwwroot/rushpay.online/frontend && CI=false npm run build
+   ```
+   Run this after editing any file under `frontend/src/` (e.g. components, pages, styles, auth, home, nav).
+
+2. **Commit changes** (so GitHub stays in sync):
+   - Stage: `git add -u` and any new files (e.g. `git add frontend/src/...`).
+   - Do not stage: `.well-known/`, `backend/uploads/`, large binaries/zips.
+   - Commit: `git commit -m "Brief description of change"`.
+
+3. **Remind to push** (auth is on user's side):
+   - Tell the user: "Commit ho gaya. GitHub par bhejne ke liye: `git push origin main`"
+   - Repo: https://github.com/ritikgchoudhary/todaaaple.git
+
+## When to run build
+
+- After changing: `frontend/src/**/*` (JSX, JS, CSS, assets).
+- After adding/editing login, nav, home, admin, or any UI component.
+- Before telling the user "done" for a UI task—ensure build has run and succeeded.
+
+## Build output
+
+- Success: `build/` folder ready; main chunk in `build/static/js/main.*.js`.
+- If build fails: fix errors (e.g. lint/import) and run build again.
