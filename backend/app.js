@@ -31,6 +31,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Compatibility Middleware: Copy Authorization Header to req.body.auth 
+// (Legacy backend controllers often check req.body.auth instead of headers)
+app.use((req, res, next) => {
+  if (req.headers.authorization && !req.body.auth) {
+    req.body.auth = req.headers.authorization;
+  }
+  next();
+});
+
 // CSP: allow Google Analytics (gtag) connect-src so GA4 is not blocked
 app.use(
   helmet({
