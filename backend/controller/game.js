@@ -33,13 +33,10 @@ export const launchGame = async (req, res, next) => {
     }
     const hasGameId = game_id != null && game_id !== "" && Number.isFinite(Number(game_id));
     const hasGameUid = game_uid != null && game_uid !== "";
-    if (!hasGameId && !hasGameUid) {
-        return next(new ErrorResponse("Missing game_id or game_uid in request body", 400));
-    }
 
     try {
         const user = await User.findOne({ id: userId });
-        if (!user) return next(new ErrorResponse("User not found", 404));
+        if (!user) return next(new ErrorResponse("User not found (ID: " + userId + ")", 404));
 
     // Prefer numeric game_id if sent; else look up by game_code (game_uid)
     let finalGameUid;

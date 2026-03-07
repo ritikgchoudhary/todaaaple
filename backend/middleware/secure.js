@@ -3,61 +3,70 @@ import User from "../model/userSchema.js";
 
 /**
  * Robust authentication middleware.
- * Verifies JWT and handles user identity verification.
+ * Verifies JWT and resolves user via _id (priority) or numeric id.
  */
 const checkAuth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        // console.log("checkAuth: Missing or invalid authorization header");
-        return res.status(401).json({ message: 'Auth Failed' });
+        // Fallback for requests that don't use headers yet
+        if (req.body && req.body.auth) {
+            // Handled by compatibility middleware in app.js
+        } else {
+            return res.status(401).json({ message: 'Auth Failed' });
+        }
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = (authHeader || req.body.auth).split(" ")[1];
     
     try {
         // 1. Validate JWT integrity
         const decoded = jwt.verify(token, 'hjbfhv12hbb3hb434343');
-        if (!decoded || !decoded.id) {
+        if (!decoded) {
             return res.status(401).json({ message: 'Auth Failed' });
         }
 
-        // 2. Resolve User (Bypass vs DB)
-        // Bypass user defined in controller/user.js
-        if (decoded.phone === '9988776655' && decoded.id === '60d5ecb8b39a9c0015f1a300') {
-            req.user = {
-                id: 998877,
-                _id: '60d5ecb8b39a9c0015f1a300',
-                phone: '9988776655',
-                username: 'BypassAdmin',
-                balance: 99999
-            };
+        // 2. Developer Bypass Account Check
+        if (decoded.phone === '9988776655' && (decoded.id === '60d5ecb8b39a9c0015f1a300' || decoded._id === '60d5ecb8b39a9c0015f1a300')) {
+            req.user = { id: 998877, _id: '60d5ecb8b39a9c0015f1a300', phone: '9988776655', username: 'BypassAdmin', balance: 99999 };
             return next();
         }
 
-        // Standard user lookup by _id (decoded.id is the MongoDB ObjectId string)
-        const user = await User.findById(decoded.id);
+        // 3. Resolve User (Handle payload inconsistency: id can be ObjectId or Numeric)
+        let user = null;
+        
+        // Strategy A: If _id is in payload, use it
+        if (decoded._id) {
+            user = await User.findById(decoded._id);
+        } 
+        
+        // Strategy B: check if 'id' field is an ObjectId-like string
+        if (!user && decoded.id && typeof decoded.id === 'string' && decoded.id.length === 24) {
+            user = await User.findById(decoded.id);
+        }
+
+        // Strategy C: Check if 'id' field is numeric (User.id)
+        if (!user && decoded.id && (typeof decoded.id === 'number' || !isNaN(decoded.id))) {
+            user = await User.findOne({ id: Number(decoded.id) });
+        }
+
         if (!user) {
-            // console.log("checkAuth: User not found for token id", decoded.id);
+            // console.warn("checkAuth: User lookup failed for payload:", decoded);
             return res.status(401).json({ message: 'Auth Failed' });
         }
 
-        // 3. Optional: Token sync check (verify this is the latest session token if stored in DB)
-        // If your app allows multiple device logins, user.token might differ. 
-        // We only check if user.token is actually SET in the DB.
-        if (user.token && user.token !== token) {
-             // console.warn(`checkAuth: Session mismatch for user ${user.id}. Old/Other session token used.`);
-             // return res.status(401).json({ message: 'Auth Failed' }); // Uncomment if you want to enforce single session
-        }
-
-        // 4. Identity validation against URL params (id)
+        // 4. Identity validation against URL params (if route uses :id for User Identification)
         const idParam = req.params.id;
-        const isGameLaunch = req.originalUrl.includes('/game/launch/');
+        const url = req.originalUrl || '';
+        const isGameLaunch = url.includes('/game/launch/');
         
-        // If the URL has an ID and it's NOT a game launch, it must match the user's numeric 'id' field
+        // For game launch, :id is usually the GAME ID, so we skip ownership check
         if (idParam && !isGameLaunch) {
             if (String(user.id) !== String(idParam)) {
-                console.warn(`checkAuth: ID mismatch. Token user: ${user.id}, URL param: ${idParam}`);
-                return res.status(401).json({ message: 'Auth Failed' });
+                // Secondary check: if idParam is actually the _id hex string
+                if (String(user._id) !== String(idParam)) {
+                    console.warn(`checkAuth: Identity mismatch. User: ${user.id}, Param: ${idParam}`);
+                    return res.status(401).json({ message: 'Auth Failed' });
+                }
             }
         }
 
