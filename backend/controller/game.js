@@ -66,7 +66,7 @@ export const launchGame = async (req, res, next) => {
 
         const response = await axios.get(url);
 
-        // console.log("Full API Response:", JSON.stringify(response.data, null, 2));
+        console.log("Full API Response:", JSON.stringify(response.data, null, 2));
 
         // DEBUG MODE: Return response to frontend but do NOT launch (success: false)
         /*
