@@ -646,56 +646,32 @@ router.get("/minute1_getCurrentNumber/:api", minute1_getCurrentNumber);
 router.get("/minute1_setResult/:id/:api", minute1_setResult);
 router.get("/minute1_getTimer", minute1_getTimer);
 router.post("/minute1_bidData", minute1_bidData);
-router.get("/minute1_getRecord", minute1_getRecordData); // secured
-router.get("/minute1_getFullRecord", minute1_getFullRecordData); // secured
-router.get(
-  "/minute1_getBidHistory/:id/",
-  checkAuth,
-  minute1_getHistoryData
-); // secured
-router.get(
-  "/minute1_getFullBidHistory/:id",
-  checkAuth,
-  minute1_getFullHistoryData
-); // secured
+router.get("/minute1_getRecordData", minute1_getRecordData); 
+router.get("/minute1_getFullRecordData", minute1_getFullRecordData);
+router.get("/minute1_getHistoryData/:id", minute1_getHistoryData);
+router.get("/minute1_getFullHistoryData/:id", minute1_getFullHistoryData);
 router.get("/minute1_getPricing/:api", minute1_getPricing);
 
-// Minute 2 Routes
+// Minute 3 Routes
 router.get("/minute3_getCurrentNumber/:api", minute3_getCurrentNumber);
 router.get("/minute3_setResult/:id/:api", minute3_setResult);
 router.get("/minute3_getTimer", minute3_getTimer);
 router.post("/minute3_bidData", minute3_bidData);
-router.get("/minute3_getRecord", minute3_getRecordData); // secured
-router.get("/minute3_getFullRecord", minute3_getFullRecordData); // secured
-router.get(
-  "/minute3_getBidHistory/:id/",
-  checkAuth,
-  minute3_getHistoryData
-); // secured
-router.get(
-  "/minute3_getFullBidHistory/:id",
-  checkAuth,
-  minute3_getFullHistoryData
-); // secured
+router.get("/minute3_getRecordData", minute3_getRecordData);
+router.get("/minute3_getFullRecordData", minute3_getFullRecordData);
+router.get("/minute3_getHistoryData/:id", minute3_getHistoryData);
+router.get("/minute3_getFullHistoryData/:id", minute3_getFullHistoryData);
 router.get("/minute3_getPricing/:api", minute3_getPricing);
 
-// Minute 3 Routes
+// Minute 5 Routes
 router.get("/minute5_getCurrentNumber/:api", minute5_getCurrentNumber);
 router.get("/minute5_setResult/:id/:api", minute5_setResult);
 router.get("/minute5_getTimer", minute5_getTimer);
 router.post("/minute5_bidData", minute5_bidData);
-router.get("/minute5_getRecord", minute5_getRecordData); // secured
-router.get("/minute5_getFullRecord", minute5_getFullRecordData); // secured
-router.get(
-  "/minute5_getBidHistory/:id/",
-  checkAuth,
-  minute5_getHistoryData
-); // secured
-router.get(
-  "/minute5_getFullBidHistory/:id",
-  checkAuth,
-  minute5_getFullHistoryData
-); // secured
+router.get("/minute5_getRecordData", minute5_getRecordData);
+router.get("/minute5_getFullRecordData", minute5_getFullRecordData);
+router.get("/minute5_getHistoryData/:id", minute5_getHistoryData);
+router.get("/minute5_getFullHistoryData/:id", minute5_getFullHistoryData);
 router.get("/minute5_getPricing/:api", minute5_getPricing);
 
 router.post("/signin", signin); // secured
