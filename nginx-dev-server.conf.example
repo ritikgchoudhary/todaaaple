@@ -1,0 +1,45 @@
+# Nginx: use this when frontend is run as DEV SERVER (PM2 rushpay-frontend-dev on port 3000).
+# Merge the location blocks into your existing server { } for rushpay.online.
+#
+# Backend (API) → :4001
+# Frontend (React dev) → :3000
+# WebSocket → :3000 (for hot reload)
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name rushpay.online www.rushpay.online;
+
+    # API and backend routes → Node on 4001
+    location /user/          { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+    location /getUser/       { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+    location /admin-api/     { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+    location /api/           { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+    location /game/          { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; }
+    location /data/          { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; }
+    location /health         { proxy_pass http://127.0.0.1:4001; proxy_http_version 1.1; proxy_set_header Host $host; }
+
+    # WebSocket for React dev server (hot reload)
+    location /sockjs-node/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+    }
+
+    # Everything else → React dev server on 3000
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+
+# If you use HTTPS (recommended), duplicate the location blocks inside your existing
+# server { listen 443 ssl; ... } block and point proxy_pass to the same ports.

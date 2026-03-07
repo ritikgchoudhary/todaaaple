@@ -12,25 +12,29 @@ const API = axios.create({ baseURL: apiBase })
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token')
   if (token) {
-    // Backend seems to expect 'Authorization: Bearer <token>' for checkAuth
-    // and sometimes looks for it in req.body.auth for bidData (legacy style)
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })
 
-// Wingo 1 Minute
-export const getTimer1 = () => API.get('/minute1_getTimer')
-export const getRecords1 = () => API.get('/minute1_getRecord')
-export const getMyHistory1 = (userId) => API.get(`/minute1_getBidHistory/${userId}`)
-export const placeBid1 = (data) => {
-  // Backend minute1_bidData expects req.body.auth for token
+/**
+ * Generic functions for Wingo 1, 3, 5 minutes
+ */
+
+export const getTimer = (id) => API.get(`/minute${id}_getTimer`)
+export const getRecords = (id) => API.get(`/minute${id}_getRecordData`)
+export const getMyHistory = (id, userId) => API.get(`/minute${id}_getHistoryData/${userId}`)
+
+export const placeBid = (id, data) => {
   const token = localStorage.getItem('auth_token')
-  return API.post('/minute1_bidData', {
+  return API.post(`/minute${id}_bidData`, {
     ...data,
     auth: `Bearer ${token}`
   })
 }
 
-// Support for Win/Loss result checking if needed
-export const getResult1 = (id) => API.get(`/minute1_setResult/${id}/fakeapi`) // Reference for result
+// Legacy exports for backward compatibility if any
+export const getTimer1 = () => getTimer(1)
+export const getRecords1 = () => getRecords(1)
+export const getMyHistory1 = (userId) => getMyHistory(1, userId)
+export const placeBid1 = (data) => placeBid(1, data)

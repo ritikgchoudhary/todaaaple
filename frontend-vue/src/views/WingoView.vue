@@ -1,409 +1,555 @@
 <template>
   <div class="wingo-page">
-    <div class="mobileContainer">
-      <!-- Top Header -->
-      <header class="wingoHeader">
-        <button @click="router.back()" class="backBtn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <span class="pageTitle">Win Go 1Min</span>
-        <div class="walletBalance">
-          <img src="https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_deposit.png" alt="" class="walletIcon" />
-          <span>₹{{ (auth.user?.balance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }}</span>
+    <div class="wingo-container">
+      <!-- Winning Dialog -->
+      <div v-if="winningDialog.show" class="modal-overlay">
+        <div class="winning-card">
+          <div class="winning-header">
+            <img :src="'/images/winBadge.png'" alt="Win Badge" class="badge-img" />
+          </div>
+          <div class="winning-content">
+            <h2 class="congrats-text">Congratulations</h2>
+            <p class="game-info">Wingo {{ gameType }} Minute Period - {{ winningDialog.period }}</p>
+            <p class="result-text">Result - {{ winningDialog.color }}</p>
+            <h3 class="winning-amount">+{{ winningDialog.amount }}</h3>
+            <p class="winning-label">Total Winning</p>
+            <button @click="winningDialog.show = false" class="close-win-btn">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warning/Alert Dialog -->
+      <div v-if="alertDialog.show" class="modal-overlay" @click="alertDialog.show = false">
+        <div class="alert-box">
+          <p>{{ alertDialog.message }}</p>
+        </div>
+      </div>
+
+      <!-- Rules Dialog -->
+      <div v-if="rulesDialog.show" class="modal-overlay" @click.self="rulesDialog.show = false">
+        <div class="rules-box">
+          <div class="rules-header">Rules of guess:</div>
+          <div class="rules-content">
+            <p>{{ gameType }} minutes 1 issue, 2 minutes and 30 seconds to order, 30 seconds to show the lottery result. It opens all day. The total number of trade is 480 issues.</p>
+            <p>If you spend 100 rupees to trade, after deducting 2 rupees service fee, your contract amount is 98 rupees:</p>
+            <p>1. JOIN GREEN: if the result shows 1,3,7,9, you will get (98*2) 196 rupees; If the result shows 5, you will get (98*1.5) 147rupees.</p>
+            <p>2. JOIN RED: if the result shows 2,4,6,8, you will get (98*2) 196 rupees; If the result shows 0, you will get (98*1.5) 147 rupees.</p>
+            <p>3. JOIN VIOLET: if the result shows 0 or 5, you will get (98*4.5) 441 rupees.</p>
+            <p>4. SELECT NUMBER: if the result is the same as the number you selected, you will get (98*9) 882 rupees.</p>
+          </div>
+          <button @click="rulesDialog.show = false" class="rules-ok-btn">OK</button>
+        </div>
+      </div>
+
+      <!-- Presale Rules Dialog -->
+      <div v-if="presaleDialog.show" class="modal-overlay">
+        <div class="rules-box presale-box">
+          <div class="rules-header">Presale management rule</div>
+          <div class="rules-content">
+            <p style="color: red">Please confirm you are not from one of below states:</p>
+            <p>Andhra Pradesh, Bihar, Chhattisgarh, Gujarat, Haryana, Himachal Pradesh, Jammu and Kashmir, Jharkhand, Karnataka, Odisha, Rajasthan, Tamil Nadu, Tripura, Telangana, Uttar Pradesh, Uttarakhand</p>
+            <p style="color: red">Presale management rule</p>
+            <p>1.1 Presale definition: refers to a sales model in which a merchant provides a product or service plan...</p>
+            <p>Note: I have carefully read all contents and agree to continue with my own risk.</p>
+          </div>
+          <button @click="confirmPresale" class="rules-ok-btn">Confirm</button>
+        </div>
+      </div>
+
+      <!-- Top Balance Header -->
+      <header class="wingo-header">
+        <div class="header-left">
+          <div class="header-label">Available Balance</div>
+          <div class="header-balance">₹ {{ (auth.user?.balance || 0).toFixed(2) }}</div>
+          <div class="header-uid">No. {{ auth.user?.id }}</div>
+        </div>
+        <div class="header-right">
+          <div style="cursor: pointer; line-height: 1" @click="rulesDialog.show = true">
+            <img :src="'/images/rule.png'" height="17" class="icon-filter" />
+          </div>
+          <router-link to="/deposit" style="line-height: 0; margin-top: 5px;">
+            <img :src="'/images/recharge.png'" height="22" />
+          </router-link>
         </div>
       </header>
 
-      <!-- Game Status Card -->
-      <div class="gameStatusRow">
-        <div class="periodInfo">
+      <!-- Minute Tabs -->
+      <nav class="minute-tabs">
+        <router-link to="/wingo/1" class="tab-btn t1" :class="{ active: gameId === '1' }">
+          <span>1 Min</span>
+           <img :src="'/images/timer1.png'" height="14" width="14" style="object-fit: contain" alt="" />
+        </router-link>
+        <router-link to="/wingo/3" class="tab-btn t3" :class="{ active: gameId === '3' }">
+          <span>3 Min</span>
+           <img :src="'/images/timer1.png'" height="14" width="14" style="object-fit: contain" alt="" />
+        </router-link>
+        <router-link to="/wingo/5" class="tab-btn t5" :class="{ active: gameId === '5' }">
+          <span>5 Min</span>
+           <img :src="'/images/timer1.png'" height="14" width="14" style="object-fit: contain" alt="" />
+        </router-link>
+      </nav>
+
+      <!-- Period & Countdown -->
+      <div class="period-row">
+        <div class="period-info">
           <div class="label">Period</div>
-          <div class="periodCode">{{ currentPeriod }}</div>
+          <div class="value">{{ currentPeriod }}</div>
         </div>
-        <div class="timerInfo">
-          <div class="label">Count Down</div>
-          <div class="timerRow">
-            <span class="timeBox">0</span>
-            <span class="timeBox">{{ Math.floor(timeLeft / 10) }}</span>
-            <span class="timeBox">{{ timeLeft % 10 }}</span>
+        <div class="timer-info">
+          <div class="label" align="center">Count Down</div>
+          <div class="timer-boxes">
+            <span class="t-box">0</span>
+            <span class="t-box">{{ timerMin }}</span>
+            <span class="t-sep">:</span>
+            <span class="t-box wide">{{ timerSec < 10 ? '0' + timerSec : timerSec }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Betting Area -->
-      <div class="bettingSection">
-        <div class="colorGroup">
-          <button @click="openBet('Green')" class="colorBtn greenLine">Green</button>
-          <button @click="openBet('Violet')" class="colorBtn violetLine">Violet</button>
-          <button @click="openBet('Red')" class="colorBtn redLine">Red</button>
-        </div>
+      <!-- Main Betting Buttons -->
+      <section class="bet-buttons-row">
+        <button @click="openBetDrawer('#28c04c', 'Join Green')" :disabled="!canOpen" class="btn-green" :class="{ disabled: !canOpen }">Join Green</button>
+        <button @click="openBetDrawer('#f84350', 'Join Red')" :disabled="!canOpen" class="btn-red" :class="{ disabled: !canOpen }">Join Red</button>
+        <button @click="openBetDrawer('#8c6ceb', 'Join Violet')" :disabled="!canOpen" class="btn-violet" :class="{ disabled: !canOpen }">Join Violet</button>
+      </section>
 
-        <div class="numberGrid">
-          <button v-for="n in 10" :key="n-1" 
-            @click="openBet('Number', n-1)" 
-            class="numBtn" 
-            :class="getNumberClass(n-1)"
-          >
-            {{ n-1 }}
-          </button>
+      <!-- Number Grid -->
+      <section class="number-grid-container">
+        <div v-for="n in numbers" :key="n.val" 
+             @click="canOpen && openBetDrawer('', 'Select ' + n.val, n.color)"
+             class="num-circle"
+             :class="{ disabled: !canOpen }"
+             :style="{ background: !canOpen ? '#dbdbdb' : n.color }">
+          {{ n.val }}
         </div>
+      </section>
 
-        <div class="sizeGroup">
-          <button @click="openBet('Big')" class="sizeBtn big">Big</button>
-          <button @click="openBet('Small')" class="sizeBtn small">Small</button>
+      <!-- Big/Small Buttons -->
+      <section class="bet-buttons-row big-small">
+        <button @click="openBetDrawer('#2196f3', 'Big')" :disabled="!canOpen" class="btn-big" :class="{ disabled: !canOpen }">Big</button>
+        <button @click="openBetDrawer('orange', 'Small')" :disabled="!canOpen" class="btn-small" :class="{ disabled: !canOpen }">Small</button>
+      </section>
+
+      <!-- Records Section -->
+      <section class="records-container">
+        <div class="section-header">
+          <span style="color: #333">{{ gameType }} Minutes Record</span>
+          <span class="more-link">more ›</span>
         </div>
-      </div>
-
-      <!-- Result Tabs -->
-      <div class="resultSection">
-        <div class="tabHeader">
-          <button @click="activeTab = 'record'" :class="{ active: activeTab === 'record' }">Game History</button>
-          <button @click="activeTab = 'my'" :class="{ active: activeTab === 'my' }">My Results</button>
+        <div class="record-table-wrapper">
+          <table class="record-table">
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Price</th>
+                <th>Number</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in records" :key="row.id">
+                <td>{{ row.id }}</td>
+                <td>{{ row.price }}</td>
+                <td :class="row.number >= 5 ? 'text-green' : 'text-red'">
+                  {{ row.number }} {{ row.number >= 5 ? 'Big' : 'Small' }}
+                </td>
+                <td>
+                  <div class="color-dots">
+                    <span v-for="c in parseColors(row.color)" :key="c" class="dot" :style="{ backgroundColor: getDotColor(c) }"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </section>
 
-        <div v-if="activeTab === 'record'" class="recordTable">
-          <div class="tableRow header">
-            <span>Period</span>
-            <span>Number</span>
-            <span>Big/Small</span>
-            <span>Color</span>
-          </div>
-          <div v-for="r in records" :key="r.id" class="tableRow">
-            <span class="periodText">{{ r.id }}</span>
-            <span class="numText" :class="getColorByNumber(r.number)">{{ r.number }}</span>
-            <span class="sizeText">{{ r.number >= 5 ? 'Big' : 'Small' }}</span>
-            <div class="colorDots">
-              <span v-for="c in getColorsByNumber(r.number)" :key="c" class="dot" :class="c"></span>
+      <!-- Bid History Section -->
+      <section class="records-container bid-history-container">
+        <div class="section-header">
+          <span style="color: #333">{{ gameType }} Bid History</span>
+          <span class="more-link">more ›</span>
+        </div>
+        <div class="bid-list">
+          <div v-if="!myHistory || myHistory.length === 0" class="no-records">No Records</div>
+          <div v-for="(bid, idx) in myHistory" :key="idx" class="bid-card">
+            <div class="bid-card-top">
+              <div>
+                <div class="bid-amt">₹{{ bid.amount }}</div>
+                <div class="bid-note">CONTRACTMONEY</div>
+              </div>
+              <div class="bid-date">{{ new Date(bid.date).toLocaleString() }}</div>
+            </div>
+            <div class="bid-card-details">
+              <div class="detail-row">
+                <span class="lbl">Period:</span> <span class="val">{{ bid.period }}</span>
+                <span class="lbl">Select:</span> <span class="val" :style="{ color: getSelectColor(bid.select) }">{{ bid.select }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="lbl">Status:</span> <span class="val" :class="bid.status.toLowerCase()">{{ bid.status }}</span>
+                <span class="lbl">Winning:</span> <span class="val" :class="{ success: bid.winning > 0, red: bid.winning === 0 }">{{ bid.winning }}</span>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div v-else class="myHistory">
-          <div v-if="!myHistory.length" class="empty">No betting records</div>
-          <div v-for="h in myHistory" :key="h.period" class="historyCard">
-            <div class="hRow">
-              <span class="hPeriod">{{ h.period }}</span>
-              <span class="hStatus" :class="h.status">{{ h.status }}</span>
+      <!-- Bet Drawer -->
+      <Transition name="slide-up">
+        <div v-if="drawer.show" class="drawer-overlay" @click.self="drawer.show = false">
+          <div class="drawer-content">
+            <div class="drawer-header" :style="{ backgroundColor: drawer.color || '#0d9488' }">
+              {{ drawer.title }}
             </div>
-            <div class="hRow">
-              <span class="hSelect">{{ h.select }}</span>
-              <span class="hAmount">₹{{ h.amount }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bet Dialog (Simple implementation) -->
-      <Transition name="fade">
-        <div v-if="betDialog.show" class="modalOverlay" @click.self="betDialog.show = false">
-          <div class="modalContent">
-            <h3>Bet on <span :class="betDialog.colorClass">{{ betDialog.select }}</span></h3>
-            <div class="amountOptions">
-              <button v-for="a in [1, 10, 100, 1000]" :key="a" 
-                @click="betDialog.amount = a"
-                :class="{ active: betDialog.amount === a }"
-              >₹{{ a }}</button>
-            </div>
-            <div class="multiplierRow">
-              <button @click="betDialog.qty = Math.max(1, betDialog.qty - 1)">-</button>
-              <input type="number" v-model.number="betDialog.qty" />
-              <button @click="betDialog.qty++">+</button>
-            </div>
-            <div class="totalRow">
-              Total Amount: <span>₹{{ betDialog.amount * betDialog.qty }}</span>
-            </div>
-            <div class="modalActions">
-              <button @click="betDialog.show = false" class="cancel">Cancel</button>
-              <button @click="confirmBet" class="confirm" :disabled="isSubmitting">
-                {{ isSubmitting ? 'Processing...' : 'Confirm' }}
-              </button>
+            <div class="drawer-body">
+              <div class="drawer-row">
+                <div class="c-label">Contract Money</div>
+                <div class="c-options">
+                  <button v-for="v in [1, 10, 500, 1000]" :key="v" 
+                          @click="drawer.selectedBase = v"
+                          :class="{ active: drawer.selectedBase === v }">{{ v }}</button>
+                </div>
+              </div>
+              <div class="drawer-row">
+                <div class="c-label">Number</div>
+                <div class="c-options">
+                  <button v-for="v in [3, 5, 10]" :key="v" 
+                          @click="drawer.multiplier = v"
+                          :class="{ active: drawer.multiplier === v }">{{ v }}</button>
+                </div>
+              </div>
+              <div class="amount-entry">
+                <span class="curr-symbol">₹</span>
+                <input type="number" v-model.number="drawer.totalAmount" class="amount-field" />
+              </div>
+              <div class="qty-control">
+                <button @click="drawer.multiplier = Math.max(1, drawer.multiplier - 1)">-</button>
+                <span class="qty-val">{{ drawer.multiplier }}</span>
+                <button @click="drawer.multiplier++">+</button>
+              </div>
+              <div class="agreement-row">
+                <label>
+                  <input type="checkbox" v-model="drawer.agreed" />
+                  I agree the <span @click="presaleDialog.show = true" class="link-text">Presale management rule</span>
+                </label>
+              </div>
+              <div class="total-summary">
+                Amount: ₹{{ drawer.totalAmount }}
+              </div>
+              <div class="drawer-buttons">
+                <button @click="drawer.show = false" class="cancel-btn">Cancel</button>
+                <button @click="handleConfirmBet" class="confirm-btn" :style="{ backgroundColor: drawer.color || '#0d9488' }" :disabled="isSubmitting">
+                  {{ isSubmitting ? 'Processing...' : 'Confirm' }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </Transition>
 
-      <!-- Toast -->
-      <Transition name="fade">
-        <div v-if="toast.show" :class="['toast', toast.type]">{{ toast.message }}</div>
-      </Transition>
+      <!-- Loader -->
+      <div v-if="isLoading" class="modal-overlay">
+        <div class="loader-content">
+          <div class="loading-spinner"></div>
+          <p>Please Wait!</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as wingoApi from '../api/wingo'
 
+const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
+const gameId = computed(() => route.params.id || '1')
+const gameType = computed(() => gameId.value)
+const isSubmitting = ref(false)
+const isLoading = ref(false)
+
 const currentPeriod = ref('...')
-const timeLeft = ref(60)
-const activeTab = ref('record')
+const timerTotal = ref(0)
+const timerMin = computed(() => Math.floor(timerTotal.value / 60))
+const timerSec = computed(() => Math.floor(timerTotal.value % 60))
+
 const records = ref([])
 const myHistory = ref([])
-const isSubmitting = ref(false)
+const canOpen = ref(true)
 
-const betDialog = ref({
+const winningDialog = ref({ show: false, period: '', color: '', amount: '0.00' })
+const rulesDialog = ref({ show: false })
+const presaleDialog = ref({ show: false })
+const alertDialog = ref({ show: false, message: '' })
+
+const drawer = ref({
   show: false,
-  select: '',
-  amount: 10,
-  qty: 1,
-  colorClass: '',
-  param: null
+  color: '',
+  title: '',
+  selectedBase: 10,
+  multiplier: 1,
+  totalAmount: 10,
+  agreed: true
 })
 
-const toast = ref({ show: false, message: '', type: 'success' })
+const numbers = [
+  { val: 0, color: 'linear-gradient(180deg, #f84350, #8c6ceb)' },
+  { val: 1, color: '#28c04c' },
+  { val: 2, color: '#f84350' },
+  { val: 3, color: '#28c04c' },
+  { val: 4, color: '#f84350' },
+  { val: 5, color: 'linear-gradient(180deg, #28c04c, #8c6ceb)' },
+  { val: 6, color: '#f84350' },
+  { val: 7, color: '#28c04c' },
+  { val: 8, color: '#f84350' },
+  { val: 9, color: '#28c04c' }
+]
 
-async function updateTimer() {
-  try {
-    const res = await wingoApi.getTimer1()
-    if (res.data && res.data.length) {
-      const lastRec = res.data[0]
-      currentPeriod.value = String(parseInt(lastRec.id) + 1)
-      const now = new Date()
-      const end = new Date(lastRec.date)
-      // Wingo usually resets balance on period change
-      const elapsed = Math.floor((now - end) / 1000)
-      timeLeft.value = Math.max(0, 60 - (elapsed % 60))
-    }
-  } catch (err) {}
-}
+const cutoffSeconds = computed(() => (gameId.value === '1' ? 10 : 30))
 
-async function fetchData() {
-  try {
-    const [recRes, myRes] = await Promise.all([
-      wingoApi.getRecords1(),
-      auth.user?.id ? wingoApi.getMyHistory1(auth.user.id) : { data: [] }
-    ])
-    if (recRes.data && Array.isArray(recRes.data)) records.value = recRes.data
-    if (myRes.data && Array.isArray(myRes.data)) myHistory.value = myRes.data
-  } catch (err) {}
-}
+watch(() => drawer.value.selectedBase, (val) => { drawer.value.totalAmount = val * drawer.value.multiplier })
+watch(() => drawer.value.multiplier, (val) => { drawer.value.totalAmount = val * drawer.value.selectedBase })
 
-function openBet(type, value = null) {
-  if (!auth.isLoggedIn) {
-    router.push('/login')
-    return
-  }
-  betDialog.value = {
+function openBetDrawer(color, title, bgOverride = null) {
+  if (!auth.isLoggedIn) { router.push('/login'); return }
+  drawer.value = {
     show: true,
-    select: value !== null ? `Number ${value}` : type,
-    amount: 10,
-    qty: 1,
-    colorClass: value !== null ? getColorByNumber(value) : type.toLowerCase(),
-    param: value !== null ? `Select ${value}` : type === 'Green' ? 'Join Green' : type === 'Red' ? 'Join Red' : type === 'Violet' ? 'Join Violet' : type
+    color: bgOverride || (color === 'orange' ? '#ffa500' : color),
+    title,
+    selectedBase: 10,
+    multiplier: 1,
+    totalAmount: 10,
+    agreed: drawer.value.agreed
   }
 }
 
-async function confirmBet() {
+async function handleConfirmBet() {
+  if (!drawer.value.agreed) { showAlert("Please agree to presale rule first !"); return }
   isSubmitting.value = true
   try {
-    const total = betDialog.value.amount * betDialog.value.qty
-    const res = await wingoApi.placeBid1({
-      bidOn: betDialog.value.param,
-      bidAmount: total,
-      userId: auth.user.id,
-      game: '1minute'
+    const res = await wingoApi.placeBid(gameId.value, {
+      bidOn: drawer.value.title,
+      bidAmount: drawer.value.totalAmount,
+      userId: auth.user.id
     })
-    
     if (res.data === 'Done') {
-      showToast('Bet placed successfully!')
-      betDialog.value.show = false
-      // Update local wallet balance
-      auth.user.balance -= total
+      showAlert('Bet placed successfully!')
+      drawer.value.show = false
+      auth.user.balance -= drawer.value.totalAmount
       fetchData()
     } else {
-      showToast(res.data?.message || 'Failed to place bet', 'error')
+      showAlert(res.data?.message || 'Failed')
     }
   } catch (err) {
-    showToast(err.response?.data?.error || 'Server error', 'error')
+    showAlert(err.response?.data?.error || 'Error')
   } finally {
     isSubmitting.value = false
   }
 }
 
-function showToast(msg, type = 'success') {
-  toast.value = { show: true, message: msg, type }
-  setTimeout(() => toast.value.show = false, 3000)
+function showAlert(msg) {
+  alertDialog.value = { show: true, message: msg }
+  setTimeout(() => alertDialog.value.show = false, 2500)
 }
 
-function getNumberClass(n) {
-  if ([1,3,7,9].includes(n)) return 'green'
-  if ([2,4,6,8].includes(n)) return 'red'
-  if (n === 0) return 'violet-red'
-  if (n === 5) return 'violet-green'
-}
-function getColorByNumber(n) {
-  if ([1,3,7,9].includes(n)) return 'greenText'
-  if ([2,4,6,8].includes(n)) return 'redText'
-  return 'violetText'
-}
-function getColorsByNumber(n) {
-  if (n === 0) return ['violet', 'red']
-  if (n === 5) return ['violet', 'green']
-  if ([1,3,7,9].includes(n)) return ['green']
-  return ['red']
+function confirmPresale() {
+  presaleDialog.value.show = false
+  drawer.value.agreed = true
 }
 
-let timerInt = null
+async function updateTimer() {
+  try {
+    const res = await wingoApi.getTimer(gameId.value)
+    if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+      const lastRec = res.data[0]
+      const duration = gameId.value === '1' ? 60 : (gameId.value === '3' ? 180 : 300)
+      const now = Date.now()
+      
+      // Use lastRec.date if available, otherwise fallback to a safe default
+      const lastEndDate = lastRec.date || now
+      const remaining = (lastEndDate / 1000 + duration) - (now / 1000)
+      
+      timerTotal.value = Math.max(0, Math.floor(remaining))
+      currentPeriod.value = lastRec.id ? String(parseInt(lastRec.id) + 1) : '...'
+      canOpen.value = timerTotal.value > cutoffSeconds.value
+    } else {
+      currentPeriod.value = 'Loading...'
+    }
+  } catch (err) {
+    console.error("Timer update failed:", err)
+  }
+}
+
+async function fetchData() {
+  try {
+    const [recRes, myRes] = await Promise.all([
+      wingoApi.getRecords(gameId.value),
+      auth.user?.id ? wingoApi.getMyHistory(gameId.value, auth.user.id) : { data: [] }
+    ])
+    
+    if (recRes.data && Array.isArray(recRes.data)) {
+      records.value = recRes.data
+    } else {
+      records.value = []
+    }
+    
+    if (myRes.data) {
+      myHistory.value = Array.isArray(myRes.data) ? myRes.data : []
+    }
+  } catch (err) {
+    console.error("Fetch data failed:", err)
+  }
+}
+
+const parseColors = (c) => c ? c.split(' ') : []
+const getDotColor = (name) => {
+  const n = name.toLowerCase()
+  if (n.includes('red')) return '#f84350'
+  if (n.includes('green')) return '#28c04c'
+  if (n.includes('violet')) return '#8c6ceb'
+  return '#94a3b8'
+}
+const getSelectColor = (s) => {
+  if (s.includes('Green')) return '#28c04c'
+  if (s.includes('Red')) return '#f84350'
+  if (s.includes('Violet')) return '#8c6ceb'
+  return '#2196f3'
+}
+
+let timerInterval = null
 onMounted(() => {
   updateTimer()
   fetchData()
-  timerInt = setInterval(() => {
-    timeLeft.value--
-    if (timeLeft.value <= 1) {
-      setTimeout(() => { updateTimer(); fetchData(); }, 1000)
+  timerInterval = setInterval(() => {
+    if (timerTotal.value > 0) {
+      timerTotal.value--
+      canOpen.value = timerTotal.value > cutoffSeconds.value
+    } else {
+      updateTimer()
+      fetchData()
     }
   }, 1000)
 })
 
-onUnmounted(() => {
-  if (timerInt) clearInterval(timerInt)
-})
+onUnmounted(() => { if (timerInterval) clearInterval(timerInterval) })
+watch(() => route.params.id, () => { updateTimer(); fetchData() })
 </script>
 
 <style scoped>
-.wingo-page { background: #f1f5f9; min-height: 100vh; }
-.mobileContainer { 
-  width: 100%; max-width: min(430px, 100vw); margin: 0 auto; 
-  padding: 0 0 90px; background: #fff; box-sizing: border-box; 
-  min-height: 100vh;
-}
+.wingo-page { background: #f5f5f5; min-height: 100vh; font-family: "Roboto", "Helvetica", "Arial", sans-serif; }
+.wingo-container { width: 100%; max-width: 480px; margin: 0 auto; background: #fff; min-height: 100vh; position: relative; padding-bottom: 80px; }
 
-.wingoHeader {
-  background: #fff; padding: 12px 16px; border-bottom: 1px solid #f1f5f9;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 10;
-}
-.backBtn { background: none; border: none; padding: 4px; color: #334155; }
-.pageTitle { font-weight: 700; font-size: 1rem; color: #1e293b; }
-.walletBalance { 
-  display: flex; align-items: center; gap: 6px; background: #f0f9ff;
-  padding: 6px 12px; border-radius: 20px; color: #0369a1; font-weight: 700;
-  font-size: 0.85rem;
-}
-.walletIcon { width: 18px; height: 18px; }
+.wingo-header { background-color: #0d9488; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+.header-left { min-width: 0; flex: 1; }
+.header-label { font-size: 13px; opacity: 1; }
+.header-balance { font-size: 1rem; font-weight: 700; margin: 1px 0; }
+.header-uid { font-size: 12px; margin-top: 10px; }
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.icon-filter { filter: brightness(0) invert(1); cursor: pointer; }
 
-.gameStatusRow {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  padding: 20px 16px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  color: #fff;
-}
-.periodInfo .label, .timerInfo .label { font-size: 0.75rem; opacity: 0.7; margin-bottom: 8px; }
-.periodCode { font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; }
+.minute-tabs { display: flex; padding: 16px 12px; gap: 0; }
+.tab-btn { flex: 1; height: 52px; background: #fff; color: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; text-decoration: none; border: none; }
+.tab-btn.t1 { border-radius: 17px 0 17px 0; }
+.tab-btn.t3 { border-radius: 17px; }
+.tab-btn.t5 { border-radius: 0 17px 0 17px; }
+.tab-btn.active { background-color: #00b8a9; color: #fff; }
+.tab-btn span { margin-bottom: 2px; }
 
-.timerRow { display: flex; gap: 4px; }
-.timeBox { 
-  background: #334155; padding: 6px 8px; border-radius: 4px; 
-  font-size: 1.1rem; font-weight: 800; color: #fbbf24;
-}
+.period-row { display: flex; justify-content: space-between; padding: 10px 16px; margin-top: 5px; }
+.period-info .label { color: grey; font-size: 12px; margin-bottom: 5px; }
+.period-info .value { font-size: 1.4rem; font-weight: 500; }
+.timer-info .label { color: #333; font-size: 13px; margin-bottom: 5px; text-align: center; }
+.timer-boxes { display: flex; align-items: center; gap: 4px; }
+.t-box { background: #f2f2f2; width: 22px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 20px; border-radius: 4px; color: #000; }
+.t-box.wide { width: 44px; }
+.t-sep { font-size: 20px; font-weight: 400; padding: 0 2px; color: #000; }
 
-.bettingSection { padding: 20px 16px; background: #fff; }
-.colorGroup { display: flex; gap: 12px; margin-bottom: 20px; }
-.colorBtn { 
-  flex: 1; padding: 12px; border: none; border-radius: 12px;
-  font-weight: 700; color: #fff; transition: opacity 0.2s;
-}
-.greenLine { background: #10b981; }
-.violetLine { background: #a855f7; }
-.redLine { background: #ef4444; }
+.bet-buttons-row { padding: 16px 12px; display: flex; gap: 12px; }
+.bet-buttons-row button { flex: 1; height: 44px; border: none; border-radius: 25px; color: #fff; font-weight: 500; font-size: 14px; cursor: pointer; box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12); }
+.btn-green { background: #28c04c; }
+.btn-red { background: #f84350; }
+.btn-violet { background: #8c6ceb; }
+.btn-big { background: #2196f3; }
+.btn-small { background: orange; }
+.disabled { background: #dbdbdb !important; cursor: not-allowed; box-shadow: none !important; }
 
-.numberGrid { 
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
-  margin-bottom: 20px;
-}
-.numBtn { 
-  aspect-ratio: 1; border: none; border-radius: 50%; 
-  color: #fff; font-weight: 800; font-size: 1.1rem;
-}
-.numBtn.green { background: #10b981; }
-.numBtn.red { background: #ef4444; }
-.numBtn.violet-red { background: linear-gradient(to bottom right, #a855f7 50%, #ef4444 50%); }
-.numBtn.violet-green { background: linear-gradient(to bottom right, #a855f7 50%, #10b981 50%); }
+.number-grid-container { padding: 8px 12px; display: flex; justify-content: space-evenly; flex-wrap: wrap; gap: 10px; }
+.num-circle { width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12); }
 
-.sizeGroup { display: flex; gap: 12px; }
-.sizeBtn { 
-  flex: 1; padding: 12px; border: none; border-radius: 12px;
-  font-weight: 700; font-size: 1rem; color: #fff;
-}
-.sizeBtn.big { background: #f59e0b; }
-.sizeBtn.small { background: #3b82f6; }
+.records-container { padding: 16px; border-top: 10px solid #f5f5f5; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
+.more-link { color: grey; font-size: 13px; font-weight: 400; }
 
-.resultSection { margin-top: 12px; }
-.tabHeader { display: flex; border-bottom: 1px solid #f1f5f9; padding: 0 16px; }
-.tabHeader button { 
-  padding: 14px 20px; background: none; border: none; border-bottom: 2px solid transparent;
-  font-size: 0.9rem; font-weight: 700; color: #64748b;
-}
-.tabHeader button.active { color: #2563eb; border-color: #2563eb; }
+.record-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; }
+.record-table th { color: #64748B; padding-bottom: 12px; border-bottom: 2px solid #E2E8F0; font-weight: 600; font-size: 12px; }
+.record-table td { padding: 10px 0; border-bottom: 1px solid #F1F5F9; font-size: 13px; }
+.text-green { color: #16A34A; font-weight: bold; }
+.text-red { color: #DC2626; font-weight: bold; }
+.color-dots { display: flex; justify-content: center; gap: 6px; }
+.dot { width: 14px; height: 14px; border-radius: 50%; }
 
-.tableRow { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f8fafc; font-size: 0.85rem; }
-.tableRow.header { font-weight: 700; color: #94a3b8; background: #f8fafc; }
-.tableRow span { flex: 1; text-align: center; }
-.periodText { color: #334155; font-weight: 600; }
-.numText { font-size: 1.1rem; font-weight: 800; }
-.greenText { color: #10b981; }
-.redText { color: #ef4444; }
-.violetText { color: #a855f7; }
+.bid-card { margin-top: 10px; padding: 10px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 4px; border: 1px solid #eee; }
+.bid-card-top { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.bid-amt { font-weight: bold; font-size: 1rem; }
+.bid-note { font-size: 11px; color: grey; }
+.bid-date { font-size: 14px; color: #333; }
+.bid-card-details { display: flex; justify-content: space-evenly; gap: 10px; }
+.detail-row { display: flex; flex-direction: column; gap: 5px; font-size: 13px; }
+.lbl { color: #333; }
+.val { font-weight: bold; }
+.success { color: #28c04c; }
+.red { color: red; }
 
-.colorDots { flex: 1; display: flex; justify-content: center; gap: 4px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot.green { background: #10b981; }
-.dot.red { background: #ef4444; }
-.dot.violet { background: #a855f7; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+.winning-card { width: 300px; background: #fff; border-radius: 0; text-align: center; overflow: hidden; }
+.badge-img { height: 150px; margin-top: 10px; }
+.winning-content { padding: 0 20px 20px; }
+.winning-amount { font-size: 24px; color: #52AE66; margin: 10px 0; font-weight: bold; }
+.congrats-text { font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #000; }
+.game-info { font-size: 10px; font-weight: bold; color: #000; margin-top: 15px; }
+.result-text { font-size: 16px; font-weight: bold; color: #000; }
+.winning-label { font-size: 18px; color: #000; margin-bottom: 10px; }
+.close-win-btn { width: 100%; height: 44px; border: none; background: #52AE66; color: #fff; font-weight: bold; cursor: pointer; }
 
-.myHistory { padding: 12px 16px; }
-.historyCard { 
-  background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 12px;
-  border: 1px solid #f1f5f9;
-}
-.hRow { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 600; }
-.hPeriod { font-size: 0.8rem; color: #94a3b8; }
-.hStatus { font-size: 0.75rem; text-transform: uppercase; }
-.hStatus.Pending { color: #f59e0b; }
-.hStatus.Win { color: #10b981; }
-.hStatus.Loss { color: #ef4444; }
-.empty { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.9rem; }
+.alert-box { background: #000; opacity: 0.6; color: #fff; padding: 10px 20px; border-radius: 0; font-size: 14px; height: 50px; display: flex; align-items: center; }
 
-/* Modal */
-.modalOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
-  display: flex; align-items: flex-end; justify-content: center; z-index: 100;
-}
-.modalContent {
-  width: 100%; max-width: min(430px, 100vw); background: #fff;
-  border-radius: 24px 24px 0 0; padding: 24px 20px; box-sizing: border-box;
-}
-.modalContent h3 { margin-bottom: 20px; font-size: 1.2rem; text-align: center; }
-.amountOptions { display: flex; gap: 10px; margin-bottom: 20px; }
-.amountOptions button {
-  flex: 1; padding: 10px; border: 1px solid #e2e8f0; background: #fff;
-  border-radius: 10px; font-weight: 700; color: #64748b;
-}
-.amountOptions button.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+.rules-box { width: 90%; max-width: 400px; background: #fff; border-radius: 4px; padding: 20px; }
+.rules-header { font-weight: bold; border-bottom: none; padding-bottom: 10px; margin-bottom: 10px; font-size: 12px; }
+.rules-content { font-size: 12px; line-height: 1.6; max-height: 400px; overflow-y: auto; color: #333; }
+.rules-ok-btn { width: auto; margin-top: 15px; height: 36px; border: none; background: transparent; color: #3f51b5; font-weight: bold; float: right; cursor: pointer; }
 
-.multiplierRow { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px; }
-.multiplierRow button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #e2e8f0; font-size: 1.2rem; }
-.multiplierRow input { width: 60px; text-align: center; font-size: 1.2rem; font-weight: 700; border: none; }
+.drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; z-index: 9999; }
+.drawer-content { width: 100%; max-width: 480px; margin: 0 auto; background: #fff; border-radius: 0; }
+.drawer-header { height: 50px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1rem; }
+.drawer-body { padding: 0; }
+.drawer-row { padding: 10px 20px; border-bottom: none; }
+.c-label { font-size: 14px; margin-bottom: 8px; color: #333; }
+.c-options { display: flex; gap: 8px; justify-content: space-evenly; }
+.c-options button { flex: 1; height: 36px; border: none; background: #D8D8D8; border-radius: 4px; cursor: pointer; }
+.c-options button.active { background: grey; color: #fff; }
+.amount-entry { display: flex; align-items: center; background: #fafafa; padding: 10px 20px; margin-bottom: 0; }
+.curr-symbol { font-weight: bold; margin-right: 15px; }
+.amount-field { flex: 1; border: none; background: transparent; font-size: 16px; outline: none; }
+.qty-control { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 10px 20px; }
+.qty-control button { width: 32px; height: 32px; border: none; background: transparent; font-size: 20px; cursor: pointer; }
+.qty-val { font-size: 16px; font-weight: 400; }
+.agreement-row { font-size: 12px; text-align: center; padding: 15px 20px; color: #000; }
+.link-text { color: green; cursor: pointer; text-decoration: none; }
+.total-summary { text-align: center; font-weight: bold; padding: 15px 20px; font-size: 14px; }
+.drawer-buttons { display: flex; height: 50px; }
+.drawer-buttons button { flex: 1; height: 50px; border: none; font-weight: 400; cursor: pointer; font-size: 14px; }
+.cancel-btn { background: #D8D8D8; color: #000; }
+.confirm-btn { color: #fff; }
 
-.totalRow { text-align: center; font-size: 1rem; font-weight: 600; margin-bottom: 24px; }
-.totalRow span { color: #2563eb; font-size: 1.2rem; font-weight: 800; }
+.loader-content { background: #000; opacity: 0.6; padding: 20px; border-radius: 0; color: #fff; text-align: center; min-width: 150px; height: 100px; }
+.loading-spinner { border: 4px solid #fff; border-top-color: transparent; width: 40px; height: 40px; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.modalActions { display: flex; gap: 12px; }
-.modalActions button { flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; }
-.modalActions .cancel { background: #f1f5f9; color: #64748b; }
-.modalActions .confirm { background: #2563eb; color: #fff; }
-
-.toast { 
-  position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-  padding: 12px 24px; border-radius: 8px; color: #fff; font-weight: 600;
-  z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.toast.success { background: #10b981; }
-.toast.error { background: #ef4444; }
-
-.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.slide-up-enter-active, .slide-up-leave-active { transition: transform 0.3s ease; }
+.slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
 </style>
