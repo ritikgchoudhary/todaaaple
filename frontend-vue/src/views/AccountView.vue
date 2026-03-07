@@ -4,26 +4,25 @@
       <!-- Profile Header -->
       <header class="profileHeader">
         <div class="userMain">
-          <div class="avatarCircle">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div class="userMeta">
+          <div class="userLeft">
+            <div class="avatarCircle">
+              <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" fill="white" stroke="currentColor" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" class="avatarIcon"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
             <div class="userName">{{ auth.user?.username || auth.user?.phone || 'User' }}</div>
-            <div class="userUID">UID: {{ auth.user?.id || '00000' }}</div>
           </div>
           <router-link to="/accountSecurity" class="settingsIconBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </router-link>
         </div>
         
-        <!-- Balance View -->
+        <!-- Balance View (Swapped Label/Value to match React) -->
         <div class="balanceSection">
+          <div class="balanceValue">₹ {{ (userBalance || 0).toFixed(2) }}</div>
           <div class="balanceLabel">Account Balance</div>
-          <div class="balanceValue">₹ {{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }}</div>
         </div>
       </header>
 
-      <!-- Full Menu List (Matching Backup) -->
+      <!-- Menu List -->
       <div class="menuWrapper">
         <router-link v-for="item in menuItems" :key="item.path" :to="item.path" class="menuItem">
           <div class="menuItemLeft">
@@ -119,119 +118,32 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.account-page {
-  min-height: 100vh;
-  background: #f1f5f9;
-}
-.mobileContainer {
-  width: 100%;
-  max-width: min(430px, 100vw);
-  margin: 0 auto;
-  min-height: 100vh;
-  padding: 0 0 100px;
-  background: #fff;
-  box-sizing: border-box;
-}
+.account-page { min-height: 100vh; background: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; display: flex; justify-content: center; }
+.mobileContainer { width: 100%; max-width: 500px; min-height: 100vh; background: #fff; padding-bottom: 32px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
 
-/* Profile Header */
-.profileHeader {
-  background: linear-gradient(135deg, #0F766E 0%, #134E4A 100%);
-  padding: 24px 20px 32px;
-  color: #fff;
-}
-.userMain {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-.avatarCircle {
-  width: 50px;
-  height: 50px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255,255,255,0.3);
-}
-.userMeta {
-  flex: 1;
-}
-.userName {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-.userUID {
-  font-size: 0.8rem;
-  opacity: 0.8;
-  margin-top: 2px;
-}
-.settingsIconBtn {
-  color: rgba(255,255,255,0.9);
-  padding: 8px;
-  transition: opacity 0.2s;
-}
-.settingsIconBtn:active { opacity: 0.6; }
+.profileHeader { background: #0d9488; background-image: url('/images/myHeader.jpg'); background-size: cover; background-position: center; min-height: 160px; padding: 20px 20px 24px; color: white; display: flex; flexDirection: column; justify-content: space-between; }
+.userMain { display: flex; align-items: center; justify-content: space-between; }
+.userLeft { display: flex; align-items: center; min-width: 0; }
+.avatarCircle { margin-right: 14px; display: flex; align-items: center; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+.avatarIcon { font-size: 44px; }
+.userName { font-size: 1.125rem; font-weight: 700; letter-spacing: 0.01em; text-shadow: 0 1px 2px rgba(0,0,0,0.2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.settingsIconBtn { color: rgba(255,255,255,0.95); padding: 8px; transition: background 0.2s; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.settingsIconBtn:active { background: rgba(255,255,255,0.15); }
 
-.balanceSection {
-  text-align: center;
-}
-.balanceLabel {
-  font-size: 0.85rem;
-  opacity: 0.9;
-  margin-bottom: 6px;
-}
-.balanceValue {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
+.balanceSection { display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
+.balanceValue { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; text-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+.balanceLabel { font-size: 0.8125rem; font-weight: 500; opacity: 0.9; margin-top: 4px; }
 
-/* Menu Wrapper */
-.menuWrapper {
-  padding: 10px 0;
-}
-.menuItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  text-decoration: none;
-  background: none;
-  border: none;
-  width: 100%;
-  cursor: pointer;
-  border-bottom: 1px solid #f1f5f9;
-  transition: background 0.2s;
-}
-.menuItem:active { background: #f8fafc; }
+.menuWrapper { padding: 20px 16px 0; }
+.menuItem { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; text-decoration: none; background: none; border: none; width: 100%; cursor: pointer; border-bottom: 1px solid #F1F5F9; transition: background 0.1s; border-radius: 0; }
+.menuItem:active { background: #f1f5f9; }
 
-.menuItemLeft {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.iconBox {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.itemLabel {
-  font-size: 0.93rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-.chevron { color: #94a3b8; }
+.menuItemLeft { display: flex; align-items: center; gap: 16px; flex: 1; }
+.iconBox { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.itemLabel { font-size: 0.9375rem; font-weight: 600; color: #0f172a; }
+.chevron { color: #94A3B8; font-size: 18px; }
 
-.logoutIcon {
-  background-color: rgba(220, 38, 38, 0.08);
-  color: #dc2626;
-}
+.logoutIcon { background-color: rgba(220, 38, 38, 0.08); color: #dc2626; }
 .dangerText { color: #dc2626; }
-.logoutItem { border-bottom: none; margin-top: 10px; }
+.logoutItem { border-bottom: none; margin-top: 10px; padding-bottom: 32px; }
 </style>
