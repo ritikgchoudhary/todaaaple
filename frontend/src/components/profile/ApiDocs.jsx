@@ -106,33 +106,27 @@ const headers = token ? { Authorization: "Bearer " + token } : {};
           <Paper elevation={0} className={classes.card}>
             <Typography style={{ fontWeight: 900, color: "#0F172A" }}>Games Catalog (Home UI)</Typography>
             <Typography className={classes.muted} style={{ marginTop: 6 }}>
-              Home page games are loaded from MongoDB using this public endpoint (only
-              <b> enabled</b> games are returned).
+              Home page games are loaded from <b>static JSON files</b> (no API). Edit files in{" "}
+              <b>public/data/</b>: sports.json, casino.json, crash.json, slot.json, lottery.json, cards.json.
+              Format: <code>{"{ \"games\": [ { \"key\", \"name\", \"category\", \"type\", \"logoUrl\", \"charImageUrl\", ... } ] }"}</code>
             </Typography>
             <div className={classes.pillRow}>
-              <span className={classes.pill}>GET /gamesCatalog</span>
+              <span className={classes.pill}>Static /data/*.json</span>
               <span className={classes.pill}>Public</span>
             </div>
-            <Code>{`curl "${baseUrl}/gamesCatalog"
-
-// Response
+            <Code>{`# Example: public/data/sports.json
 {
-  "success": true,
   "games": [
     {
-      "_id": "...",
+      "id": "sports-1",
       "key": "9wickets",
       "name": "9WICKETS",
       "category": "sports",
-      "type": "featured",
-      "enabled": true,
-      "sortOrder": 0,
-      "badge": "",
-      "logoUrl": "",
-      "charImageUrl": "",
+      "type": "grid",
+      "logoUrl": "https://...",
+      "charImageUrl": "https://...",
       "backgroundUrl": "",
-      "onClickPath": "/cricket",
-      "externalUrl": ""
+      "softapiGameUid": "9wickets"
     }
   ]
 }`}</Code>

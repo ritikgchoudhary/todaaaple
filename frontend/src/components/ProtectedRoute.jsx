@@ -1,27 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Redirect, useLocation } from 'react-router-dom';
+import { Route, useLocation, useHistory } from 'react-router-dom';
 import { CircularProgress } from '@material-ui/core';
 
 const ProtectedRoute = ({ component: Component, ...rest }) => {
   const location = useLocation();
+  const history = useHistory();
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    const verifyAuth = async () => {
+    const verifyAuth = () => {
       try {
         const user = localStorage.getItem("user");
-        
         if (!user) {
           setIsAuthenticated(false);
           return;
         }
-
         try {
           const foundUser = JSON.parse(user);
-          
-          // Check if user object has required fields
           if (foundUser && foundUser.token) {
-            // Allow access if user data exists - simplified for testing
             setIsAuthenticated(true);
           } else {
             setIsAuthenticated(false);
@@ -36,11 +32,20 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
         setIsAuthenticated(false);
       }
     };
-
     verifyAuth();
   }, [location.pathname]);
 
-  // Show loading spinner while checking authentication
+  // Not logged in: redirect to login (replace so back button doesn't return here)
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      history.replace({
+        pathname: "/login",
+        state: { from: location },
+      });
+    }
+  }, [isAuthenticated, history, location]);
+
+  // Loading: show spinner
   if (isAuthenticated === null) {
     return (
       <div style={{
@@ -59,23 +64,12 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
     );
   }
 
-  return (
-    <Route
-      {...rest}
-      render={props =>
-        isAuthenticated ? (
-          <Component {...props} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location }
-            }}
-          />
-        )
-      }
-    />
-  );
+  // Not authenticated: render nothing (redirect runs in useEffect)
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <Route {...rest} render={props => <Component {...props} />} />;
 };
 
 export default ProtectedRoute; 

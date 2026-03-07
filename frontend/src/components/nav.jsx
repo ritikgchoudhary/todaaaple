@@ -3,6 +3,9 @@ import { useLocation, Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 
 const FOOTER_ICON_BASE = "https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon";
+const GAME_TYPE_ICON_BASE = "https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon";
+const SPORTS_ICON = `${GAME_TYPE_ICON_BASE}/gowin11/4_active.png`;
+const WINGO_ICON = `${GAME_TYPE_ICON_BASE}/2.png`;
 
 const useStyles = makeStyles((theme) => ({
   FooterDiv: {
@@ -10,9 +13,12 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 1000,
+    zIndex: 9999,
     display: "flex",
     justifyContent: "center",
+    alignItems: "flex-end",
+    background: "#fff",
+    boxShadow: "0 -2px 12px rgba(0,0,0,0.08)",
     // Phone safe area: notch/home indicator (iPhone X+, Android gesture)
     paddingBottom: "max(env(safe-area-inset-bottom), 8px)",
     paddingLeft: "env(safe-area-inset-left)",
@@ -27,8 +33,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "stretch",
     justifyContent: "space-around",
-    background: "#fff",
-    boxShadow: "0 -2px 12px rgba(0,0,0,0.08)",
+    background: "transparent",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: "10px 4px 8px",
@@ -125,8 +130,8 @@ export default function NavBar() {
 
   const isHome = pathname === "/";
   const isAccount = pathname === "/profile" || pathname.startsWith("/accountSecurity") || pathname === "/bank" || pathname === "/address" || pathname === "/financial";
-  const isDeposit = pathname === "/recharge" || pathname === "/wallet" || pathname === "/preOrder";
-  const isBonus = pathname === "/mypromotion" || pathname === "/discount" || pathname.startsWith("/invitation");
+  const isSports = pathname === "/sports";
+  const isWingo = pathname.startsWith("/wingo");
   const isChat = pathname === "/help" || pathname === "/contact";
 
   const items = [
@@ -139,11 +144,11 @@ export default function NavBar() {
       badge: 0,
     },
     {
-      symbol: "deposit",
-      label: "Deposit",
-      to: "/recharge",
-      icon: `${FOOTER_ICON_BASE}/footer_deposit.png`,
-      active: isDeposit,
+      symbol: "sports",
+      label: "Sports",
+      to: "/sports",
+      icon: SPORTS_ICON,
+      active: isSports,
     },
     {
       symbol: "home",
@@ -154,11 +159,11 @@ export default function NavBar() {
       isMain: true,
     },
     {
-      symbol: "discount",
-      label: "Bonus",
-      to: "/discount",
-      icon: `${FOOTER_ICON_BASE}/footer_discount.png`,
-      active: isBonus,
+      symbol: "wingo",
+      label: "Wingo",
+      to: "/wingo/1",
+      icon: WINGO_ICON,
+      active: isWingo,
     },
     {
       symbol: "customService",
