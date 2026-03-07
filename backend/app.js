@@ -1,11 +1,12 @@
 /**
- * Backend entry. Serves API + React frontend build (so login and all pages use latest build).
+ * Backend entry. Serves API + Vue frontend build (frontend-vue/dist). Login and all pages = Vue app.
  */
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,6 +25,7 @@ import { launchGame, gameCallback } from './controller/game.js';
 
 const app = express();
 const PORT = process.env.PORT || 4001;
+const useViteDev = process.env.USE_VITE_DEV === '1'; // Bina build: USE_VITE_DEV=1 npm run dev
 
 app.use(cors());
 app.use(express.json());
@@ -68,6 +70,14 @@ app.use(
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
+// Vue build path – root / and SPA routes serve this (before API router)
+const buildDir = path.resolve(__dirname, '..', 'frontend-vue', 'dist');
+const indexPath = path.join(buildDir, 'index.html');
+const vueBuildExists = fs.existsSync(indexPath);
+if (!vueBuildExists) {
+  console.warn('WARN: Vue build missing. Run: cd frontend-vue && npm run build');
+}
+
 // Image proxy for external game images (e.g. igamingapis.com) so they load in-page
 const PROXY_IMAGE_ORIGINS = ['https://igamingapis.com'];
 app.get('/api/proxy-image', async (req, res) => {
@@ -111,7 +121,26 @@ app.put('/admin-api/slots/:id/', updateSlotGame);
 app.delete('/admin-api/slots/:id', deleteSlotGame);
 app.delete('/admin-api/slots/:id/', deleteSlotGame);
 
-app.use('/admin-api', homeCategoryRoutes);
+// Root and SPA routes → Vue (skip when Vite dev mode – Vite will handle these)
+if (!useViteDev) {
+  app.get('/', (req, res) => {
+    if (!vueBuildExists) return res.status(404).json({ error: 'Not found', hint: 'Run: cd frontend-vue && npm run build OR USE_VITE_DEV=1' });
+    res.sendFile(indexPath, (err) => {
+      if (err && !res.headersSent) res.status(500).json({ error: 'Not found' });
+    });
+  });
+  app.get('/login', (req, res) => {
+    if (!vueBuildExists) return res.status(404).json({ error: 'Not found' });
+    res.sendFile(indexPath, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Not found' }); });
+  });
+  app.get('/login/:id', (req, res) => {
+    if (!vueBuildExists) return res.status(404).json({ error: 'Not found' });
+    res.sendFile(indexPath, (err) => { if (err && !res.headersSent) res.status(404).json({ error: 'Not found' }); });
+  });
+}
+
+// Mount main API router at root so API routes work: /getProviders, /carousel, /site-settings, /getNotice, /gamesCatalog, /getUserHome, etc.
+app.use('/', homeCategoryRoutes);
 
 // Serve /data/slot.json dynamically (no cache) so edits show instantly
 app.get('/data/slot.json', getSlots);
@@ -140,20 +169,30 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Serve React build (so /login and all frontend routes show latest build)
-const buildDir = path.join(__dirname, '..', 'frontend', 'build');
-app.use(express.static(buildDir));
-
-// SPA fallback: any GET that isn't a file gets index.html (for /login, /, etc.)
-app.get('*', (req, res, next) => {
-  if (req.method !== 'GET' || req.path.startsWith('/admin-api') || req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(buildDir, 'index.html'), (err) => {
-    if (err) res.status(404).json({ error: 'Not found' });
+// Vue: ya to build serve karo ya Vite dev (bina build)
+if (useViteDev) {
+  const { createServer } = await import('vite');
+  const vueRoot = path.resolve(__dirname, '..', 'frontend-vue');
+  const server = await createServer({
+    root: vueRoot,
+    server: { middlewareMode: true },
+    appType: 'spa',
   });
-});
+  app.use(server.middlewares);
+} else {
+  app.use(express.static(buildDir));
+  app.get('*', (req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/admin-api') || req.path.startsWith('/api')) return next();
+    if (!vueBuildExists) return next();
+    res.sendFile(indexPath, (err) => {
+      if (err && !res.headersSent) res.status(404).json({ error: 'Not found' });
+    });
+  });
+}
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
 app.listen(PORT, () => {
   console.log('Backend running on http://localhost:' + PORT);
+  if (useViteDev) console.log('Vue: dev mode (no build) – frontend-vue served by Vite');
 });

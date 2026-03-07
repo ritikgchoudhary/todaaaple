@@ -13,6 +13,9 @@ import thunk from 'redux-thunk';
 
 const store = createStore(reducers, compose(applyMiddleware(thunk)));
 
+var loadingEl = document.getElementById('loading-msg');
+if (loadingEl) loadingEl.style.display = 'none';
+
 ReactDom.render(
   <BrowserRouter>
   <Provider store={store}>

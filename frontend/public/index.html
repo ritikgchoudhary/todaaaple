@@ -60,11 +60,38 @@ color="<color-code>" bolt-logo="<image path>"></script> -->
 
     gtag('config', 'G-Z685CFG3XK');
   </script>
-
+</head>
 <body>
+  <div id="loading-msg" style="position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:99999;font-family:sans-serif;text-align:center;padding:20px;box-sizing:border-box;">
+    <p style="margin:0;color:#555;max-width:360px;">Loading… If this message does not disappear, enable JavaScript for this site and refresh.</p>
+  </div>
   <script type="text/javascript" src="https://www.paynimo.com/paynimocheckout/server/lib/checkout.js"></script>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
+  <script>
+    (function() {
+      function hideLoading() {
+        var el = document.getElementById('loading-msg');
+        if (el) el.style.display = 'none';
+      }
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var root = document.getElementById('root');
+          if (root && root.children.length === 0) {
+            hideLoading();
+            root.innerHTML = '<div style="padding:2rem;font-family:sans-serif;text-align:center;max-width:520px;margin:0 auto;">' +
+              '<h2 style="color:#1a1a1a;margin-bottom:12px;">App did not load</h2>' +
+              '<p style="color:#555;line-height:1.6;">The app script may have failed to load. Try:</p>' +
+              '<ul style="text-align:left;color:#555;margin:16px 0;padding-left:24px;">' +
+              '<li>Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)</li>' +
+              '<li>In DevTools → Network, check that <code>main.*.js</code> loads (no 404)</li>' +
+              '<li>Disable extensions that block scripts; try incognito or another browser</li>' +
+              '</ul>' +
+              '</div>';
+          }
+        }, 3000);
+      });
+    })();
+  </script>
   <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

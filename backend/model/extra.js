@@ -58,7 +58,14 @@ const ExtraScheme = mongoose.Schema({
     apkDownloadUrl: {
         type: String,
         default: ""
-    }
+    },
+    // Home page category sections – admin: add/delete/reorder games per category
+    homeCategorySports: { type: Array, default: [] },
+    homeCategoryCasino: { type: Array, default: [] },
+    homeCategoryCrash: { type: Array, default: [] },
+    homeCategorySlot: { type: Array, default: [] },
+    homeCategoryLottery: { type: Array, default: [] },
+    homeCategoryCards: { type: Array, default: [] },
 });
 
 export default mongoose.model('Extra', ExtraScheme);

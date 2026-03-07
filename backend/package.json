@@ -6,6 +6,7 @@
     "type": "module",
     "scripts": {
         "dev": "nodemon app.js",
+        "dev:vue": "USE_VITE_DEV=1 node app.js",
         "start": "node app.js"
     },
     "keywords": [],
@@ -43,6 +44,8 @@
         "uuid": "^8.3.2"
     },
     "devDependencies": {
-        "nodemon": "^2.0.15"
+        "nodemon": "^2.0.15",
+        "vite": "^5.0.0",
+        "@vitejs/plugin-vue": "^5.0.0"
     }
 }
