@@ -20,6 +20,25 @@
       </div>
     </header>
 
+    <!-- Logged in User Widget -->
+    <div v-if="auth.isLoggedIn" class="homeUserWidget">
+      <div class="huTop">
+        <div class="huLeft">
+          <div class="huAvatar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="huDetails">
+             <div class="huId">ID: {{ auth.user?.id || '0000' }}</div>
+             <div class="huBal">₹ {{ (userBalance || 0).toFixed(2) }}</div>
+          </div>
+        </div>
+        <div class="huRight">
+          <router-link to="/deposit" class="huBtn huDeposit">Deposit</router-link>
+          <router-link to="/withdrawal" class="huBtn huWithdraw">Withdraw</router-link>
+        </div>
+      </div>
+    </div>
+
     <!-- Slider with overlay text (reference) - swipe to slide -->
     <section
       class="sliderSection"
@@ -210,9 +229,11 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as api from '../api/home'
+import * as walletApi from '../api/wallet'
 
 const router = useRouter()
 const auth = useAuthStore()
+const userBalance = ref(0)
 
 const baseImg = 'https://img.bzvm68.com'
 const sliderImages = [
@@ -402,6 +423,14 @@ onUnmounted(() => {
 })
 
 onMounted(async () => {
+  if (auth.isLoggedIn && auth.user?.id) {
+    try {
+      const res = await walletApi.getUserHome(auth.user.id)
+      if (res.data && res.data.length > 0) {
+        userBalance.value = res.data[0].balance || 0
+      }
+    } catch (err) {}
+  }
   try {
     const [noticeRes, providersRes] = await Promise.all([
       api.getNotice().catch(() => ({ data: {} })),
