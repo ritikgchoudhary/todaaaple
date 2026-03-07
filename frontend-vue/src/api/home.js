@@ -1,13 +1,17 @@
 import axios from 'axios'
+import { url } from './auth'
 
-const API_PORT = import.meta.env.VITE_API_PORT || '4001'
-const isDev = import.meta.env.DEV
-const apiBase = import.meta.env.VITE_API_BASE_URL != null
-  ? import.meta.env.VITE_API_BASE_URL
-  : (isDev ? `http://localhost:${API_PORT}` : '')
+const API = axios.create({ baseURL: url })
 
-const API = axios.create({ baseURL: apiBase })
+API.interceptors.request.use((req) => {
+  const profile = localStorage.getItem('user')
+  if (profile) {
+    req.headers.Authorization = `Bearer ${JSON.parse(profile).token}`
+  }
+  return req
+})
 
 export const getCarousel = () => API.get('/carousel')
 export const getNotice = () => API.get('/getNotice')
 export const getProviders = () => API.get('/getProviders')
+export const launchGame = (userId, gameId) => API.post(`/game/launch/${userId}`, { game_uid: gameId })

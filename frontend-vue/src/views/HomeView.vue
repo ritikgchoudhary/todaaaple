@@ -207,9 +207,11 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as api from '../api/home'
 
+const router = useRouter()
 const auth = useAuthStore()
 
 const baseImg = 'https://img.bzvm68.com'
@@ -365,8 +367,28 @@ function getCrashGameName(g) {
   return 'Game'
 }
 
-function onProviderClick(p) {
-  console.log('Provider', p.name)
+async function onProviderClick(p) {
+  if (!auth.isLoggedIn) {
+    router.push('/login')
+    return
+  }
+  try {
+    const userId = auth.user.id
+    const gameId = p.game_id || p.game_uid || p.id
+    if (!gameId) {
+      alert('Game ID not found')
+      return
+    }
+    const res = await api.launchGame(userId, gameId)
+    if (res.data && res.data.success && res.data.data && res.data.data.game_url) {
+      window.location.href = res.data.data.game_url
+    } else {
+      alert('Failed to launch game: ' + (res.data?.message || 'Unknown error'))
+    }
+  } catch (err) {
+    console.error(err)
+    alert('Error launching game: ' + (err.response?.data?.message || err.message))
+  }
 }
 
 onMounted(() => {
