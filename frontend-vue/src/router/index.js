@@ -9,6 +9,8 @@ import PlaceholderView from '../views/PlaceholderView.vue'
 import HelpView from '../views/HelpView.vue'
 import WingoView from '../views/WingoView.vue'
 import AgentEarningView from '../views/AgentEarningView.vue'
+import MySalaryView from '../views/MySalaryView.vue'
+import InvitationBonusView from '../views/InvitationBonusView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -20,6 +22,8 @@ const routes = [
   { path: '/wingo/:id', name: 'Wingo', component: WingoView, meta: { title: 'Win Go', requiresAuth: true, showNav: true } },
   { path: '/bonus', redirect: '/wingo/1' },
   { path: '/agent-earning', name: 'AgentEarning', component: AgentEarningView, meta: { title: 'Agent Earning', requiresAuth: true, showNav: false } },
+  { path: '/mySalary', name: 'MySalary', component: MySalaryView, meta: { title: 'My Daily Salary', requiresAuth: true, showNav: false } },
+  { path: '/invitationBonus', name: 'InvitationBonus', component: InvitationBonusView, meta: { title: 'Invitation Bonus', requiresAuth: true, showNav: false } },
   { path: '/help', name: 'Help', component: HelpView, meta: { title: 'Help', showNav: true } },
 ]
 
