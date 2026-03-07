@@ -22,11 +22,14 @@ function encryptPayload(data, key) {
 }
 
 export const launchGame = async (req, res, next) => {
-    const userId = req.params.id || req.body.userId;
+    // 1. Identify User (Priority: Auth User > Param > Body)
+    const userId = req.user?.id || req.params.id || req.body.userId;
+    
+    // 2. Identify Game (Priority: Body UID > Body ID > Param if it's NOT the User ID)
     const { game_uid, game_id } = req.body || {};
-
+    
     if (!userId) {
-        return next(new ErrorResponse("Missing userId (use URL /game/launch/:userId or body.userId)", 400));
+        return next(new ErrorResponse("Missing user context (log in required)", 401));
     }
     const hasGameId = game_id != null && game_id !== "" && Number.isFinite(Number(game_id));
     const hasGameUid = game_uid != null && game_uid !== "";
@@ -38,14 +41,19 @@ export const launchGame = async (req, res, next) => {
         const user = await User.findOne({ id: userId });
         if (!user) return next(new ErrorResponse("User not found", 404));
 
-        // Prefer numeric game_id if sent; else look up by game_code (game_uid)
-        let finalGameUid;
-        if (hasGameId) {
-            finalGameUid = Number(game_id);
-        } else {
-            const game = await Game.findOne({ game_code: game_uid });
-            finalGameUid = game ? game.id : game_uid;
-        }
+    // Prefer numeric game_id if sent; else look up by game_code (game_uid)
+    let finalGameUid;
+    if (hasGameId) {
+        finalGameUid = Number(game_id);
+    } else if (hasGameUid) {
+        const gameItem = await Game.findOne({ game_code: game_uid });
+        finalGameUid = gameItem ? gameItem.id : game_uid;
+    } else if (req.params.id && req.params.id != userId) {
+        // Fallback: If URL has numeric ID but it's not the authenticated user's ID, it must be the Game ID
+        finalGameUid = req.params.id;
+    } else {
+        return next(new ErrorResponse("Game ID or Code missing from request", 400));
+    }
 
         console.log(`Launching Game: userId=${userId}, game_uid=${game_uid}, game_id=${game_id} -> finalGameUid=${finalGameUid}`);
 
