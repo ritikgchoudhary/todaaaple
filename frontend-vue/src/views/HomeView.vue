@@ -380,10 +380,10 @@ async function onProviderClick(p) {
       return
     }
     const res = await api.launchGame(userId, gameId)
-    if (res.data && res.data.success && res.data.data && res.data.data.game_url) {
-      window.location.href = res.data.data.game_url
+    if (res.data && res.data.success && res.data.url) {
+      window.location.href = res.data.url
     } else {
-      alert('Failed to launch game: ' + (res.data?.message || 'Unknown error'))
+      alert('Failed to launch game: ' + (res.data?.msg || res.data?.message || 'Unknown error'))
     }
   } catch (err) {
     console.error(err)
