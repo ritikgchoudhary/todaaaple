@@ -16,7 +16,7 @@ const checkAuth = async (req, res, next) => {
         const token = req.headers.authorization.split(" ")[1];
         
         if(token !== user.token) {
-            console.log("checkAuth failed: token mismatch");
+            console.log("checkAuth failed: token mismatch for user", id);
             return res.status(401).json({ message: 'Auth Failed' });
         }
         

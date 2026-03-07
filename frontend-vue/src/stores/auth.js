@@ -9,7 +9,14 @@ export const useAuthStore = defineStore('auth', () => {
     const raw = localStorage.getItem('user')
     if (raw) {
       const parsed = JSON.parse(raw)
-      if (parsed.token) token.value = parsed.token
+      // Populate token from 'user' object if 'auth_token' was empty (legacy/consistency)
+      if (parsed.token && !token.value) {
+        token.value = parsed.token
+        localStorage.setItem('auth_token', parsed.token)
+      } else if (parsed.token) {
+        token.value = parsed.token
+      }
+      
       if (parsed.result) user.value = parsed.result
     }
   } catch (_) {}
@@ -23,7 +30,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
     if (data?.result) user.value = data.result
     if (data?.token || data?.result) {
-      localStorage.setItem('user', JSON.stringify({ result: data.result || user.value, token: data.token || token.value }))
+      localStorage.setItem('user', JSON.stringify({ 
+        result: data.result || user.value, 
+        token: data.token || token.value 
+      }))
     }
   }
 

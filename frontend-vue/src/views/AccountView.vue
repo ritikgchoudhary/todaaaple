@@ -78,7 +78,9 @@ async function fetchBalance() {
   if (!auth.user?.id) return
   try {
     const res = await walletApi.getUserHome(auth.user.id)
-    if (res.data) userBalance.value = res.data.balance || 0
+    if (res.data && res.data.length > 0) {
+      userBalance.value = res.data[0].balance || 0
+    }
   } catch (err) {}
 }
 

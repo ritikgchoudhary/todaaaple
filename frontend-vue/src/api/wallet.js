@@ -17,13 +17,24 @@ API.interceptors.request.use((config) => {
   return config
 })
 
+// User Home & Profile
 export const getUserHome = (userId) => API.get(`/getUserHome/${userId}`)
-export const getCurrentGateway = () => API.get('/getCurrentGateway')
+export const getUser = (userId) => API.get(`/getUser/${userId}`)
 
-// Specific Gateway Order Creation
+// Withdrawal Endpoints
+export const getUserWithdrawal = (userId) => API.get(`/getUserWithdrawal/${userId}`)
+export const applyWithdrawal = (data) => API.post('/applyWithdrawal', data)
+export const applyWithdrawalUSDT = (data) => API.post('/applyWithdrawalUSDT', data)
+export const getWithdrawalHistory = (userId) => API.get(`/getWithdrawal/${userId}`)
+
+// Deposit / Gateway Endpoints
+export const getCurrentGateway = () => API.get('/getCurrentGateway')
 export const watchPayCreateOrder = (userId, data) => API.post(`/watchPayCreateOrder/${userId}`, data)
 export const lgPayCreateOrder = (userId, data) => API.post(`/lgPayCreateOrder/${userId}`, data)
 export const rupeeRushCreateOrder = (userId, data) => API.post(`/rupeeRushCreateOrder/${userId}`, data)
 
-// Generic Gateway check/initiate if needed
-export const getRechargeSettings = () => API.get('/admin/recharge-settings/fakeapi') // Just for reference if needed
+// Site Settings
+export const getSiteSettings = () => API.get('/site-settings')
+export const getCarousel = () => API.get('/carousel')
+
+export default API
