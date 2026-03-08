@@ -367,7 +367,11 @@ const DEFAULTS = {
         { id: "855", name: "Baccarat", img: "https://igamingapis.com/img/855.png", provider: "jili" },
         { id: "951", name: "Blackjack Lucky Ladies", img: "https://igamingapis.com/img/951.png", provider: "jili" },
         { id: "1119", name: "TeenPatti", img: "https://igamingapis.com/img/1119.png", provider: "jili" },
-        { id: "10498", name: "Domino Go", img: "https://igamingapis.com/img/10498.png", provider: "jili" }
+        { id: "10498", name: "Domino Go", img: "https://igamingapis.com/img/10498.png", provider: "jili" },
+        { id: "1164", name: "100 Teen Patti", img: "https://igamingapis.com/img/1164.png", provider: "r88" },
+        { id: "1163", name: "100 PokDeng", img: "https://igamingapis.com/img/1163.png", provider: "r88" },
+        { id: "3469", name: "PokDeng", img: "https://igamingapis.com/img/3469.png", provider: "r88" },
+        { id: "3820", name: "Single Black Jack", img: "https://igamingapis.com/img/3820.png", provider: "r88" }
     ]
 }
 

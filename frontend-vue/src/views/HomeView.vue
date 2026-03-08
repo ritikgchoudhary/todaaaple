@@ -601,6 +601,30 @@ const CQ9_GAMES = [
   { id: "69", name: "Oo Ga Cha Ka", img: "https://igamingapis.com/img/69.png", provider: "cq9" }
 ]
 
+const JILI_CARD_GAMES = [
+  { id: "21", name: "Caribbean Stud Poker", img: "https://igamingapis.com/img/21.png", provider: "jili" },
+  { id: "107", name: "TeenPatti Joker", img: "https://igamingapis.com/img/107.png", provider: "jili" },
+  { id: "110", name: "TeenPatti 20-20", img: "https://igamingapis.com/img/110.png", provider: "jili" },
+  { id: "183", name: "Video Poker", img: "https://igamingapis.com/img/183.png", provider: "jili" },
+  { id: "267", name: "Blackjack", img: "https://igamingapis.com/img/267.png", provider: "jili" },
+  { id: "296", name: "Pool Rummy", img: "https://igamingapis.com/img/296.png", provider: "jili" },
+  { id: "505", name: "Andar Bahar", img: "https://igamingapis.com/img/505.png", provider: "jili" },
+  { id: "595", name: "Ultimate Texas Hold'em", img: "https://igamingapis.com/img/595.png", provider: "jili" },
+  { id: "793", name: "Poker King", img: "https://igamingapis.com/img/793.png", provider: "jili" },
+  { id: "810", name: "Rummy", img: "https://igamingapis.com/img/810.png", provider: "jili" },
+  { id: "855", name: "Baccarat", img: "https://igamingapis.com/img/855.png", provider: "jili" },
+  { id: "951", name: "Blackjack Lucky Ladies", img: "https://igamingapis.com/img/951.png", provider: "jili" },
+  { id: "1119", name: "TeenPatti", img: "https://igamingapis.com/img/1119.png", provider: "jili" },
+  { id: "10498", name: "Domino Go", img: "https://igamingapis.com/img/10498.png", provider: "jili" }
+]
+
+const RICH88_CARD_GAMES = [
+  { id: "1164", name: "100 Teen Patti", img: "https://igamingapis.com/img/1164.png", provider: "r88" },
+  { id: "1163", name: "100 PokDeng", img: "https://igamingapis.com/img/1163.png", provider: "r88" },
+  { id: "3469", name: "PokDeng", img: "https://igamingapis.com/img/3469.png", provider: "r88" },
+  { id: "3820", name: "Single Black Jack", img: "https://igamingapis.com/img/3820.png", provider: "r88" }
+]
+
 const slotGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
   
@@ -646,12 +670,24 @@ const displaySlotGames = computed(() => {
   return list
 })
 
-const displayCardGames = computed(() => {
+const cardGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.cards) ? gameCategories.value.cards : []
-  let list = dynamic.map(g => ({
+  const combined = [...dynamic]
+  const existingIds = new Set(dynamic.map(g => String(g.id)))
+  
+  const FIXED_GAMES = [...JILI_CARD_GAMES, ...RICH88_CARD_GAMES]
+  FIXED_GAMES.forEach(g => {
+    if (!existingIds.has(String(g.id))) combined.push(g)
+  })
+  
+  return combined.map(g => ({
     ...g,
     img: g.img || g.logo || g.charImageUrl || g.logoUrl || defaultCardBg
   }))
+})
+
+const displayCardGames = computed(() => {
+  let list = cardGamesList.value
   
   // 1. Filter by provider (Sidebar)
   const active = (cardFilterActive.value || 'hot').toLowerCase()
