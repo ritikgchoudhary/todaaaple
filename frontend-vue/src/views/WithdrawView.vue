@@ -62,7 +62,7 @@
             <router-link to="/bank" class="change-tag">Change</router-link>
           </div>
         </div>
-        <div v-else class="empty-state glass-card">
+        <div v-else class="empty-state">
           <p>No valid bank account found.</p>
           <router-link to="/bank" class="add-bank-link">Add Bank Account</router-link>
         </div>
