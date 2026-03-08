@@ -437,6 +437,13 @@ watch(cardFilterActive, (newVal) => {
   localStorage.setItem('cardFilterActive', newVal)
 })
 
+const slotFilterActive = ref(localStorage.getItem('slotFilterActive') || 'hot')
+const slotSearchQuery = ref('')
+
+watch(slotFilterActive, (newVal) => {
+  localStorage.setItem('slotFilterActive', newVal)
+})
+
 const cardFilterItems = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.cardProviders) ? gameCategories.value.cardProviders : []
   return [
