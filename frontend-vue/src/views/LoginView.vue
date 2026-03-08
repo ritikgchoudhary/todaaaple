@@ -331,10 +331,10 @@ async function handleSubmit(e) {
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 20px 20px 24px;
+  padding: 0 20px 24px;
   padding-left: max(20px, env(safe-area-inset-left));
   padding-right: max(20px, env(safe-area-inset-right));
-  padding-top: max(20px, env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
   padding-bottom: max(24px, env(safe-area-inset-bottom));
   box-sizing: border-box;
   position: relative;
@@ -361,6 +361,7 @@ async function handleSubmit(e) {
   padding: 0 20px 0;
   padding-left: max(20px, env(safe-area-inset-left));
   padding-right: max(20px, env(safe-area-inset-right));
+  padding-top: env(safe-area-inset-top);
   margin-bottom: 24px;
 }
 
@@ -603,8 +604,8 @@ async function handleSubmit(e) {
 
 /* Responsive: mobile container & phone field */
 @media (max-width: 600px) {
-  .mobileContainer { padding: 0 16px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-  .head { margin-left: calc(-1 * max(16px, env(safe-area-inset-left))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right))); padding: 0 16px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); margin-bottom: 20px; }
+  .mobileContainer { padding: 0 16px 24px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .head { margin-left: calc(-1 * max(16px, env(safe-area-inset-left))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right))); padding: 0 16px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); padding-top: env(safe-area-inset-top); margin-bottom: 20px; }
   .formPanel { padding: 20px 16px 24px; width: 100%; }
   .fieldRow { gap: 12px; }
   .fieldRow .label { width: 90px; font-size: 0.9rem; }
@@ -613,8 +614,8 @@ async function handleSubmit(e) {
   .input { font-size: 16px; }
 }
 @media (max-width: 480px) {
-  .mobileContainer { padding: 0 12px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
-  .head { margin-left: calc(-1 * max(12px, env(safe-area-inset-left))); margin-right: calc(-1 * max(12px, env(safe-area-inset-right))); padding: 0 12px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); margin-bottom: 16px; }
+  .mobileContainer { padding: 0 12px 24px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+  .head { margin-left: calc(-1 * max(12px, env(safe-area-inset-left))); margin-right: calc(-1 * max(12px, env(safe-area-inset-right))); padding: 0 12px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); padding-top: env(safe-area-inset-top); margin-bottom: 16px; }
   .header { padding: 10px 0 12px; }
   .logoIcon { width: 36px; height: 36px; }
   .logoDeltin { font-size: 1.3rem; }
