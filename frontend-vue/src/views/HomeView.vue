@@ -445,7 +445,19 @@ watch(slotFilterActive, (newVal) => {
 })
 
 const cardFilterItems = computed(() => {
-  const dynamic = Array.isArray(gameCategories.value.cardProviders) ? gameCategories.value.cardProviders : []
+  let dynamic = Array.isArray(gameCategories.value.cardProviders) ? gameCategories.value.cardProviders : []
+  
+  // Minimal defaults if DB is empty
+  if (dynamic.length === 0) {
+    dynamic = [
+      { id: 'jili', label: 'JILI', logoShow: 'https://img.bzvm68.com/game/banner/R1BKTF8wX2RlZmF1bHRfM18xNzQ5MTEwNDcz.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BKTF8wX2RlZmF1bHRfNF8xNzQ5MTEwNDcx.png' },
+      { id: 'r88', label: 'R88', logoShow: 'https://img.bzvm68.com/game/banner/R1BSOF8wX2RlZmF1bHRfNF8xNjkxMTM4OTk2.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BSOF8wX2RlZmF1bHRfM18xNjkxMTM5MDEz.png' },
+      { id: 'km', label: 'KM', logoShow: 'https://img.bzvm68.com/game/banner/R1BLTV8wX2RlZmF1bHRfNF8xNzEzMzI0MDM5.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BLTV8wX2RlZmF1bHRfM18xNzEzMzI0MDM0.png' },
+      { id: 'jdb', label: 'JDB', logoShow: 'https://img.bzvm68.com/game/banner/R1BKRF8wX2RlZmF1bHRfNF8xNzQ5NDUyOTM2.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BKRF8wX2RlZmF1bHRfM18xNzQ5NDUyOTM1.png' },
+      { id: 'cq9', label: 'CQ9', logoShow: 'https://img.bzvm68.com/game/banner/R1BDUTJfMF9kZWZhdWx0XzRfMTY3MTUxNTY0NQ==.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BDUTJfMF9kZWZhdWx0XzNfMTY3MTUxNTY0NA==.png' }
+    ]
+  }
+
   return [
     { id: 'search', label: 'Search', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/search.png` },
     { id: 'hot', label: 'HOT', icon: `${baseImg}/site_common/H5_8_mobile/game_type_icon/popular.png` },
