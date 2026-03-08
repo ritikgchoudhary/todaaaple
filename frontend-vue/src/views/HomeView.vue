@@ -1089,22 +1089,22 @@ onMounted(async () => {
 
 .huRight {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 .huBtn {
   text-decoration: none;
   font-size: 13px;
   font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
   text-align: center;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 100px;
+  gap: 4px;
+  min-width: 80px;
   transition: all 0.2s;
   box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
 }
