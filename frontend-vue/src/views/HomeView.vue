@@ -168,7 +168,7 @@
             v-for="f in slotFilterItems"
             :key="f.id"
             :class="['gp-type-item', { active: slotFilterActive === f.id }]"
-            @click="slotFilterActive = f.id"
+            @click="onSlotFilterClick(f.id)"
           >
             <div>
               <span v-if="f.label" class="gp-label">{{ f.label }}</span>
@@ -186,6 +186,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
             <input
+              ref="searchInputRef"
               v-model="slotSearchQuery"
               type="text"
               class="search-input"
@@ -271,6 +272,14 @@ const auth = useAuthStore()
 const userBalance = ref(0)
 const iframeUrl = ref(null)
 const isGameLoading = ref(false)
+const searchInputRef = ref(null)
+
+function onSlotFilterClick(id) {
+  slotFilterActive.value = id
+  if (id === 'search' && searchInputRef.value) {
+    searchInputRef.value.focus()
+  }
+}
 
 const baseImg = 'https://img.bzvm68.com'
 const sliderImages = [
@@ -359,7 +368,7 @@ const crashGamesList = computed(() => {
     img: g.img || g.logo || g.charImageUrl || g.logoUrl || defaultCardBg 
   }))
 })
-const heartIcon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ef4444"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')
+const heartIcon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffffff"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')
 
 const slotFilterActive = ref(localStorage.getItem('slotFilterActive') || 'hot')
 const slotSearchQuery = ref('')
@@ -716,13 +725,13 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  background: #f1f5f9;
-  margin: 0 0 12px;
-  border-radius: 8px;
+  padding: 8px 12px;
+  background: #f8fafc;
+  margin: 0 0 16px;
+  border-radius: 10px;
+  border: 1px solid #f1f5f9;
   font-size: 0.8rem;
   color: #475569;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 .announceLabel {
   display: inline-flex;
@@ -783,19 +792,40 @@ onMounted(async () => {
   font-size: 0.7rem;
   font-weight: 500;
   color: #666;
-  transition: transform 0.2s, border-color 0.2s, background 0.2s, color 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.type-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: #3b82f6;
+  border-radius: 3px 3px 0 0;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
 }
 .type-item img {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
+  margin-bottom: 2px;
+  transition: transform 0.2s;
 }
-.type-item span { white-space: nowrap; }
+.type-item span { white-space: nowrap; transition: color 0.2s; }
 .type-item.active {
-  background: #dbeafe;
-  border-color: #93c5fd;
-  color: #1e40af;
-  font-weight: 600;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  transform: translateY(-2px);
+}
+.type-item.active::after {
+  width: 60%;
+}
+.type-item.active img {
+  transform: scale(1.1);
 }
 
 /* Sports / Live Casino game items - reference structure */
@@ -983,9 +1013,11 @@ onMounted(async () => {
   object-fit: contain;
 }
 .gp-type-item.active {
-  background: #dbeafe;
-  border-color: #93c5fd;
-  color: #1e40af;
+  background: #fff;
+  border-color: #3b82f6;
+  color: #3b82f6;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
+  transform: scale(1.02);
 }
 .game-menu-wrapper--slot .game-item-box-wrapper {
   flex: 1;
@@ -1049,11 +1081,12 @@ onMounted(async () => {
 .game-link.card-f .new-text {
   display: inline-block;
   padding: 2px 6px;
-  background: #ef4444;
+  background: #f59e0b;
   color: #fff;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 800;
   border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 /* Crash Game: card-f grid – 4 columns, compact like reference */
@@ -1073,7 +1106,12 @@ onMounted(async () => {
   overflow: hidden;
   text-decoration: none;
   color: #1a1a1a;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.game-link.card-f:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .game-link.card-f .img-container {
   width: 100%;
