@@ -651,7 +651,7 @@ async function handleSubmit(e) {
   flex-shrink: 0;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.6);
+  color: #94a3b8;
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -659,7 +659,7 @@ async function handleSubmit(e) {
   justify-content: center;
 }
 .eyeBtn:hover {
-  color: #fff;
+  color: #0f172a;
 }
 
 .forgetRow {
@@ -674,11 +674,11 @@ async function handleSubmit(e) {
 }
 .forgetLink {
   font-size: 0.85rem;
-  color: rgba(255,255,255,0.7);
+  color: #05c0b8;
   text-decoration: none;
 }
 .forgetLink:hover {
-  color: #f97316;
+  color: #0d9488;
   text-decoration: underline;
 }
 
@@ -698,7 +698,7 @@ async function handleSubmit(e) {
   min-width: 72px;
   min-height: 42px;
   padding: 0 12px;
-  background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+  background: linear-gradient(135deg, #05c0b8 0%, #0d9488 100%);
   color: #fff;
   font-weight: 600;
   font-size: 0.9rem;
@@ -719,22 +719,22 @@ async function handleSubmit(e) {
   width: 100%;
   min-height: 42px;
   padding: 0 12px;
-  background: rgba(45,45,52,0.8);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  color: #fff;
+  color: #0f172a;
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
 }
 .fieldBlock > .input::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: #94a3b8;
 }
 
 .primaryBtn {
   margin-top: 4px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);
+  background: linear-gradient(135deg, #05c0b8 0%, #0d9488 100%);
   color: #fff;
   font-size: 0.95rem;
   font-weight: 700;
@@ -747,7 +747,7 @@ async function handleSubmit(e) {
   justify-content: center;
   min-height: 44px;
   width: 100%;
-  box-shadow: 0 2px 12px rgba(245,158,11,0.3);
+  box-shadow: 0 2px 12px rgba(5, 192, 184, 0.3);
 }
 .primaryBtn:hover:not(:disabled) {
   filter: brightness(1.05);
@@ -761,24 +761,24 @@ async function handleSubmit(e) {
   margin-top: 8px;
   padding: 10px 20px;
   background: transparent;
-  color: #fff;
+  color: #05c0b8;
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  border: 2px solid #f59e0b;
+  border: 2px solid #05c0b8;
   border-radius: 10px;
   cursor: pointer;
   width: 100%;
   min-height: 42px;
 }
 .registerBtn:hover {
-  background: rgba(245,158,11,0.15);
+  background: rgba(5, 192, 184, 0.15);
 }
 .registerBtn.outlineOnly {
-  border-color: rgba(255,255,255,0.4);
+  border-color: #05c0b8;
 }
 .registerBtn.outlineOnly:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(5, 192, 184, 0.08);
 }
 
 .btnLoader {
@@ -826,7 +826,7 @@ async function handleSubmit(e) {
 .loaderOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(12,12,14,0.9);
+  background: rgba(255,255,255,0.9);
   backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
@@ -838,8 +838,8 @@ async function handleSubmit(e) {
 .spinner {
   width: 44px;
   height: 44px;
-  border: 3px solid rgba(255,255,255,0.2);
-  border-top-color: #f97316;
+  border: 3px solid rgba(5,192,184,0.2);
+  border-top-color: #05c0b8;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -850,7 +850,7 @@ async function handleSubmit(e) {
 
 .loaderOverlay p {
   margin-top: 12px;
-  color: #fff;
+  color: #1a1a1a;
 }
 
 .dialogBackdrop {
@@ -865,15 +865,14 @@ async function handleSubmit(e) {
 }
 
 .dialogPaper {
-  background: rgba(30,30,34,0.98);
-  backdrop-filter: blur(12px);
-  color: #fff;
+  background: #fff;
+  color: #1a1a1a;
   border-radius: 20px;
   max-width: 360px;
   width: 100%;
   padding: 24px 28px;
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+  border: none;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 
 .dialogHeader {
@@ -885,22 +884,24 @@ async function handleSubmit(e) {
 
 .dialogTitle {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  color: #0f172a;
 }
 
 .closeBtn {
   border: none;
   background: none;
-  color: rgba(255,255,255,0.7);
+  color: #94a3b8;
   font-size: 24px;
   cursor: pointer;
   line-height: 1;
   padding: 0 4px;
 }
+.closeBtn:hover { color: #0f172a; }
 
 .dialogBody {
-  color: rgba(255,255,255,0.85);
-  font-size: 0.9rem;
+  color: #475569;
+  font-size: 0.95rem;
   margin: 0;
 }
 </style>
