@@ -67,6 +67,7 @@ const ExtraScheme = mongoose.Schema({
     homeCategoryLottery: { type: Array, default: [] },
     homeCategoryCards: { type: Array, default: [] },
     slotProviders: { type: Array, default: [] },
+    cardProviders: { type: Array, default: [] },
 });
 
 export default mongoose.model('Extra', ExtraScheme);
