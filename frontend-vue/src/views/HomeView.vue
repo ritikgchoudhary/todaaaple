@@ -223,12 +223,13 @@
           :key="g.id"
           href="#"
           class="game-link card-f"
-          :style="g.img ? { backgroundImage: `url(${g.img})` } : {}"
           :title="getCrashGameName(g)"
           @click.prevent="onProviderClick(g)"
         >
-          <div>
-            <img class="heart" :src="heartIcon" alt="heart" />
+          <div class="img-container" :style="g.img ? { backgroundImage: `url(${g.img})` } : {}">
+            <div>
+              <img class="heart" :src="heartIcon" alt="heart" />
+            </div>
           </div>
           <div class="game-name-box">
             <span>{{ getCrashGameName(g) }}</span>
