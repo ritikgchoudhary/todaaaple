@@ -134,29 +134,25 @@
       </div>
     </div>
 
-    <!-- Lottery: Indian Lottery style – single column, grey bg, LOTTERY watermark, name + logo left, character right -->
+    <!-- Lottery: card-f grid (3 in a row like crash/slot) -->
     <div v-else-if="activeCategory === 'lottery'" class="game-item-box-wrapper">
-      <div class="game-item-box">
-        <div class="gt-wrapper gt-wrapper--lottery">
-          <a
-            v-for="p in lotteryProvidersList"
-            :key="p.id"
-            href="#"
-            class="game-item game-item--lottery card-b"
-            @click.prevent="onProviderClick(p)"
-          >
-            <div class="character-bg" :style="{ backgroundImage: p.character ? `url(${p.character})` : 'none' }"></div>
-            <div class="content">
-              <div class="text-content">
-                <div class="name">{{ p.name }}</div>
-                <div v-if="p.subtitle" class="lottery-subtitle">{{ p.subtitle }}</div>
-              </div>
-              <div class="img-content">
-                <img :src="p.logo" :alt="p.name" />
-              </div>
+      <div class="card-f-wrapper">
+        <a
+          v-for="p in lotteryProvidersList"
+          :key="p.id"
+          href="#"
+          class="game-link card-f"
+          @click.prevent="onProviderClick(p)"
+        >
+          <div class="img-container" :style="{ backgroundImage: p.logo ? `url(${p.logo})` : 'none' }">
+            <div>
+              <img class="heart" :src="heartIcon" alt="heart" />
             </div>
-          </a>
-        </div>
+          </div>
+          <div class="game-name-box">
+            <span>{{ p.name }}</span>
+          </div>
+        </a>
       </div>
     </div>
 
