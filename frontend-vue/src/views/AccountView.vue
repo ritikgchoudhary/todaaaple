@@ -121,6 +121,7 @@ const menuItems = [
   { label: 'About Us', path: '/about-us', svg: icons.info, bg: tealBg, color: tealColor },
   { label: 'Customer Service', path: '/help', svg: icons.help, bg: tealBg, color: tealColor },
   { label: 'API Docs', path: '/api-docs', svg: icons.code, bg: tealBg, color: tealColor },
+  { label: 'Manage Games', path: '/admin/games', svg: icons.security, bg: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' },
 ]
 
 onMounted(fetchBalance)
