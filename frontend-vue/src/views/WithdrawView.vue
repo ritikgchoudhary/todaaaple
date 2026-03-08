@@ -468,11 +468,11 @@ onMounted(fetchData)
 .change-tag:hover { border-color: #05c0b8; }
 
 .empty-state {
-  padding: 16px 20px;
+  padding: 20px 24px;
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   border-radius: 12px;
   background-color: #fff;
   border: 1px solid #e2e8f0;
@@ -483,14 +483,14 @@ onMounted(fetchData)
 }
 .empty-state p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: #0f172a;
   font-weight: 500;
 }
 .add-bank-link {
-  color: #6366f1;
-  font-size: 1rem;
-  font-weight: 500;
+  color: #4f46e5;
+  font-size: 1.05rem;
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
