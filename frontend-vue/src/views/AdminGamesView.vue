@@ -19,7 +19,10 @@
       <div v-for="(games, key) in gameCategories" :key="key" class="category-card">
         <div class="card-header">
           <h2 class="category-title">{{ formatKey(key) }}</h2>
-          <button class="add-btn" @click="addGame(key)">+ Add Game</button>
+          <div class="header-actions">
+            <button class="reset-btn" @click="resetCategory(key)">Restore Defaults</button>
+            <button class="add-btn" @click="addGame(key)">+ Add Game</button>
+          </div>
         </div>
 
         <div class="games-grid">
@@ -94,21 +97,65 @@ async function fetchData() {
   try {
     const res = await api.getHomeCategoryGames()
     if (res.data) {
-      // Ensure all keys exist
       const keys = ['sports', 'casino', 'crash', 'slot', 'lottery', 'cards']
       const formatted = {}
+      let isEmpty = true
       keys.forEach(k => {
-        formatted[k] = Array.isArray(res.data[k]) ? res.data[k] : []
+        formatted[k] = Array.isArray(res.data[k]) && res.data[k].length > 0 ? res.data[k] : []
+        if (formatted[k].length > 0) isEmpty = false
       })
-      gameCategories.value = formatted
+      
+      if (isEmpty) {
+          // Initialize with defaults if everything is empty
+          resetAllToDefaults()
+      } else {
+          gameCategories.value = formatted
+      }
     }
   } catch (err) {
     console.error('Fetch error:', err)
     message.value = 'Failed to load games. Using defaults.'
     messageType.value = 'error'
+    resetAllToDefaults()
   } finally {
     fetching.value = false
   }
+}
+
+const DEFAULTS = {
+    sports: [
+        { id: '9w', name: '9WICKETS', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GP9W.png' },
+        { id: 'lucky', name: 'Lucky Sports', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPLS.png' },
+        { id: 'saba', name: 'SABA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPOW-en_US.png' }
+    ],
+    casino: [
+        { id: 'evo', name: 'EVO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPEV.png' },
+        { id: 'ezugi', name: 'Ezugi', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPEZ.png' },
+        { id: 'sexy', name: 'SEXY', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPSX2.png' }
+    ],
+    crash: [
+        { id: 'av', name: 'Aviator', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png' },
+        { id: 'avx', name: 'AviatorX', img: 'https://img.bzvm68.com/game/img2/en-US/GPR8/NV9BdmlhdG9yWCMxNzU2Mjg1Mjg2.png' },
+        { id: 'fb', name: 'Firework Burst', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDE1IzE3MzUwMjgyNjI=.png' }
+    ],
+    slot: [
+        { id: 's7', name: 'Super Ace', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/MV80OSMxNjQ4NDM2OTA2.png' },
+        { id: 's10', name: 'Fortune Gems', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/MV8xMDkjMTY0ODQzNjkwNg==.png' },
+        { id: 's12', name: 'Double Ace MultiXPLUS', img: 'https://img.bzvm68.com/game/img2/en-US/GPVP/U0xPVF9WUF8yMzAwMzhfMSMxNzY1NTI0MTYx.png' }
+    ],
+    lottery: [
+        { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },
+        { id: 'sea-tcg', name: 'SEA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/sea_tcgaming.png' }
+    ],
+    cards: []
+}
+
+function resetCategory(key) {
+    gameCategories.value[key] = JSON.parse(JSON.stringify(DEFAULTS[key] || []))
+}
+
+function resetAllToDefaults() {
+    gameCategories.value = JSON.parse(JSON.stringify(DEFAULTS))
 }
 
 async function save() {
@@ -211,6 +258,20 @@ h1 { font-size: 1.5rem; color: #1e293b; margin: 0; }
   font-weight: 500;
 }
 .add-btn:hover { background: #e2e8f0; }
+
+.header-actions { display: flex; gap: 8px; }
+
+.reset-btn {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+.reset-btn:hover { background: #f8fafc; color: #1e293b; border-color: #cbd5e1; }
 
 .games-grid {
   display: grid;
