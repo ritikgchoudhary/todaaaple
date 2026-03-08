@@ -126,17 +126,25 @@ const DEFAULTS = {
     sports: [
         { id: '9w', name: '9WICKETS', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GP9W.png' },
         { id: 'lucky', name: 'Lucky Sports', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPLS.png' },
-        { id: 'saba', name: 'SABA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPOW-en_US.png' }
+        { id: 'saba', name: 'SABA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPOW-en_US.png' },
+        { id: 'newbb', name: 'NewBB', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPBB-new bb.png' },
+        { id: 'sbo', name: 'SBO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPSB2.png' },
+        { id: 'fb', name: 'FB', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GPFB-en_US.png' }
     ],
     casino: [
         { id: 'evo', name: 'EVO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPEV.png' },
+        { id: 'pt', name: 'PT', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPPT3.png' },
         { id: 'ezugi', name: 'Ezugi', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPEZ.png' },
-        { id: 'sexy', name: 'SEXY', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPSX2.png' }
+        { id: 'sexy', name: 'SEXY', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPSX2.png' },
+        { id: 'ssg', name: 'SSG', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPSS.png' },
+        { id: 'mg', name: 'MG', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPMG2.png' }
     ],
     crash: [
         { id: 'av', name: 'Aviator', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png' },
         { id: 'avx', name: 'AviatorX', img: 'https://img.bzvm68.com/game/img2/en-US/GPR8/NV9BdmlhdG9yWCMxNzU2Mjg1Mjg2.png' },
-        { id: 'fb', name: 'Firework Burst', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDE1IzE3MzUwMjgyNjI=.png' }
+        { id: 'aeb', name: 'Aviator Extra Bet', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png' },
+        { id: 'cd', name: 'Chicken Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTAjMTVODA5ODc1Ng==.png' },
+        { id: 'fd', name: 'Frog Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTgjMTc2MjMyODYyNA==.png' }
     ],
     slot: [
         { id: 's7', name: 'Super Ace', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/MV80OSMxNjQ4NDM2OTA2.png' },
@@ -145,7 +153,8 @@ const DEFAULTS = {
     ],
     lottery: [
         { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },
-        { id: 'sea-tcg', name: 'SEA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/sea_tcgaming.png' }
+        { id: 'sea-tcg', name: 'SEA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/sea_tcgaming.png' },
+        { id: 'bbin', name: 'BBIN', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/bbin.png' }
     ],
     cards: []
 }

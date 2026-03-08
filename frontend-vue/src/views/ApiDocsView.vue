@@ -90,7 +90,7 @@ onMounted(() => {
 .mobileContainer { width: 100%; max-width: 500px; min-height: 100vh; background-color: #fff; position: relative; }
 
 .header { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid #E5E7EB; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.title { font-weight: 900; color: #0F172A; fontSize: 16px; margin: 0; }
+.title { font-weight: 900; color: #0F172A; font-size: 16px; margin: 0; }
 .baseUrl { color: #64748B; font-size: 11px; margin-top: 2px; }
 .backBtn { padding: 6px 12px; border: 1px solid #E5E7EB; background: white; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
 

@@ -93,6 +93,11 @@
             ₹{{ val >= 1000 ? (val/1000) + 'K' : val }}
           </button>
         </div>
+        
+        <button class="deposit-btn inline-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
+          <span v-if="loading" class="btn-spinner"></span>
+          <span v-else>Deposit ₹{{ (amount || 0).toLocaleString() }}</span>
+        </button>
       </div>
 
       <!-- Instruction Details -->
