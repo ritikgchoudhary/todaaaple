@@ -625,6 +625,42 @@ const RICH88_CARD_GAMES = [
   { id: "3820", name: "Single Black Jack", img: "https://igamingapis.com/img/3820.png", provider: "r88" }
 ]
 
+const KM_CARD_GAMES = [
+  { id: "6774", name: "Andar Bahar", img: "https://igamingapis.com/img/6774.png", provider: "km" },
+  { id: "6838", name: "Speedy Andar Bahar", img: "https://igamingapis.com/img/6838.png", provider: "km" },
+  { id: "6788", name: "Teen Patti", img: "https://igamingapis.com/img/6788.png", provider: "km" },
+  { id: "6842", name: "Teen Patti Blitz", img: "https://igamingapis.com/img/6842.png", provider: "km" },
+  { id: "6781", name: "Blackjack", img: "https://igamingapis.com/img/6781.png", provider: "km" },
+  { id: "6775", name: "Baccarat", img: "https://igamingapis.com/img/6775.png", provider: "km" },
+  { id: "6791", name: "5 Card Poker", img: "https://igamingapis.com/img/6791.png", provider: "km" },
+  { id: "6815", name: "Video Poker", img: "https://igamingapis.com/img/6815.png", provider: "km" },
+  { id: "6776", name: "Kingmaker Pok Deng", img: "https://igamingapis.com/img/6776.png", provider: "km" },
+  { id: "6768", name: "Bai Cao", img: "https://igamingapis.com/img/6768.png", provider: "km" },
+  { id: "6769", name: "Bai Buu", img: "https://igamingapis.com/img/6769.png", provider: "km" },
+  { id: "6809", name: "Pusoy", img: "https://igamingapis.com/img/6809.png", provider: "km" },
+  { id: "6810", name: "Tongits", img: "https://igamingapis.com/img/6810.png", provider: "km" },
+  { id: "6782", name: "32 Cards", img: "https://igamingapis.com/img/6782.png", provider: "km" },
+  { id: "6780", name: "Cards Hi Lo", img: "https://igamingapis.com/img/6780.png", provider: "km" }
+]
+
+const JDB_CARD_GAMES = [
+  { id: "28", name: "Dragon Tiger - Joker Bonus", img: "https://igamingapis.com/img/28.png", provider: "jdb" },
+  { id: "58", name: "Jogo Do Bicho", img: "https://igamingapis.com/img/58.png", provider: "jdb" },
+  { id: "277", name: "Tongits Rush", img: "https://igamingapis.com/img/277.png", provider: "jdb" },
+  { id: "307", name: "Mines", img: "https://igamingapis.com/img/307.png", provider: "jdb" },
+  { id: "316", name: "Tongits", img: "https://igamingapis.com/img/316.png", provider: "jdb" },
+  { id: "395", name: "Lucky Color Game", img: "https://igamingapis.com/img/395.png", provider: "jdb" },
+  { id: "472", name: "Tongits Fight", img: "https://igamingapis.com/img/472.png", provider: "jdb" },
+  { id: "477", name: "Dice", img: "https://igamingapis.com/img/477.png", provider: "jdb" },
+  { id: "734", name: "Hilo", img: "https://igamingapis.com/img/734.png", provider: "jdb" },
+  { id: "744", name: "Mole Crash", img: "https://igamingapis.com/img/744.png", provider: "jdb" },
+  { id: "819", name: "Mines2", img: "https://igamingapis.com/img/819.png", provider: "jdb" },
+  { id: "927", name: "Plinko", img: "https://igamingapis.com/img/927.png", provider: "jdb" },
+  { id: "1089", name: "Pusoy Rush", img: "https://igamingapis.com/img/1089.png", provider: "jdb" },
+  { id: "1105", name: "Pusoy", img: "https://igamingapis.com/img/1105.png", provider: "jdb" },
+  { id: "10040", name: "Aviator Extra Bet", img: "https://igamingapis.com/img/10040.png", provider: "jdb" }
+]
+
 const slotGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
   
@@ -675,7 +711,7 @@ const cardGamesList = computed(() => {
   const combined = [...dynamic]
   const existingIds = new Set(dynamic.map(g => String(g.id)))
   
-  const FIXED_GAMES = [...JILI_CARD_GAMES, ...RICH88_CARD_GAMES]
+  const FIXED_GAMES = [...JILI_CARD_GAMES, ...RICH88_CARD_GAMES, ...KM_CARD_GAMES, ...JDB_CARD_GAMES]
   FIXED_GAMES.forEach(g => {
     if (!existingIds.has(String(g.id))) combined.push(g)
   })
