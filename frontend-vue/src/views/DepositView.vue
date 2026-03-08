@@ -69,7 +69,7 @@
             <span>Select channel</span>
           </div>
           <div class="channelBoxes">
-            <div class="channelBox active" v-for="gateway in gatewayList" :key="gateway" @click="selectedGateway = gateway" v-show="selectedGateway === gateway || gatewayList.length === 1">
+            <div class="channelBox" v-for="gateway in gatewayList" :key="gateway" :class="{ active: selectedGateway === gateway }" @click="selectedGateway = gateway" v-show="selectedGateway === gateway || gatewayList.length === 1">
                <div class="cbName">{{ GATEWAY_LABELS[gateway] || gateway }}</div>
                <div class="cbRange">Balance:{{ GATEWAY_RANGES[gateway] || '100 - 50K' }}</div>
             </div>
@@ -289,52 +289,56 @@ onMounted(() => {
 }
 .clearBtn { background: none; border: none; font-size: 20px; color: #94A3B8; cursor: pointer; padding: 4px; }
 
+.channelBoxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.channelBox {
+  background: #2a2a2a;
+  padding: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: none;
+}
+.channelBox.active {
+  background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%);
+  color: #1a1a1a;
+  display: block;
+}
+.channelBox:not(.active) {
+  color: #a3a3a3;
+}
+
+/* Amount Section */
+.amountSection {
+  background: #1a1a1a;
+  padding: 16px;
+  border-radius: 12px;
+}
 .amountGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 .amtBtn {
-  padding: 12px 4px;
-  border-radius: 10px;
-  border: 1px solid #E2E8F0;
-  background: #fff;
+  background: #2a2a2a;
+  border: 1px solid #333;
+  color: #a3a3a3;
+  padding: 12px 0;
+  border-radius: 8px;
   font-weight: 600;
-  color: #64748B;
-  cursor: pointer;
   font-size: 14px;
-}
-.amtBtn.active {
-  background: #05c0b8;
-  color: #fff;
-  border-color: #05c0b8;
-}
-
-.channelSection { margin-bottom: 30px; }
-.channelGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.channelCard {
-  background: #fff;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 12px;
-  position: relative;
   cursor: pointer;
+  transition: all 0.2s;
 }
-.channelCard.active {
-  background: rgba(5, 192, 184, 0.05);
-  border-color: #05c0b8;
-}
-.channelName { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 4px; }
-.channelRange { font-size: 11px; color: #64748B; font-weight: 500; }
-.checkIcon {
-  position: absolute; top: -6px; right: -6px;
-  background: #05c0b8; border-radius: 50%;
-  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+.amtBtn .rs { font-weight: normal; margin-right: 2px; }
+.amtBtn.active {
+  background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%);
+  color: #1a1a1a;
+  border-color: transparent;
 }
 
 .actionBtn {
@@ -359,24 +363,24 @@ onMounted(() => {
 
 /* Dialog */
 .dialogOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
   display: flex; align-items: center; justify-content: center; z-index: 100;
 }
 .dialogCard {
-  background: #fff; padding: 24px; border-radius: 20px; width: 90%; max-width: 360px;
-  text-align: center;
+  background: #1a1a1a; padding: 24px; border-radius: 20px; width: 90%; max-width: 360px;
+  text-align: center; color: white;
 }
-.dialogTitle { font-weight: 700; font-size: 18px; color: #0F172A; }
-.dialogBody { font-size: 14px; color: #475569; line-height: 1.5; margin: 16px 0 24px; }
+.dialogTitle { font-weight: 700; font-size: 18px; color: #f0c27b; }
+.dialogBody { font-size: 14px; color: #a3a3a3; line-height: 1.5; margin: 16px 0 24px; }
 .confirmBtn {
-    width: 100%; padding: 12px; background: #05c0b8; color: #fff;
+    width: 100%; padding: 12px; background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%); color: #1a1a1a;
     border: none; border-radius: 10px; font-weight: 700; cursor: pointer;
 }
 
 .pageLoader {
   position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: #f0c27b;
 }
-.spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
+.spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #f0c27b; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 </style>
