@@ -1051,8 +1051,8 @@ onMounted(async () => {
   top: 4px;
   right: 4px;
   z-index: 2;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   background: rgba(239, 68, 68, 0.9);
   border-radius: 50%;
   display: flex;
@@ -1061,14 +1061,14 @@ onMounted(async () => {
   pointer-events: none;
 }
 .game-link.card-f .heart {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   display: block;
   object-fit: contain;
   filter: none;
 }
 .game-link.card-f .game-name-box {
-  padding: 6px 4px;
+  padding: 4px;
   background: #f1f5f9;
   display: flex;
   align-items: center;
