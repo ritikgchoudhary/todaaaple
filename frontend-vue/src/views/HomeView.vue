@@ -109,7 +109,7 @@
     </div>
 
     <!-- Game items: Sports / Live Casino (provider cards) -->
-    <div v-if="activeCategory !== 'crash' && activeCategory !== 'slot' && activeCategory !== 'lottery'" class="game-item-box-wrapper">
+    <div v-if="activeCategory !== 'crash' && activeCategory !== 'slot' && activeCategory !== 'lottery' && activeCategory !== 'cards'" class="game-item-box-wrapper">
       <div class="game-item-box">
         <div class="gt-wrapper" :class="{ 'gt-wrapper--live-casino': activeCategory === 'casino' }">
           <a
@@ -216,6 +216,62 @@
       </div>
     </div>
 
+    <!-- Card Game: left sidebar (Search, HOT, providers) + search bar + card-f grid -->
+    <div v-else-if="activeCategory === 'cards'" class="game-menu-wrapper game-menu-wrapper--slot">
+      <div class="type-wrapper type-wrapper--slot">
+        <div class="left-type-wrapper">
+          <div
+            v-for="f in cardFilterItems.filter(i => i.id !== 'search')"
+            :key="f.id"
+            :class="['gp-type-item', { active: cardFilterActive === f.id }]"
+            @click="onCardFilterClick(f.id)"
+          >
+            <div class="gp-item-inner">
+              <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
+              <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
+              <template v-else>
+                <img v-if="cardFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo" />
+                <img v-if="cardFilterActive === f.id && f.logoShow" :src="f.logoShow" alt="" class="gp-publisher-logo" />
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="game-item-box-wrapper">
+          <div class="search-bar">
+            <div class="icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <input
+              ref="searchInputRef"
+              v-model="cardSearchQuery"
+              type="text"
+              class="search-input"
+              placeholder="Search game name"
+            />
+          </div>
+            <div class="card-f-wrapper">
+            <a
+              v-for="g in displayCardGames"
+              :key="g.id"
+              href="#"
+              class="game-link card-f"
+              @click.prevent="onProviderClick(g)"
+            >
+              <div class="img-container" :style="{ backgroundImage: g.img ? `url(${g.img})` : 'none' }">
+                <div>
+                  <img class="heart" :src="heartIcon" alt="heart" />
+                </div>
+                <div v-if="g.isNew" class="new-icon"><span class="new-text">NEW</span></div>
+              </div>
+              <div class="game-name-box">
+                <span>{{ g.name }}</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Crash Game: card-f grid -->
     <div v-else class="game-item-box-wrapper">
       <div class="card-f-wrapper">
@@ -276,6 +332,12 @@ const searchInputRef = ref(null)
 
 function onSlotFilterClick(id) {
   slotFilterActive.value = id
+  if (id === 'search' && searchInputRef.value) {
+    searchInputRef.value.focus()
+  }
+}
+function onCardFilterClick(id) {
+  cardFilterActive.value = id
   if (id === 'search' && searchInputRef.value) {
     searchInputRef.value.focus()
   }
@@ -562,6 +624,31 @@ const displaySlotGames = computed(() => {
   
   // 2. Filter by search query
   const q = (slotSearchQuery.value || '').trim().toLowerCase()
+  if (q) {
+    list = list.filter((g) => g.name.toLowerCase().includes(q))
+  }
+  
+  return list
+})
+
+const displayCardGames = computed(() => {
+  const dynamic = Array.isArray(gameCategories.value.cards) ? gameCategories.value.cards : []
+  let list = dynamic.map(g => ({
+    ...g,
+    img: g.img || g.logo || g.charImageUrl || g.logoUrl || defaultCardBg
+  }))
+  
+  // 1. Filter by provider (Sidebar)
+  const active = (cardFilterActive.value || 'hot').toLowerCase()
+  if (active !== 'hot' && active !== 'search') {
+    list = list.filter(g => {
+      const p = (g.provider || g.publisher || g.vendor || '').toLowerCase()
+      return p === active || p.includes(active)
+    })
+  }
+  
+  // 2. Filter by search query
+  const q = (cardSearchQuery.value || '').trim().toLowerCase()
   if (q) {
     list = list.filter((g) => g.name.toLowerCase().includes(q))
   }
