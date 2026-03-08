@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '../router'
 
 const API_PORT = import.meta.env.VITE_API_PORT || '4001'
 const isDev = import.meta.env.DEV
@@ -55,25 +54,15 @@ function isAuthFailBody(data) {
 function handleAuthFailure(response) {
   console.warn('Authentication failure detected, redirecting to login...', response?.data);
   
+  // Clear local storage
   localStorage.removeItem('user')
   localStorage.removeItem('auth_token')
   
-  // Try to redirect using router
-  if (router.currentRoute.value.name !== 'Login') {
-    router.push({ 
-      name: 'Login', 
-      query: { redirect: router.currentRoute.value.fullPath } 
-    }).catch(err => {
-      console.error('Router push failed:', err);
-      window.location.href = '/login';
-    });
-    
-    // Fallback if router doesn't navigate within 500ms
-    setTimeout(() => {
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
-      }
-    }, 500);
+  // Force a page reload to Login to ensure all stores are cleared
+  // This is more reliable than internal routing for Auth failures
+  const currentPath = window.location.pathname + window.location.search;
+  if (!currentPath.includes('/login')) {
+    window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
   }
   
   return Promise.reject(new Error('Auth Failed'))

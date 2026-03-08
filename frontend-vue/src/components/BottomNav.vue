@@ -13,7 +13,13 @@
       <span class="navLabel">Home</span>
     </router-link>
     <router-link to="/wingo/1" class="navItem" :class="{ active: route.path.startsWith('/wingo') }">
-      <img :src="route.path.startsWith('/wingo') ? 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_discount.png' : 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_discount.png'" alt="" class="navIconImg" />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="navIconImg">
+        <rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect>
+        <path d="M6 12h4"></path>
+        <path d="M8 10v4"></path>
+        <path d="M15 13h.01"></path>
+        <path d="M18 11h.01"></path>
+      </svg>
       <span class="navLabel">Wingo</span>
     </router-link>
     <router-link to="/help" class="navItem" :class="{ active: route.path === '/help' }">
