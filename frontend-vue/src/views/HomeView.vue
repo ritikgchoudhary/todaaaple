@@ -174,7 +174,7 @@
               <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <template v-else>
-                <img v-if="slotFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo grayscale" />
+                <img v-if="slotFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo" />
                 <img v-if="slotFilterActive === f.id && f.logoShow" :src="f.logoShow" alt="" class="gp-publisher-logo" />
               </template>
             </div>
@@ -1070,7 +1070,7 @@ onMounted(async () => {
   transition: all 0.3s ease;
 }
 .gp-publisher-logo.grayscale {
-  filter: grayscale(1) opacity(0.5);
+  opacity: 0.85; /* Slight fade instead of total grayscale/white */
 }
 .gp-type-item .gp-icon {
   width: 32px;
