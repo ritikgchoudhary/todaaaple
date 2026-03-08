@@ -453,14 +453,46 @@ const SPRIBE_GAMES = [
   { id: "5808", name: "Trader", img: "https://igamingapis.com/img/5808.png", provider: "spribe" }
 ]
 
+const JDB_GAMES = [
+  { id: "307", name: "Mines", img: "https://igamingapis.com/img/307.png", provider: "jdb" },
+  { id: "927", name: "Plinko", img: "https://igamingapis.com/img/927.png", provider: "jdb" },
+  { id: "734", name: "Hilo", img: "https://igamingapis.com/img/734.png", provider: "jdb" },
+  { id: "744", name: "Mole Crash", img: "https://igamingapis.com/img/744.png", provider: "jdb" },
+  { id: "819", name: "Mines2", img: "https://igamingapis.com/img/819.png", provider: "jdb" },
+  { id: "6", name: "Goal", img: "https://igamingapis.com/img/6.png", provider: "jdb" },
+  { id: "283", name: "KingOfFootball", img: "https://igamingapis.com/img/283.png", provider: "jdb" },
+  { id: "544", name: "Birds Party Deluxe", img: "https://igamingapis.com/img/544.png", provider: "jdb" },
+  { id: "565", name: "Piggy Bank", img: "https://igamingapis.com/img/565.png", provider: "jdb" },
+  { id: "981", name: "Happy Lottery", img: "https://igamingapis.com/img/981.png", provider: "jdb" },
+  { id: "10040", name: "Aviator Extra Bet", img: "https://igamingapis.com/img/10040.png", provider: "jdb" }
+]
+
+const RICH88_GAMES = [
+  { id: "1163", name: "100 PokDeng", img: "https://igamingapis.com/img/1163.png", provider: "r88" },
+  { id: "1164", name: "100 Teen Patti", img: "https://igamingapis.com/img/1164.png", provider: "r88" },
+  { id: "1223", name: "88 Fortunes", img: "https://igamingapis.com/img/1223.png", provider: "r88" },
+  { id: "1330", name: "Ancient Giant Elephant", img: "https://igamingapis.com/img/1330.png", provider: "r88" },
+  { id: "1425", name: "Battle of Five Carp", img: "https://igamingapis.com/img/1425.png", provider: "r88" },
+  { id: "1456", name: "Big and Small", img: "https://igamingapis.com/img/1456.png", provider: "r88" },
+  { id: "1457", name: "Big and Small 2", img: "https://igamingapis.com/img/1457.png", provider: "r88" },
+  { id: "1480", name: "Bingo Football", img: "https://igamingapis.com/img/1480.png", provider: "r88" },
+  { id: "1745", name: "Christmas Gift", img: "https://igamingapis.com/img/1745.png", provider: "r88" },
+  { id: "1766", name: "Cleopatra", img: "https://igamingapis.com/img/1766.png", provider: "r88" },
+  { id: "1776", name: "CockFighting", img: "https://igamingapis.com/img/1776.png", provider: "r88" },
+  { id: "1788", name: "Color Dish", img: "https://igamingapis.com/img/1788.png", provider: "r88" },
+  { id: "1789", name: "Color Dish 2", img: "https://igamingapis.com/img/1789.png", provider: "r88" },
+  { id: "1821", name: "Crazy Rich Man", img: "https://igamingapis.com/img/1821.png", provider: "r88" },
+  { id: "1977", name: "Double slot", img: "https://igamingapis.com/img/1977.png", provider: "r88" }
+]
+
 const slotGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
   
-  // Combine dynamic games, JILI games, and SPRIBE games, unique by ID
+  // Combine dynamic games, JILI, SPRIBE, JDB, and RICH88 games, unique by ID
   const combined = [...dynamic]
   const existingIds = new Set(dynamic.map(g => String(g.id)))
   
-  const FIXED_GAMES = [...JILI_GAMES, ...SPRIBE_GAMES]
+  const FIXED_GAMES = [...JILI_GAMES, ...SPRIBE_GAMES, ...JDB_GAMES, ...RICH88_GAMES]
   
   FIXED_GAMES.forEach(g => {
     if (!existingIds.has(String(g.id))) {
