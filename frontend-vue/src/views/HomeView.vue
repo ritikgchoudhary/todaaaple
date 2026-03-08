@@ -1045,6 +1045,7 @@ onMounted(async () => {
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+  border-radius: 8px 8px 0 0;
 }
 .game-link.card-f .img-container > div:first-child {
   position: absolute;

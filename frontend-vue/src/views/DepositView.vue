@@ -282,8 +282,10 @@ onMounted(() => {
     walletApi.getCurrentGateway().then(res => {
         if (res.data?.gateway) selectedGateway.value = res.data.gateway.toLowerCase()
         if (res.data?.gatewayList && Array.isArray(res.data.gatewayList)) {
-            const preferred = ['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual']
-            gatewayList.value = res.data.gatewayList.sort((a, b) => preferred.indexOf(a.toLowerCase()) - preferred.indexOf(b.toLowerCase()))
+            const working = ['watchpay', 'lgpay', 'rupeerush']
+            gatewayList.value = res.data.gatewayList
+                .filter(g => working.includes(g.toLowerCase()))
+                .sort((a, b) => working.indexOf(a.toLowerCase()) - working.indexOf(b.toLowerCase()))
         }
     }).catch(() => {})
 })
