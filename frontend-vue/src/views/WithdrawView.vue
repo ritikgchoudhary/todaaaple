@@ -70,12 +70,12 @@
         <div class="wagering-info">
           <div class="info-text">
             You need to play total bids equal to your last recharge amount<br/>
-            <span class="hindi-text">आपको अपनी अंतिम रिचार्ज राशि के बराबर कुल बिड खेलने की आवश्यकता है</span>
+            <span class="hindi-text" style="color: #666;">आपको अपनी अंतिम रिचार्ज राशि के बराबर कुल बिड खेलने की आवश्यकता है</span>
           </div>
-        <div class="info-text" style="color: black; margin-top: 5px;">
-          Last recharge amount is ₹{{ withdrawalLimits.recharge }}, play ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid).toFixed(2) }} more amount bids to withdraw<br/>
-          <span class="hindi-text">अंतिम रिचार्ज राशि ₹{{ withdrawalLimits.recharge }} है, निकासी के लिए ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid).toFixed(2) }} और अधिक राशि की बिड खेलें</span>
-        </div>
+          <div class="info-text" style="color: black; margin-top: 5px;">
+            Last recharge amount is ₹{{ withdrawalLimits.recharge }}, play ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid).toFixed(2) }} more amount bids to withdraw<br/>
+            <span class="hindi-text" style="color: #666;">अंतिम रिचार्ज राशि ₹{{ withdrawalLimits.recharge }} है, निकासी के लिए ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid).toFixed(2) }} और अधिक राशि की बिड खेलें</span>
+          </div>
         </div>
 
         <div class="btn-container">
