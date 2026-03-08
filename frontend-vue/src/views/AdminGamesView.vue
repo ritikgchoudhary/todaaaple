@@ -152,37 +152,6 @@ function addProvider() {
   slotProviders.value.push({ id: '', label: '', logoHide: '', logoShow: '' })
 }
 
-async function fetchData() {
-  fetching.value = true
-  try {
-    const res = await api.getHomeCategoryGames()
-    if (res.data) {
-      const keys = ['sports', 'casino', 'crash', 'slot', 'lottery', 'cards']
-      const formatted = {}
-      let isEmpty = true
-      keys.forEach(k => {
-        formatted[k] = Array.isArray(res.data[k]) && res.data[k].length > 0 ? res.data[k] : []
-        if (formatted[k].length > 0) isEmpty = false
-      })
-      slotProviders.value = Array.isArray(res.data.slotProviders) ? res.data.slotProviders : []
-      
-      if (isEmpty) {
-          // Initialize with defaults if everything is empty
-          resetAllToDefaults()
-      } else {
-          gameCategories.value = formatted
-      }
-    }
-  } catch (err) {
-    console.error('Fetch error:', err)
-    message.value = 'Failed to load games. Using defaults.'
-    messageType.value = 'error'
-    resetAllToDefaults()
-  } finally {
-    fetching.value = false
-  }
-}
-
 const DEFAULTS = {
     sports: [
         { id: '9w', name: '9WICKETS', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/4-GP9W.png' },
@@ -275,6 +244,45 @@ const DEFAULTS = {
     ],
     cards: []
 }
+
+async function fetchData() {
+  fetching.value = true
+  try {
+    const res = await api.getHomeCategoryGames()
+    if (res.data) {
+      const keys = ['sports', 'casino', 'crash', 'slot', 'lottery', 'cards']
+      const formatted = {}
+      let isEmpty = true
+      keys.forEach(k => {
+        formatted[k] = Array.isArray(res.data[k]) && res.data[k].length > 0 ? res.data[k] : []
+        if (formatted[k].length > 0) isEmpty = false
+      })
+      slotProviders.value = Array.isArray(res.data.slotProviders) ? res.data.slotProviders : []
+      
+      if (isEmpty) {
+          resetAllToDefaults()
+      } else {
+          // Merge JILI games from defaults into slots if IDs are missing
+          const existingSlotIds = new Set(formatted.slot.map(g => String(g.id)))
+          DEFAULTS.slot.forEach(g => {
+            if (!existingSlotIds.has(String(g.id))) {
+              formatted.slot.push(JSON.parse(JSON.stringify(g)))
+            }
+          })
+          gameCategories.value = formatted
+      }
+    }
+  } catch (err) {
+    console.error('Fetch error:', err)
+    message.value = 'Failed to load games. Using defaults.'
+    messageType.value = 'error'
+    resetAllToDefaults()
+  } finally {
+    fetching.value = false
+  }
+}
+
+
 
 function resetCategory(key) {
     gameCategories.value[key] = JSON.parse(JSON.stringify(DEFAULTS[key] || []))
