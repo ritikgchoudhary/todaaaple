@@ -8,15 +8,24 @@
         <img src="https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png" alt="DELTIN SPORT" class="headerLogo" />
       </router-link>
       <div class="headerActions">
-        <router-link v-if="!auth.isLoggedIn" to="/login" class="btnRegister">
-          <img src="https://img.bzvm68.com/site_common/H5_7_mobile/direction.png" alt="" class="btnIcon" />
-          <span class="text">Register</span>
-        </router-link>
-        <router-link v-if="!auth.isLoggedIn" to="/login" class="btnLogin">
-          <img src="https://img.bzvm68.com/site_common/H5_7_mobile/plus.png" alt="" class="btnIcon" />
-          <span class="text">Log-in</span>
-        </router-link>
-        <router-link v-else to="/account" class="btnLogin"><span class="text">Account</span></router-link>
+        <template v-if="!auth.isLoggedIn">
+          <router-link to="/login" class="btnRegister">
+            <img src="https://img.bzvm68.com/site_common/H5_7_mobile/direction.png" alt="" class="btnIcon" />
+            <span class="text">Register</span>
+          </router-link>
+          <router-link to="/login" class="btnLogin">
+            <img src="https://img.bzvm68.com/site_common/H5_7_mobile/plus.png" alt="" class="btnIcon" />
+            <span class="text">Log-in</span>
+          </router-link>
+        </template>
+        <template v-else>
+          <div class="headerBalance" @click="$router.push('/account')">
+            <span class="text">₹ {{ (userBalance || 0).toFixed(2) }}</span>
+          </div>
+          <button class="btnLogout" @click="handleLogout" title="Logout">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </template>
       </div>
     </header>
 
