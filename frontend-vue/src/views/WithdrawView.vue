@@ -1,228 +1,173 @@
 <template>
   <div class="withdrawal-page">
+    <!-- Header -->
     <div class="header">
       <div class="header-left" @click="router.back()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </div>
       <h1 class="header-title">Withdrawal</h1>
-      <router-link to="/withdrawalHistory" class="header-right">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
-      </router-link>
+      <div class="header-right"></div>
     </div>
 
     <div class="mobile-container">
-      <!-- Balance Card -->
-      <div class="glass-card balance-card">
-        <div class="card-glow"></div>
-        <div class="balance-info">
-          <div class="label-row">
-            <span class="label">Withdrawable Balance</span>
-            <button class="refresh-btn" @click="fetchData" :class="{ 'spinning': fetching }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            </button>
-          </div>
-          <div class="amount-row">
-            <span class="currency">₹</span>
-            <span class="amount">{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }}</span>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="wallet-tag">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/><path d="M18 12h4"/></svg>
-            <span>Primary Wallet</span>
-          </div>
-        </div>
+      <div class="balance-title">
+        <span class="balance-label">My Balance</span>
+        <span class="balance-amount">₹{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }}</span>
       </div>
-
+      
       <!-- Tab Switcher -->
-      <div class="tab-switcher">
-        <button :class="['tab-btn', { active: activeTab === 'inr' }]" @click="activeTab = 'inr'">
-          <span class="dot"></span> INR Bank
-        </button>
-        <button :class="['tab-btn', { active: activeTab === 'usdt' }]" @click="activeTab = 'usdt'">
-          <span class="dot"></span> USDT Crypto
-        </button>
+      <div class="tab-switcher-container">
+        <div class="tab-switcher">
+          <button :class="['tab-btn', { active: activeTab === 'inr' }]" @click="activeTab = 'inr'">
+            INR Withdrawal
+          </button>
+          <button :class="['tab-btn', { active: activeTab === 'usdt' }]" @click="activeTab = 'usdt'">
+            USDT Withdrawal
+          </button>
+        </div>
       </div>
 
       <!-- INR Channel -->
       <div v-if="activeTab === 'inr'" class="channel-content">
-        <div v-if="bankInfo" class="premium-bank-card">
-          <div class="card-type">PRIMARY BANK</div>
-          <div class="bank-main">
-            <div class="bank-icon-wrap">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <div class="card-container">
+          <div v-if="bankInfo" class="bank-card">
+            <div class="bank-top">
+              <span class="bank-name">{{ bankInfo.name }}</span>
+              <span class="bank-limit">Limit 230 ~ 50000</span>
             </div>
-            <div class="bank-details">
-              <div class="bank-name">{{ bankInfo.name }}</div>
-              <div class="bank-acc">**** **** {{ bankInfo.account?.slice(-4) }}</div>
+            <div class="bank-bottom">
+              Account: XXXXXX{{ bankInfo.account?.slice(-4) }}
             </div>
           </div>
-          <div class="bank-footer">
-            <span>IFSC: {{ bankInfo.ifsc || '-------' }}</span>
-            <router-link to="/bank" class="change-tag">Change</router-link>
-          </div>
-        </div>
-        <div v-else class="empty-state">
-          <p>No valid bank account found.</p>
-          <router-link to="/bank" class="add-bank-link">Add Bank Account</router-link>
         </div>
 
-        <!-- Input Section -->
-        <div class="section-title">Enter Amount</div>
-        <div class="input-card glass-card">
+        <div class="info-text">Amount: ₹0 - ₹1000, fee ₹30</div>
+        <div class="info-text">Amount: ₹1000 and above, fee 3%</div>
+
+        <div class="input-label">Withdrawal Amount</div>
+        <div class="input-card">
           <div class="input-wrap">
             <span class="prefix">₹</span>
-            <input type="number" v-model.number="amount" placeholder="Min. 230" class="main-input" />
-            <span class="all-btn" @click="amount = Math.floor(userBalance)">MAX</span>
-          </div>
-          
-          <div class="fee-details" v-if="amount > 0">
-             <div class="fee-row">
-               <span>Handling Fee:</span>
-               <span class="fee-val">₹{{ calculateInrFee() }}</span>
-             </div>
-             <div class="fee-row total">
-               <span>Settlement Amount:</span>
-               <span class="settle-val">₹{{ (amount - calculateInrFee()).toLocaleString() }}</span>
-             </div>
+            <input type="number" v-model.number="amount" placeholder="Enter Amount" class="main-input" />
           </div>
         </div>
 
-        <div class="rules-card">
-          <h3>Withdrawal Rules</h3>
-          <ul class="rules-list">
-             <li><span class="dot"></span> Min Withdrawal: <b>₹230</b> | Max: <b>₹50,000</b></li>
-             <li><span class="dot"></span> Fee: ₹30 for &lt; ₹1000, <b>3%</b> for &ge; ₹1000</li>
-             <li><span class="dot"></span> Frequency: Up to <b>3 times</b> per day.</li>
-             <li><span class="dot"></span> Time: Mon-Fri | <b>11:30 - 17:30</b></li>
-          </ul>
+        <div class="limit-info">
+          <div class="info-text bold">Now you can withdrawal 3 times a day</div>
+          <div class="input-label">Single Withdrawal Limit</div>
+          <div class="info-text">maximum amount: ₹50000</div>
+          <div class="info-text">minimum amount: ₹230</div>
+          <div class="input-label service-time">Service Time</div>
+          <div class="info-text black-text">Monday 11:30-17:30</div>
+          <div class="info-text black-text">Tuesday 11:30-17:30</div>
+          <div class="info-text black-text">Wednesday 11:30-17:30</div>
+          <div class="info-text black-text">Thursday 11:30-17:30</div>
+          <div class="info-text black-text">Friday 11:30-17:30</div>
         </div>
         
-        <div class="play-requirement" :class="{ 'met': (withdrawalLimits.bid >= withdrawalLimits.recharge) }">
-           <div class="req-header">
-             <span>Wagering Requirement</span>
-             <span class="badge">{{ (withdrawalLimits.bid >= withdrawalLimits.recharge) ? 'Met' : 'Pending' }}</span>
-           </div>
-           <div class="progress-bar">
-             <div class="progress" :style="{ width: Math.min(100, (withdrawalLimits.bid / (withdrawalLimits.recharge || 1)) * 100) + '%' }"></div>
-           </div>
-           <div class="req-footer">
-              <span>Played: ₹{{ withdrawalLimits.bid }}</span>
-              <span>Req: ₹{{ withdrawalLimits.recharge }}</span>
-           </div>
-           <p class="req-hint" v-if="withdrawalLimits.bid < withdrawalLimits.recharge">
-             You need to play <b>₹{{ withdrawalLimits.recharge - withdrawalLimits.bid }}</b> more to unlock withdrawal.
-           </p>
+        <div class="wagering-info">
+          <div class="info-text">
+            You need to play total bids equal to your last recharge amount<br/>
+            <span class="hindi-text">आपको अपनी अंतिम रिचार्ज राशि के बराबर कुल बिड खेलने की आवश्यकता है</span>
+          </div>
+          <div class="info-text">
+            Last recharge amount is ₹{{ withdrawalLimits.recharge }}, play ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid) }} more amount bids to withdraw<br/>
+            <span class="hindi-text">अंतिम रिचार्ज राशि ₹{{ withdrawalLimits.recharge }} है, निकासी के लिए ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid) }} और अधिक राशि की बिड खेलें</span>
+          </div>
+        </div>
+
+        <div class="btn-container">
+          <button class="withdraw-btn primary-btn" :disabled="loading" @click="handleWithdrawal">
+            Withdrawal
+          </button>
         </div>
       </div>
 
       <!-- USDT Channel -->
       <div v-if="activeTab === 'usdt'" class="channel-content">
-        <div class="premium-bank-card usdt-card">
-          <div class="card-type">CRYPTO NETWORK</div>
-          <div class="bank-main">
-            <div class="bank-icon-wrap usdt">₮</div>
-            <div class="bank-details">
-              <div class="bank-name">USDT - TRC20</div>
-              <div class="bank-acc">Global Stablecoin Channel</div>
+        <div class="card-container">
+          <div class="bank-card usdt-card">
+            <div class="bank-top">
+              <span class="bank-name">USDT (TRC20)</span>
+              <span class="bank-limit">Rate: 1 USDT = ₹95</span>
             </div>
           </div>
-          <div class="bank-footer">
-            <span>Rate: 1 USDT = ₹95.00</span>
-          </div>
         </div>
 
-        <div class="section-title">Amount (USDT)</div>
-        <div class="input-card glass-card">
+        <div class="info-text">Conversion Rate: 1 USDT = ₹95</div>
+        <div class="info-text">Minimum: 10 USDT</div>
+        <div class="info-text">Withdrawal Fee: 3% (deducted from withdrawal amount)</div>
+        <div class="info-text sub-text">Minimum fee: 3 USDT</div>
+
+        <div class="input-label">USDT Withdrawal Amount</div>
+        <div class="input-card">
           <div class="input-wrap">
-            <span class="prefix usdt">₮</span>
-            <input type="number" v-model.number="usdtAmount" placeholder="Min. 10" class="main-input" />
-            <span class="all-btn" @click="usdtAmount = Math.floor(userBalance / 95)">MAX</span>
+            <span class="prefix usdt-text">USDT</span>
+            <input type="number" v-model.number="usdtAmount" placeholder="Enter USDT Amount" class="main-input" />
           </div>
-          
-          <div class="fee-details" v-if="usdtAmount > 0">
-             <div class="fee-row">
-               <span>Handling Fee:</span>
-               <span class="fee-val">{{ calculateUsdtFee().toFixed(2) }} USDT</span>
-             </div>
-             <div class="fee-row total">
-               <span>Settlement:</span>
-               <span class="settle-val">{{ (usdtAmount - calculateUsdtFee()).toFixed(2) }} USDT</span>
-             </div>
-             <div class="fee-row total inr-equiv">
-               <span>Deducted from Wallet:</span>
-               <span class="val">₹{{ (usdtAmount * 95).toLocaleString() }}</span>
-             </div>
-          </div>
-        </div>
-
-        <div class="rules-card usdt-rules">
-          <h3>Crypto Guidelines</h3>
-          <ul class="rules-list">
-             <li><span class="dot"></span> Minimum Withdrawal: <b>10 USDT</b></li>
-             <li><span class="dot"></span> Network Fee: <b>3% (Min. 3 USDT)</b></li>
-             <li><span class="dot"></span> Payout Speed: <b>24-48 Business Hours</b></li>
-             <li><span class="dot"></span> Use TRC20 (Tron) network addresses only.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Recent History Section -->
-      <div id="history-section" ref="historySection" class="history-section">
-        <div class="section-header">
-           <h2 class="section-title">Recent Withdrawals</h2>
         </div>
         
-        <div v-if="withdrawalHistory.length > 0" class="history-list">
-          <div v-for="(item, idx) in withdrawalHistory.slice(0, 5)" :key="idx" class="history-item glass-card">
-            <div class="h-icon" :style="{ color: getStatusColor(item.status), background: getStatusColor(item.status) + '15' }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </div>
-            <div class="h-info">
-              <div class="h-type">Withdrawal</div>
-              <div class="h-date">{{ formatDate(item.date) }}</div>
-            </div>
-            <div class="h-amount">
-              <div class="amt-val">-₹{{ item.amount }}</div>
-              <div class="amt-status" :style="{ color: getStatusColor(item.status) }">{{ getStatusLabel(item.status) }}</div>
-            </div>
+        <div class="fee-details" v-if="usdtAmount > 0">
+           <div class="fee-row usdt-text">
+             Withdrawal Amount: {{ usdtAmount.toFixed(2) }} USDT
+           </div>
+           <div class="fee-row warning-text">
+             Fee: {{ calculateUsdtFee().toFixed(2) }} USDT
+           </div>
+           <div class="fee-row danger-text bold">
+             Net Amount You'll Receive: {{ Math.max(0, usdtAmount - calculateUsdtFee()).toFixed(2) }} USDT
+           </div>
+           <div class="fee-row sub-text">
+             Total Deducted from Balance: ₹{{ (usdtAmount * 95).toLocaleString() }}
+           </div>
+        </div>
+
+        <div class="limit-info">
+          <div class="input-label">USDT Withdrawal Limits</div>
+          <div class="info-text">minimum amount: 10 USDT</div>
+          <div class="info-text">maximum amount: 526 USDT</div>
+        </div>
+
+        <div class="wagering-info">
+          <div class="info-text">
+            • USDT will be sent to your TRC20 wallet address<br/>
+            • Processing time: 24-48 hours<br/>
+            • Network fee may apply
           </div>
         </div>
-        <div v-else class="empty-history glass-card">
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <p>No withdrawal history recorded yet.</p>
+
+        <div class="btn-container">
+          <button class="withdraw-btn warning-btn" :disabled="loading" @click="processWithdraw">
+            Withdraw USDT
+          </button>
         </div>
       </div>
-    </div>
 
-    <!-- Action Bar -->
-    <div class="action-footer">
-      <div class="footer-inner">
-        <button class="withdraw-btn" :disabled="loading || isSubmitDisabled()" @click="processWithdraw">
-          <span v-if="loading" class="btn-spinner"></span>
-          <span v-else>Initiate Withdrawal</span>
-        </button>
-      </div>
+      <router-link to="/withdrawalHistory" class="historical-btn">
+        Historical
+      </router-link>
     </div>
 
     <!-- TRC Dialog -->
     <div v-if="showTrcDialog" class="modal-overlay" @click="showTrcDialog = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-           <div class="modal-icon usdt-icon">₮</div>
-           <h3>TRC20 Address</h3>
+           <h3 class="modal-title">Enter TRC20 Wallet Address</h3>
         </div>
         <div class="modal-summary">
-           <div class="sum-row">Withdraw: <span>{{ usdtAmount }} USDT</span></div>
-           <div class="sum-row net">Receive: <span>{{ (usdtAmount - calculateUsdtFee()).toFixed(2) }} USDT</span></div>
+           <div class="sum-row sub-text"><strong>Withdrawal Amount:</strong> {{ usdtAmount }} USDT</div>
+           <div class="sum-row warning-text"><strong>Fee (3%):</strong> {{ calculateUsdtFee().toFixed(2) }} USDT</div>
+           <div class="sum-row primary-text bold"><strong>Net Amount You'll Receive:</strong> {{ Math.max(0, usdtAmount - calculateUsdtFee()).toFixed(2) }} USDT</div>
+           <div class="sum-row sub-text"><strong>Deducted from Balance:</strong> ₹{{ (usdtAmount * 95).toFixed(2) }}</div>
         </div>
         <div class="modal-input-wrap">
-           <input v-model="trcAddress" type="text" placeholder="Paste TRC20 Wallet Address" />
+           <div class="input-label-small">TRC20 Wallet Address</div>
+           <input v-model="trcAddress" type="text" placeholder="Enter your TRC20 wallet address" class="address-input" />
         </div>
-        <p class="modal-warning">Double check the address. Wrong address results in permanent loss of funds.</p>
+        <p class="modal-warning">Please double-check your TRC20 address. Incorrect addresses may result in loss of funds.</p>
         <div class="modal-actions">
            <button @click="showTrcDialog = false" class="btn-cancel">Cancel</button>
-           <button @click="handleUsdtWithdrawal" class="btn-confirm">Submit</button>
+           <button @click="handleUsdtWithdrawal" class="btn-confirm warning-bg">Confirm</button>
         </div>
       </div>
     </div>
@@ -230,17 +175,15 @@
     <!-- Toast Modal -->
     <div v-if="dialog.open" class="modal-overlay" @click="dialog.open = false">
       <div class="modal-content toast-card" @click.stop>
-        <div class="modal-icon">!</div>
         <p class="toast-body">{{ dialog.body }}</p>
-        <button @click="dialog.open = false" class="btn-confirm">Okay</button>
       </div>
     </div>
 
     <!-- Page Loader -->
-    <div v-if="loading && !showTrcDialog" class="global-loader">
+    <div v-if="loading && !showTrcDialog" class="modal-overlay">
        <div class="loader-content">
          <div class="loader-circle"></div>
-         <div class="loader-text pulse">Transacting...</div>
+         <div class="loader-text">Please Wait!</div>
        </div>
     </div>
   </div>
@@ -279,14 +222,6 @@ const calculateUsdtFee = () => {
     return Math.max(usdtAmount.value * 0.03, 3)
 }
 
-const isSubmitDisabled = () => {
-    if (activeTab.value === 'inr') {
-        return !amount.value || amount.value < 230 || withdrawalLimits.bid < withdrawalLimits.recharge
-    } else {
-        return !usdtAmount.value || usdtAmount.value < 10
-    }
-}
-
 async function fetchData() {
     if (!auth.user?.id) return
     fetching.value = true
@@ -310,30 +245,18 @@ async function fetchData() {
 
 const withdrawalHistory = ref([])
 
-function formatDate(dateStr) {
-  if (!dateStr) return '-'
-  const d = new Date(dateStr)
-  return d.toLocaleString('en-IN', { 
-    day: '2-digit', month: 'short', 
-    hour: '2-digit', minute: '2-digit' 
-  })
-}
-
-function getStatusColor(status) {
-    if (status === 1 || status === 'Success' || status === '1') return '#10b981'
-    if (status === 2 || status === 'Reviewing' || status === '0') return '#d9a05b'
-    return '#ef4444'
-}
-
-function getStatusLabel(status) {
-    if (status === 1 || status === 'Success' || status === '1') return 'Successful'
-    if (status === 2 || status === 'Reviewing' || status === '0') return 'Processing'
-    if (status === 3 || status === 'Reject' || status === '2') return 'Rejected'
-    return 'Pending'
-}
-
 function processWithdraw() {
     if (activeTab.value === 'usdt') {
+        if (!usdtAmount.value || usdtAmount.value < 10) {
+            dialog.body = "Minimum 10 USDT required"
+            dialog.open = true
+            return
+        }
+        if ((usdtAmount.value * 95) > userBalance.value) {
+            dialog.body = `Insufficient Fund. Required: ₹${(usdtAmount.value * 95).toFixed(2)}`
+            dialog.open = true
+            return
+        }
         showTrcDialog.value = true
     } else {
         handleWithdrawal()
@@ -341,12 +264,26 @@ function processWithdraw() {
 }
 
 async function handleWithdrawal() {
+    if (!amount.value || amount.value < 230) {
+        dialog.body = "Minimum ₹230"
+        dialog.open = true
+        return
+    }
+    if (amount.value > userBalance.value) {
+        dialog.body = "Insufficient Fund"
+        dialog.open = true
+        return
+    }
+    if (!bankInfo.value) {
+        dialog.body = "Please Add UPI or a bank account first"
+        dialog.open = true
+        return
+    }
+
     loading.value = true
     try {
         await walletApi.applyWithdrawal({ amount: amount.value, userId: auth.user.id })
-        dialog.body = "Withdrawal request submitted for review!"
-        dialog.open = true
-        fetchData()
+        router.push("/wallet")
     } catch (err) {
         dialog.body = err.response?.data?.error || "Transaction could not be initiated."
         dialog.open = true
@@ -356,8 +293,12 @@ async function handleWithdrawal() {
 }
 
 async function handleUsdtWithdrawal() {
-    if (!trcAddress.value) return
-    showTrcDialog.value = false
+    if (!trcAddress.value.trim()) {
+        dialog.body = "Please enter a valid TRC20 wallet address"
+        dialog.open = true
+        return
+    }
+    
     loading.value = true
     try {
         const fee = calculateUsdtFee()
@@ -366,10 +307,15 @@ async function handleUsdtWithdrawal() {
             walletAddress: trcAddress.value,
             fee,
             netAmount: usdtAmount.value - fee,
+            totalAmount: usdtAmount.value,
+            currency: 'USDT',
             userId: auth.user.id 
         })
-        dialog.body = "USDT request submitted successfully!"
+        
+        dialog.body = `USDT withdrawal request submitted successfully!\nYou will receive: ${(usdtAmount.value - fee).toFixed(2)} USDT\nTo address: ${trcAddress.value}\nFee deducted: ${fee.toFixed(2)} USDT`
         dialog.open = true
+        showTrcDialog.value = false
+        trcAddress.value = ''
         fetchData()
     } catch (err) {
         dialog.body = err.response?.data?.error || "USDT processing error."
@@ -386,213 +332,206 @@ onMounted(fetchData)
 .withdrawal-page {
   min-height: 100vh;
   background-color: #f5f5f5;
-  color: #0f172a;
-  font-family: 'Outfit', sans-serif;
+  color: #000;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  padding-bottom: 20px;
 }
 
 /* Header */
 .header {
-  height: 56px; position: sticky; top: 0; z-index: 1000;
-  background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
-  display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
-  border-bottom: 1px solid #e2e8f0;
-  max-width: 430px; margin: 0 auto; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between; 
+  padding: 15px 20px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
 }
-.header-left { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; }
-.header-title { font-size: 1rem; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.1em; margin: 0; }
-.header-right { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #05c0b8; text-decoration: none; }
+.header-left { color: #000; cursor: pointer; display: flex; align-items: center; }
+.header-left svg { width: 20px; height: 20px; }
+.header-title { font-size: 1.1rem; font-weight: 500; color: #000; margin: 0; text-align: center; flex: 1; text-transform: none;}
+.header-right { width: 24px; }
 
 .mobile-container { 
-  max-width: 430px; 
+  max-width: 100%; 
   margin: 0 auto; 
-  padding: 16px 12px; 
-  background: #ffffff; 
-  min-height: calc(100vh - 56px);
-  padding-bottom: 100px;
 }
 
-/* Glass Card */
-.glass-card {
-  background: #ffffff; border: 1px solid #e2e8f0;
-  border-radius: 16px; position: relative; overflow: hidden;
+.balance-title {
+  padding: 15px 35px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
-
-/* Balance Card */
-.balance-card {
-  padding: 16px 20px; margin-bottom: 24px;
-  background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
-  border-color: #ccfbf1;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+.balance-label {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #00b8a9;
 }
-.card-glow {
-  position: absolute; top: -30%; right: -20%; width: 100px; height: 100px;
-  background: radial-gradient(circle, rgba(5,192,184, 0.15) 0%, transparent 70%); filter: blur(20px);
+.balance-amount {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #00b8a9;
 }
-.label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.label { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-.refresh-btn { background: none; border: none; color: #05c0b8; cursor: pointer; transition: 0.5s; padding: 4px; }
-.refresh-btn.spinning { transform: rotate(360deg); }
-.amount-row { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
-.currency { font-size: 1.2rem; font-weight: 900; color: #05c0b8; }
-.amount { font-size: 2rem; font-weight: 900; color: #0f172a; letter-spacing: -0.02em; }
-.card-footer { display: flex; align-items: center; padding-top: 12px; border-top: 1px solid #e2e8f0; }
-.wallet-tag { display: flex; align-items: center; gap: 4px; font-size: 0.7rem; font-weight: 700; color: #475569; }
 
 /* Switcher */
 .tab-switcher {
-  display: flex; background: #f8fafc; padding: 4px; border-radius: 12px; margin-bottom: 24px;
-  border: 1px solid #e2e8f0;
+  display: flex; background: white; margin: 20px; margin-bottom: 10px;
+  border-radius: 4px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+  overflow: hidden;
 }
 .tab-btn {
-  flex: 1; height: 40px; border: none; background: none; color: #64748b; font-weight: 800;
-  font-size: 0.8rem; border-radius: 10px; cursor: pointer; transition: 0.2s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  flex: 1; height: 48px; border: none; background: none; color: rgba(0, 0, 0, 0.54); 
+  font-weight: 500; font-size: 0.875rem; cursor: pointer; text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
 }
-.tab-btn.active { background: #05c0b8; color: #fff; box-shadow: 0 4px 12px rgba(5,192,184,0.25); }
-.dot { width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid currentColor; }
+.tab-btn.active { color: #3f51b5; border-bottom: 2px solid #3f51b5; }
 
 /* Bank Card */
-.premium-bank-card {
-  background: #f8fafc;
-  border-radius: 16px; padding: 16px; position: relative; overflow: hidden;
-  border: 1px solid #e2e8f0; margin-bottom: 24px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+.bank-card {
+  background: #fff;
+  border-radius: 10px; padding: 10px; margin: 0 20px 15px 20px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
 }
-.card-type { font-size: 0.65rem; color: #05c0b8; font-weight: 900; letter-spacing: 0.2em; margin-bottom: 12px; }
-.bank-main { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.bank-icon-wrap { width: 40px; height: 40px; border-radius: 12px; background: #f0fdfa; display: flex; align-items: center; justify-content: center; color: #05c0b8; font-size: 1.2rem; font-weight: 900; }
-.bank-details .bank-name { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
-.bank-details .bank-acc { font-family: monospace; font-size: 0.9rem; color: #64748b; letter-spacing: 1px; }
-.bank-footer { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #64748b; font-weight: 700; }
-.change-tag { color: #05c0b8; text-decoration: none; border-bottom: 1.5px solid transparent; transition: 0.2s; }
-.change-tag:hover { border-color: #05c0b8; }
+.bank-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.bank-name { font-weight: bold; font-size: 1rem; }
+.bank-limit { font-size: 15px; color: #000; }
+.bank-bottom { font-size: 1rem; color: #000; }
 
-.empty-state {
-  padding: 16px 20px;
-  margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  border-radius: 12px;
-  background-color: #fff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  align-items: flex-start;
-  justify-content: center;
-  text-align: left;
+.info-text {
+  padding-left: 35px;
+  padding-right: 20px;
+  padding-top: 5px;
+  font-size: 1rem;
+  color: #000;
+  line-height: 1.5;
 }
-.empty-state p {
-  margin: 0;
-  font-size: 1.05rem;
-  color: #0f172a;
-  font-weight: 400;
-}
-.add-bank-link {
-  color: #4b0082;
-  font-size: 1.05rem;
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.add-bank-link:hover {
-  color: #4f46e5;
+.info-text.bold { font-weight: bold; padding-left: 28px; }
+
+.input-label {
+  padding-left: 22px;
+  padding-top: 20px;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
-.usdt-card { background: #f0fdfa; border-color: #ccfbf1; }
-.usdt-card .card-type { color: #10b981; }
-.usdt-card .bank-icon-wrap { color: #10b981; background: rgba(16,185,129,0.1); }
+.input-card {
+  padding: 20px 20px 0 22px;
+}
+.input-wrap { 
+  display: flex; align-items: center;
+  background: rgba(0, 0, 0, 0.09);
+  border-radius: 4px 4px 0 0;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+}
+.prefix { font-weight: bold; font-size: 1rem; margin-right: 10px; }
+.main-input { 
+  flex: 1; background: none; border: none; outline: none; color: #000; 
+  font-size: 1rem; padding: 20px 0 6px 0;
+}
+.main-input::placeholder { color: rgba(0,0,0,0.54); }
 
-/* Input Card */
-.section-title { font-size: 0.85rem; font-weight: 800; margin: 0 0 12px 4px; color: #0f172a; text-transform: uppercase; }
-.input-card { padding: 16px; margin-bottom: 24px; border-radius: 12px; }
-.input-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 4px 12px; transition: 0.2s;}
-.input-wrap:focus-within { border-color: #05c0b8; background: #ffffff; box-shadow: 0 0 0 2px rgba(5,192,184,0.1); }
-.prefix { font-size: 1.3rem; font-weight: 900; color: #05c0b8; }
-.main-input { flex: 1; background: none; border: none; outline: none; color: #0f172a; font-size: 1.4rem; font-weight: 900; padding: 8px 0; }
-.all-btn { cursor: pointer; color: #05c0b8; font-weight: 900; font-size: 0.75rem; padding: 4px 8px; background: rgba(5,192,184,0.1); border-radius: 6px; }
+.limit-info {
+  margin-top: 5px;
+}
+.limit-info .info-text {
+  padding-left: 28px;
+}
 
-.fee-details { border-top: 1px solid #e2e8f0; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
-.fee-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b; font-weight: 600; }
-.fee-row.total { color: #0f172a; font-weight: 800; margin-top: 2px; font-size: 0.9rem; }
-.settle-val { color: #10b981; }
+.wagering-info {
+  margin-top: 15px;
+}
+.wagering-info .info-text {
+  padding-left: 28px;
+}
+.hindi-text {
+  font-size: 14px;
+}
 
-/* Rules Card */
-.rules-card { background: #f0fdfa; border-radius: 12px; padding: 16px; border: 1px dashed rgba(5,192,184,0.3); margin-bottom: 24px; }
-.rules-card h3 { font-size: 0.75rem; font-weight: 800; color: #05c0b8; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.05em; }
-.rules-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-.rules-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 0.75rem; color: #475569; font-weight: 500; line-height: 1.4; }
-.rules-list .dot { width: 5px; height: 5px; background: #05c0b8; border-radius: 50%; margin-top: 5px; flex-shrink: 0;}
-.rules-list b { color: #0f172a; }
+.withdraw-btn { 
+  width: auto; margin: 15px; height: 50px; border-radius: 8px; 
+  border: none; color: #fff; font-size: 0.875rem; text-transform: none; 
+  cursor: pointer; display: block; box-sizing: border-box;
+  box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+  width: calc(100% - 30px);
+}
+.primary-btn { background-color: #00b8a9; }
+.warning-btn { background-color: #f39c12; }
 
-/* Requirements */
-.play-requirement { background: #fff1f2; border: 1px dashed #fecdd3; border-radius: 12px; padding: 16px; margin-bottom: 20px;}
-.play-requirement.met { background: #f0fdf4; border-color: #ccfbf1; }
-.req-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.8rem; font-weight: 800; color: #0f172a;}
-.badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: #ef4444; color: #fff; }
-.met .badge { background: #10b981; }
-.progress-bar { height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-.progress { height: 100%; background: #ef4444; transition: 0.5s; }
-.met .progress { background: #10b981; }
-.req-footer { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; color: #64748b; }
-.req-hint { margin-top: 10px; font-size: 0.7rem; color: #ef4444; line-height: 1.4; }
+.historical-btn {
+  display: block; background-color: grey; margin: 15px; margin-bottom: 100px;
+  height: 50px; border-radius: 8px; color: white; text-align: center;
+  line-height: 50px; text-decoration: none; font-size: 1rem;
+  box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+}
 
-/* History Section */
-.history-section { margin-top: 10px; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.history-list { display: flex; flex-direction: column; gap: 8px; }
-.history-item { padding: 12px 16px; display: flex; align-items: center; gap: 12px; background: #ffffff; border-color: #e2e8f0; border-radius: 12px;}
-.h-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.h-icon svg { width: 16px; height: 16px; }
-.h-info { flex: 1; }
-.h-type { font-weight: 800; font-size: 0.85rem; color: #0f172a; margin-bottom: 2px; }
-.h-date { font-size: 0.65rem; color: #64748b; font-weight: 600; }
-.h-amount { text-align: right; }
-.amt-val { font-weight: 900; font-size: 0.95rem; color: #ef4444; margin-bottom: 2px; }
-.amt-status { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
-.empty-history { padding: 32px 16px; text-align: center; border: 1px dashed #cbd5e1; border-radius: 12px; }
-.empty-history p { margin-top: 12px; color: #64748b; font-size: 0.8rem; font-weight: 600; }
+/* USDT specific */
+.usdt-text { color: #00b8a9; }
+.warning-text { color: #f39c12; }
+.danger-text { color: #e74c3c; }
+.sub-text { color: #666; font-size: 14px; }
+.bold { font-weight: bold; }
 
-/* Footer */
-.action-footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: #ffffff; border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
-.footer-inner { max-width: 430px; margin: 0 auto; }
-.withdraw-btn { width: 100%; height: 48px; background: linear-gradient(135deg, #05c0b8 0%, #0d9488 100%); border: none; border-radius: 12px; color: #fff; font-size: 0.95rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 15px rgba(5,192,184,0.2); }
-.withdraw-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); box-shadow: none; }
+.fee-details {
+  padding-top: 5px;
+}
+.fee-row {
+  padding-left: 28px;
+  padding-top: 2px;
+  font-size: 1rem;
+}
 
 /* Modals */
-.modal-overlay { position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 24px; }
-.modal-content { background: #ffffff; width: 100%; max-width: 320px; border-radius: 20px; padding: 24px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-.modal-header { margin-bottom: 20px; text-align: center; }
-.modal-icon { width: 44px; height: 44px; background: rgba(5,192,184,0.1); color: #05c0b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.2rem; font-weight: 900; }
-.modal-header h3 { color: #0f172a; margin: 0; font-size: 1.1rem; }
-.modal-summary { background: #f8fafc; padding: 12px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e2e8f0; }
-.sum-row { display: flex; justify-content: space-between; padding: 4px 0; color: #475569; font-weight: 600; font-size: 0.8rem; }
-.sum-row.net { color: #0f172a; font-weight: 800; border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px; }
-.sum-row.net span { color: #10b981; }
+.modal-overlay { 
+  position: fixed; inset: 0; z-index: 5000; 
+  background: rgba(0,0,0,0.5); 
+  display: flex; align-items: center; justify-content: center; 
+}
+.modal-content { 
+  background: #ffffff; width: 100%; max-width: 600px; margin: 32px;
+  border-radius: 4px; padding: 20px; border: none; 
+  box-shadow: 0px 11px 15px -7px rgba(0,0,0,0.2), 0px 24px 38px 3px rgba(0,0,0,0.14), 0px 9px 46px 8px rgba(0,0,0,0.12);
+}
+.modal-title { font-size: 1.25rem; font-weight: 500; margin: 0 0 15px 0; }
 
-.modal-input-wrap { border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 10px; padding: 0 12px; margin-bottom: 12px; }
-.modal-input-wrap input { width: 100%; height: 44px; background: none; border: none; outline: none; color: #0f172a; font-family: inherit; font-size: 0.85rem; }
-.modal-warning { font-size: 0.7rem; color: #ef4444; line-height: 1.4; opacity: 0.9; margin-bottom: 20px; text-align: center; }
-.modal-actions { display: flex; gap: 10px; }
-.modal-actions button { flex: 1; height: 44px; border-radius: 10px; font-weight: 800; cursor: pointer; border: none; font-size: 0.9rem;}
-.btn-cancel { background: #f1f5f9; color: #475569; }
-.btn-confirm { background: #05c0b8; color: #fff; }
+.modal-summary { background: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+.sum-row { margin-bottom: 5px; font-size: 1rem; }
 
-.toast-card { text-align: center; }
-.toast-body { font-size: 0.9rem; font-weight: 600; margin-bottom: 20px; color: #0f172a; }
+.modal-input-wrap {
+  background: rgba(0, 0, 0, 0.09);
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  margin-bottom: 20px;
+  padding: 8px 12px 0 12px;
+}
+.input-label-small { font-size: 0.75rem; color: rgba(0, 0, 0, 0.54); }
+.address-input { 
+  width: 100%; height: 32px; background: none; border: none; outline: none; 
+  color: #000; font-family: inherit; font-size: 1rem; 
+  padding: 4px 0; margin-bottom: 4px;
+}
+.modal-warning { font-size: 12px; color: #888; margin: 0 0 20px 0; }
+.modal-actions { display: flex; gap: 16px; }
+.modal-actions button { 
+  flex: 1; height: 36px; border-radius: 4px; font-weight: 500; 
+  cursor: pointer; border: none; font-size: 0.875rem; text-transform: uppercase;
+  box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+}
+.btn-cancel { background: transparent; color: rgba(0, 0, 0, 0.87); border: 1px solid rgba(0, 0, 0, 0.23) !important; box-shadow: none !important;}
+.warning-bg { background-color: #f39c12; color: white; }
+
+.toast-card { text-align: left; padding: 24px; max-width: 400px; }
+.toast-body { font-size: 1rem; margin: 0; color: rgba(0, 0, 0, 0.87); white-space: pre-wrap;}
 
 /* Loader */
-.global-loader { position: fixed; inset: 0; z-index: 9999; background: #ffffff; display: flex; align-items: center; justify-content: center; }
-.loader-content { text-align: center; }
-.loader-circle { width: 44px; height: 44px; border: 3px solid rgba(5,192,184,0.1); border-top-color: #05c0b8; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
-.loader-text { font-size: 0.75rem; font-weight: 900; color: #05c0b8; letter-spacing: 0.15em; text-transform: uppercase; }
+.loader-content { 
+  text-align: center; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 4px; width: 250px;
+}
+.loader-circle { 
+  width: 40px; height: 40px; border: 4px solid transparent; border-top-color: #fff; 
+  border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; 
+}
+.loader-text { font-size: 1rem; color: #fff; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
-.pulse { animation: pulse 1.5s ease-in-out infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-@media (max-width: 400px) {
-  .amount { font-size: 1.6rem; }
-  .prefix { font-size: 1.2rem; }
-  .main-input { font-size: 1.3rem; }
-}
 </style>
