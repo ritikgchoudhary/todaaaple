@@ -235,6 +235,18 @@
         </a>
       </div>
     </div>
+    
+    <!-- Game Iframe Modal -->
+    <div v-if="iframeUrl" class="game-iframe-modal">
+      <div class="iframe-header">
+        <button class="iframe-close-btn" @click="closeIframe">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          Back to Home
+        </button>
+      </div>
+      <iframe :src="iframeUrl" frameborder="0" allowfullscreen></iframe>
+    </div>
+
   </div>
 </div>
 </template>
@@ -249,6 +261,7 @@ import * as walletApi from '../api/wallet'
 const router = useRouter()
 const auth = useAuthStore()
 const userBalance = ref(0)
+const iframeUrl = ref(null)
 
 const baseImg = 'https://img.bzvm68.com'
 const sliderImages = [
@@ -455,7 +468,7 @@ async function onProviderClick(p) {
     }
     const res = await api.launchGame(userId, gameId)
     if (res.data && res.data.success && res.data.url) {
-      window.location.href = res.data.url
+      iframeUrl.value = res.data.url
     } else {
       alert('Failed to launch game: ' + (res.data?.msg || res.data?.message || 'Unknown error'))
     }
@@ -463,6 +476,11 @@ async function onProviderClick(p) {
     console.error(err)
     alert('Error launching game: ' + (err.response?.data?.message || err.message))
   }
+}
+
+function closeIframe() {
+  iframeUrl.value = null
+  fetchBalance()
 }
 
 function handleLogout() {
@@ -1151,4 +1169,45 @@ onMounted(async () => {
   box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
+.game-iframe-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: #000;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe-header {
+  height: 44px;
+  background: #111;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #333;
+}
+
+.iframe-close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.game-iframe-modal iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #000;
+}
 </style>
