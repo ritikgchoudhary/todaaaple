@@ -32,22 +32,25 @@ API.interceptors.request.use((config) => {
 API.interceptors.response.use(
   (response) => {
     // Some endpoints might return 200 but with an "Auth Failed" message
-    if (response.data?.message === 'Auth Failed' || response.data?.msg === 'Auth Failed') {
+    if (isAuthFailBody(response.data)) {
       return handleAuthFailure(response)
     }
     return response
   },
   (error) => {
-    const isAuthError = error.response?.status === 401 || 
-                       error.response?.data?.msg === 'Auth Failed' || 
-                       error.response?.data?.message === 'Auth Failed';
-                       
+    const isAuthError = error.response?.status === 401 || isAuthFailBody(error.response?.data);
     if (isAuthError) {
       return handleAuthFailure(error.response)
     }
     return Promise.reject(error)
   }
 )
+
+function isAuthFailBody(data) {
+  if (!data) return false;
+  const str = String(data.message || data.msg || data.error || '').toLowerCase();
+  return str.includes('auth failed');
+}
 
 function handleAuthFailure(response) {
   console.warn('Authentication failure detected, redirecting to login...', response?.data);
