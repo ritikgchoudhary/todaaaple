@@ -3,9 +3,9 @@
     <div class="mobile-container">
       <!-- Back Link -->
       <div class="back-link">
-        <div class="back-link-inner" @click="router.back()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </div>
+        <router-link to="/wallet" class="back-link-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </router-link>
         <span class="back-title">Withdrawal</span>
       </div>
 
@@ -124,7 +124,7 @@
         <div class="limit-info">
           <div class="input-label">USDT Withdrawal Limits</div>
           <div class="info-text">minimum amount: 10 USDT</div>
-          <div class="info-text">maximum amount: 526 USDT</div>
+          <div class="info-text">maximum amount: {{ Math.floor(50000 / 95) }} USDT</div>
         </div>
 
         <div class="wagering-info">
@@ -150,9 +150,7 @@
     <!-- TRC Dialog -->
     <div v-if="showTrcDialog" class="modal-overlay" @click="showTrcDialog = false">
       <div class="modal-content" @click.stop>
-        <div class="modal-header">
-           <h3 class="modal-title">Enter TRC20 Wallet Address</h3>
-        </div>
+        <h3 class="modal-title">Enter TRC20 Wallet Address</h3>
         <div class="modal-summary">
            <div class="sum-row sub-text"><strong>Withdrawal Amount:</strong> {{ usdtAmount }} USDT</div>
            <div class="sum-row warning-text"><strong>Fee (3%):</strong> {{ calculateUsdtFee().toFixed(2) }} USDT</div>
@@ -165,8 +163,8 @@
         </div>
         <p class="modal-warning">Please double-check your TRC20 address. Incorrect addresses may result in loss of funds.</p>
         <div class="modal-actions">
-           <button @click="showTrcDialog = false" class="btn-cancel">Cancel</button>
-           <button @click="handleUsdtWithdrawal" class="btn-confirm warning-bg">Confirm</button>
+           <button @click="showTrcDialog = false" class="btn-cancel">CANCEL</button>
+           <button @click="handleUsdtWithdrawal" class="btn-confirm warning-bg">CONFIRM</button>
         </div>
       </div>
     </div>
@@ -354,6 +352,7 @@ onMounted(fetchData)
   align-items: center;
   width: 33%;
   cursor: pointer;
+  text-decoration: none;
 }
 .back-link-inner svg {
   width: 20px;
@@ -494,7 +493,7 @@ onMounted(fetchData)
 .warning-btn { background-color: #f39c12; }
 
 .historical-btn {
-  display: block; background-color: grey; margin: 15px; margin-bottom: 100px;
+  display: block; background-color: grey; margin: 15px 20px 100px 20px;
   height: 50px; border-radius: 8px; color: white; text-align: center;
   line-height: 50px; text-decoration: none; font-size: 1rem;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
