@@ -122,18 +122,18 @@ onMounted(() => {
 
 /* Header */
 .header {
-  height: 60px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 8px;
   background: #fff;
   border-bottom: 1px solid #f1f5f9;
   z-index: 100;
   flex-shrink: 0;
 }
 .headerLogo {
-  height: 24px;
+  height: 20px;
   object-fit: contain;
 }
 
