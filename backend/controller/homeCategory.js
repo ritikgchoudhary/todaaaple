@@ -11,8 +11,9 @@ const KEYS = [
   'homeCategorySlot',
   'homeCategoryLottery',
   'homeCategoryCards',
+  'slotProviders',
 ];
-const RESPONSE_KEYS = ['sports', 'casino', 'crash', 'slot', 'lottery', 'cards'];
+const RESPONSE_KEYS = ['sports', 'casino', 'crash', 'slot', 'lottery', 'cards', 'slotProviders'];
 
 function docToResponse(doc) {
   if (!doc) return RESPONSE_KEYS.reduce((o, k) => ({ ...o, [k]: [] }), {});

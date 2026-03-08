@@ -14,8 +14,47 @@
     </div>
 
     <div v-if="fetching" class="loader">Loading data...</div>
-
+    
     <div v-else class="categories-list">
+      <!-- Slot Providers Section -->
+      <div class="category-card providers-section">
+        <div class="card-header">
+           <h2 class="category-title">Slot Sidebar Providers</h2>
+           <div class="header-actions">
+             <button class="add-btn" @click="addProvider">+ Add Provider</button>
+           </div>
+        </div>
+        <div class="table-container">
+          <table class="games-table">
+            <thead>
+              <tr>
+                <th width="50">#</th>
+                <th>Provider Name (Label)</th>
+                <th>Provider ID (for URL)</th>
+                <th>Normal Icon / logoHide</th>
+                <th>Hover Icon / logoShow</th>
+                <th width="80">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(p, index) in slotProviders" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td><input v-model="p.label" placeholder="e.g. JDB" /></td>
+                <td><input v-model="p.id" placeholder="e.g. jdb" /></td>
+                <td><input v-model="p.logoHide" placeholder="Normal icon URL" /></td>
+                <td><input v-model="p.logoShow" placeholder="Active icon URL" /></td>
+                <td class="actions">
+                  <button class="remove-btn" @click="slotProviders.splice(index, 1)">×</button>
+                </td>
+              </tr>
+              <tr v-if="!slotProviders.length">
+                <td colspan="6" class="empty-row">No providers. Search & HOT are permanent.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div v-for="(games, key) in gameCategories" :key="key" class="category-card">
         <div class="card-header">
           <h2 class="category-title">{{ formatKey(key) }}</h2>
@@ -91,6 +130,7 @@ const gameCategories = ref({
   cards: []
 })
 
+const slotProviders = ref([])
 const loading = ref(false)
 const fetching = ref(true)
 const message = ref('')
@@ -110,6 +150,10 @@ function removeGame(key, index) {
   gameCategories.value[key].splice(index, 1)
 }
 
+function addProvider() {
+  slotProviders.value.push({ id: '', label: '', logoHide: '', logoShow: '' })
+}
+
 async function fetchData() {
   fetching.value = true
   try {
@@ -122,6 +166,7 @@ async function fetchData() {
         formatted[k] = Array.isArray(res.data[k]) && res.data[k].length > 0 ? res.data[k] : []
         if (formatted[k].length > 0) isEmpty = false
       })
+      slotProviders.value = Array.isArray(res.data.slotProviders) ? res.data.slotProviders : []
       
       if (isEmpty) {
           // Initialize with defaults if everything is empty
@@ -229,8 +274,9 @@ async function save() {
   loading.value = true
   message.value = ''
   try {
-    await api.updateHomeCategoryGames(gameCategories.value)
-    message.value = 'Game IDs updated successfully!'
+    const payload = { ...gameCategories.value, slotProviders: slotProviders.value }
+    await api.updateHomeCategoryGames(payload)
+    message.value = 'Settings updated successfully!'
     messageType.value = 'success'
   } catch (err) {
     console.error('Save error:', err)
