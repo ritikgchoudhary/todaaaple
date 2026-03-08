@@ -20,30 +20,40 @@
         </template>
         <template v-else>
           <div class="headerBalance" @click="$router.push('/account')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="headerBalIcon"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
             <span class="text">₹ {{ (userBalance || 0).toFixed(2) }}</span>
           </div>
           <button class="btnLogout" @click="handleLogout" title="Logout">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </template>
       </div>
     </header>
 
-    <!-- Logged in User Widget -->
+    <!-- Logged in User Widget (Card Style like image) -->
     <div v-if="auth.isLoggedIn" class="homeUserWidget">
       <div class="huTop">
         <div class="huLeft">
-          <div class="huAvatar">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div class="huWalletLabel">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+            <span>Wallet balance</span>
           </div>
-          <div class="huDetails">
-             <div class="huId">ID: {{ auth.user?.id || '0000' }}</div>
-             <div class="huBal">₹ {{ (userBalance || 0).toFixed(2) }}</div>
+          <div class="huBalContainer">
+             <div class="huBal">₹{{ (userBalance || 0).toFixed(2) }}</div>
+             <button class="huRefreshBtn" @click="fetchBalance" title="Refresh Balance">
+               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+             </button>
           </div>
         </div>
         <div class="huRight">
-          <router-link to="/deposit" class="huBtn huDeposit">Deposit</router-link>
-          <router-link to="/withdrawal" class="huBtn huWithdraw">Withdraw</router-link>
+          <router-link to="/withdrawal" class="huBtn huWithdraw">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+             Withdraw
+          </router-link>
+          <router-link to="/deposit" class="huBtn huDeposit">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+             Deposit
+          </router-link>
         </div>
       </div>
     </div>
@@ -436,7 +446,7 @@ onUnmounted(() => {
   if (sliderTimer) clearInterval(sliderTimer)
 })
 
-onMounted(async () => {
+async function fetchBalance() {
   if (auth.isLoggedIn && auth.user?.id) {
     try {
       const res = await walletApi.getUserHome(auth.user.id)
@@ -445,6 +455,10 @@ onMounted(async () => {
       }
     } catch (err) {}
   }
+}
+
+onMounted(async () => {
+  fetchBalance()
   try {
     const [noticeRes, providersRes] = await Promise.all([
       api.getNotice().catch(() => ({ data: {} })),
@@ -1018,12 +1032,12 @@ onMounted(async () => {
 }
 
 .homeUserWidget {
-  background: linear-gradient(135deg, #05c0b8 0%, #0d9488 100%);
+  background: #111111;
   margin: 10px 12px 15px;
-  border-radius: 16px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 16px 20px;
   color: white;
-  box-shadow: 0 4px 15px rgba(15, 118, 110, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .huTop {
@@ -1034,72 +1048,83 @@ onMounted(async () => {
 
 .huLeft {
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.huAvatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.huDetails {
-  display: flex;
-  flex-direction: column;
-}
-
-.huId {
-  font-size: 13px;
-  opacity: 0.9;
-  font-weight: 500;
-}
-
-.huBal {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin-top: 2px;
-  letter-spacing: -0.01em;
-}
-
-.huRight {
-  display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+.huWalletLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #a3a3a3;
+}
+
+.huBalContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.huBal {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #fde047;
+}
+
+.huRefreshBtn {
+  background: none;
+  border: none;
+  color: #a3a3a3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.huRefreshBtn:active {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+.huRight {
+  display: flex;
+  gap: 12px;
+}
+
 .huBtn {
   text-decoration: none;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
+  padding: 10px 16px;
+  border-radius: 8px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
   transition: all 0.2s;
-}
-
-.huDeposit {
-  background: white;
-  color: #0d9488;
-}
-
-.huDeposit:active {
-  background: #f0f0f0;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
 }
 
 .huWithdraw {
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, #fdba74 0%, #f97316 100%);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.huWithdraw:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
-.huWithdraw:active {
-  background: rgba(255, 255, 255, 0.3);
+.huDeposit {
+  background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+  color: white;
+}
+.huDeposit:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
 </style>
