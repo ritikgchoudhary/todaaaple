@@ -377,15 +377,14 @@ watch(slotFilterActive, (newVal) => {
   localStorage.setItem('slotFilterActive', newVal)
 })
 const bannerBase = `${baseImg}/game/banner`
-const slotFilterItems = [
-  { id: 'search', label: 'Search', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/search.png` },
-  { id: 'hot', label: 'HOT', icon: `${baseImg}/site_common/H5_8_mobile/game_type_icon/popular.png` },
-  { id: 'jdb', label: 'JDB', logoHide: `${bannerBase}/R1BKRF8wX2RlZmF1bHRfM18xNzQ5NDUyOTM1.png`, logoShow: `${bannerBase}/R1BKRF8wX2RlZmF1bHRfNF8xNzQ5NDUyOTM2.png` },
-  { id: 'r88', label: 'R88', logoHide: `${bannerBase}/R1BSOF8wX2RlZmF1bHRfM18xNjkxMTM5MDEz.png`, logoShow: `${bannerBase}/R1BSOF8wX2RlZmF1bHRfNF8xNjkxMTM4OTk2.png` },
-  { id: 'jili', label: 'JILI', logoHide: `${bannerBase}/R1BKTF8wX2RlZmF1bHRfM18xNzQ5MTEwNDcz.png`, logoShow: `${bannerBase}/R1BKTF8wX2RlZmF1bHRfNF8xNzQ5MTEwNDcx.png` },
-  { id: 'vp', label: 'VP', logoHide: `${bannerBase}/R1BWUF8wX2RlZmF1bHRfM18xNzU4Njk2OTA3.png`, logoShow: `${bannerBase}/R1BWUF8wX2RlZmF1bHRfNF8xNzU4Njk2OTA4.png` },
-  { id: 'pg', label: 'PG', logoHide: `${bannerBase}/R1BQR18wX2RlZmF1bHRfM18xNzQ5MTk1NTA4.png`, logoShow: `${bannerBase}/R1BQR18wX2RlZmF1bHRfNF8xNzQ5MTk1NTA5.png` },
-]
+const slotFilterItems = computed(() => {
+  const dynamic = Array.isArray(gameCategories.value.slotProviders) ? gameCategories.value.slotProviders : []
+  return [
+    { id: 'search', label: 'Search', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/search.png` },
+    { id: 'hot', label: 'HOT', icon: `${baseImg}/site_common/H5_8_mobile/game_type_icon/popular.png` },
+    ...dynamic
+  ]
+})
 const slotGamesList = computed(() => {
   const list = (gameCategories.value.slot && gameCategories.value.slot.length) 
     ? gameCategories.value.slot 
