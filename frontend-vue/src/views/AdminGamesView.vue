@@ -235,7 +235,19 @@ const DEFAULTS = {
         { id: "296", name: "Pool Rummy", img: "https://igamingapis.com/img/296.png", provider: "jili" },
         { id: "299", name: "Penalty Kick", img: "https://igamingapis.com/img/299.png", provider: "jili" },
         { id: "306", name: "Go For Champion", img: "https://igamingapis.com/img/306.png", provider: "jili" },
-        { id: "315", name: "Pirate Queen 2", img: "https://igamingapis.com/img/315.png", provider: "jili" }
+        { id: "315", name: "Pirate Queen 2", img: "https://igamingapis.com/img/315.png", provider: "jili" },
+        { id: "426", name: "Mines", img: "https://igamingapis.com/img/426.png", provider: "spribe" },
+        { id: "478", name: "Plinko", img: "https://igamingapis.com/img/478.png", provider: "spribe" },
+        { id: "551", name: "Keno 80", img: "https://igamingapis.com/img/551.png", provider: "spribe" },
+        { id: "635", name: "Dice", img: "https://igamingapis.com/img/635.png", provider: "spribe" },
+        { id: "723", name: "Mini Roulette", img: "https://igamingapis.com/img/723.png", provider: "spribe" },
+        { id: "737", name: "Aviator", img: "https://igamingapis.com/img/737.png", provider: "spribe" },
+        { id: "775", name: "Hi Lo", img: "https://igamingapis.com/img/775.png", provider: "spribe" },
+        { id: "826", name: "Hotline", img: "https://igamingapis.com/img/826.png", provider: "spribe" },
+        { id: "894", name: "Keno", img: "https://igamingapis.com/img/894.png", provider: "spribe" },
+        { id: "904", name: "Goal", img: "https://igamingapis.com/img/904.png", provider: "spribe" },
+        { id: "1019", name: "Balloon", img: "https://igamingapis.com/img/1019.png", provider: "spribe" },
+        { id: "5808", name: "Trader", img: "https://igamingapis.com/img/5808.png", provider: "spribe" }
     ],
     lottery: [
         { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },

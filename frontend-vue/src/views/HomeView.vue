@@ -438,14 +438,31 @@ const JILI_GAMES = [
   { id: "315", name: "Pirate Queen 2", img: "https://igamingapis.com/img/315.png", provider: "jili" }
 ]
 
+const SPRIBE_GAMES = [
+  { id: "426", name: "Mines", img: "https://igamingapis.com/img/426.png", provider: "spribe" },
+  { id: "478", name: "Plinko", img: "https://igamingapis.com/img/478.png", provider: "spribe" },
+  { id: "551", name: "Keno 80", img: "https://igamingapis.com/img/551.png", provider: "spribe" },
+  { id: "635", name: "Dice", img: "https://igamingapis.com/img/635.png", provider: "spribe" },
+  { id: "723", name: "Mini Roulette", img: "https://igamingapis.com/img/723.png", provider: "spribe" },
+  { id: "737", name: "Aviator", img: "https://igamingapis.com/img/737.png", provider: "spribe" },
+  { id: "775", name: "Hi Lo", img: "https://igamingapis.com/img/775.png", provider: "spribe" },
+  { id: "826", name: "Hotline", img: "https://igamingapis.com/img/826.png", provider: "spribe" },
+  { id: "894", name: "Keno", img: "https://igamingapis.com/img/894.png", provider: "spribe" },
+  { id: "904", name: "Goal", img: "https://igamingapis.com/img/904.png", provider: "spribe" },
+  { id: "1019", name: "Balloon", img: "https://igamingapis.com/img/1019.png", provider: "spribe" },
+  { id: "5808", name: "Trader", img: "https://igamingapis.com/img/5808.png", provider: "spribe" }
+]
+
 const slotGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
   
-  // Combine dynamic games and fixed JILI games, unique by ID
+  // Combine dynamic games, JILI games, and SPRIBE games, unique by ID
   const combined = [...dynamic]
   const existingIds = new Set(dynamic.map(g => String(g.id)))
   
-  JILI_GAMES.forEach(g => {
+  const FIXED_GAMES = [...JILI_GAMES, ...SPRIBE_GAMES]
+  
+  FIXED_GAMES.forEach(g => {
     if (!existingIds.has(String(g.id))) {
       combined.push(g)
     }
