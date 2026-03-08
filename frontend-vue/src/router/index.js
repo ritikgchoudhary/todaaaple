@@ -62,6 +62,7 @@ const routes = [
   { path: '/about-us', name: 'AboutUs', component: AboutUsView, meta: { title: 'About Us', showNav: true } },
   { path: '/api-docs', name: 'ApiDocs', component: ApiDocsView, meta: { title: 'API Docs', requiresAuth: true, showNav: false } },
   { path: '/withdrawal', name: 'Withdraw', component: WithdrawView, meta: { title: 'Withdraw', requiresAuth: true, showNav: true } },
+  { path: '/admin/games', name: 'AdminGames', component: () => import('../views/AdminGamesView.vue'), meta: { title: 'Master Admin - Games', requiresAuth: true } },
 ]
 
 const router = createRouter({
