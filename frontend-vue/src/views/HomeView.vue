@@ -318,9 +318,22 @@
     <div v-if="iframeUrl" class="game-iframe-modal">
       <div class="iframe-header">
         <button class="iframe-close-btn" @click="closeIframe">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          Back to Home
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Back
         </button>
+        
+        <div v-if="auth.isLoggedIn" class="headerBalance">
+          <div class="hBalTop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+            <span>Balance</span>
+          </div>
+          <div class="hBalBottom">
+             <span class="hBalVal">₹{{ (userBalance || 0).toFixed(2) }}</span>
+             <button class="hRefreshBtn" @click="fetchBalance" :class="{ 'spinning': isRefreshing }">
+               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+             </button>
+          </div>
+        </div>
       </div>
       <iframe :src="iframeUrl" frameborder="0" allowfullscreen></iframe>
     </div>
@@ -345,6 +358,7 @@ import * as walletApi from '../api/wallet'
 const router = useRouter()
 const auth = useAuthStore()
 const userBalance = ref(0)
+const isRefreshing = ref(false)
 const iframeUrl = ref(null)
 const isGameLoading = ref(false)
 const searchInputRef = ref(null)
@@ -941,12 +955,16 @@ onUnmounted(() => {
 
 async function fetchBalance() {
   if (auth.isLoggedIn && auth.user?.id) {
+    isRefreshing.value = true
     try {
       const res = await walletApi.getUserHome(auth.user.id)
       if (res.data && res.data.length > 0) {
         userBalance.value = res.data[0].balance || 0
       }
-    } catch (err) {}
+    } catch (err) {
+    } finally {
+      setTimeout(() => { isRefreshing.value = false }, 500)
+    }
   }
 }
 
@@ -1684,39 +1702,78 @@ onMounted(async () => {
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  background: #000;
+  background: #fff;
   z-index: 999999;
   display: flex;
   flex-direction: column;
 }
 
 .iframe-header {
-  height: 44px;
-  background: #111;
+  height: 60px;
+  background: #fff;
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  border-bottom: 1px solid #333;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .iframe-close-btn {
-  background: transparent;
+  background: #f1f5f9;
   border: none;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 0.95rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   cursor: pointer;
-  padding: 0;
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+.headerBalance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+.hBalTop {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.hBalBottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hBalVal {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+.hRefreshBtn {
+  background: none;
+  border: none;
+  color: #05c0b8;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+}
+.hRefreshBtn.spinning {
+  animation: spin 1s linear infinite;
 }
 
 .game-iframe-modal iframe {
   flex: 1;
   width: 100%;
   border: none;
-  background: #000;
+  background: #fff;
 }
 
 .game-loader-overlay {
