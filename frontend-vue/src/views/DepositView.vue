@@ -42,16 +42,18 @@
           v-for="gateway in gatewayList" 
           :key="gateway" 
           class="method-item" 
-          :class="{ 'active': selectedGateway === gateway }"
-          @click="selectedGateway = gateway"
+          :class="{ 'active': selectedGateway === gateway.toLowerCase() }"
+          @click="selectedGateway = gateway.toLowerCase()"
         >
           <div class="item-inner">
             <div class="icon-wrap">
-              <img v-if="gateway === 'rupeerush' || gateway === 'watchpay' || gateway === 'lgpay' || gateway === 'auto' || gateway === 'manual'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" :class="gateway"/>
-              <div v-else class="fallback-icon">₹</div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="gateway-icon" :class="gateway.toLowerCase()">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
             </div>
-            <span class="name">{{ GATEWAY_LABELS[gateway] || gateway }}</span>
-            <div class="check-mark" v-if="selectedGateway === gateway">
+            <span class="name">{{ gateway }}</span>
+            <div class="check-mark" v-if="selectedGateway === gateway.toLowerCase()">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
           </div>
@@ -281,7 +283,7 @@ onMounted(() => {
         if (res.data?.gateway) selectedGateway.value = res.data.gateway.toLowerCase()
         if (res.data?.gatewayList && Array.isArray(res.data.gatewayList)) {
             const preferred = ['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual']
-            gatewayList.value = res.data.gatewayList.sort((a, b) => preferred.indexOf(a) - preferred.indexOf(b))
+            gatewayList.value = res.data.gatewayList.sort((a, b) => preferred.indexOf(a.toLowerCase()) - preferred.indexOf(b.toLowerCase()))
         }
     }).catch(() => {})
 })
@@ -349,18 +351,24 @@ onMounted(() => {
 .section-title { font-size: 0.8rem; font-weight: 800; color: #0f172a; margin: 0 0 10px 4px; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* Methods Grid */
-.methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
 .method-item { cursor: pointer; }
 .item-inner {
   position: relative; background: #ffffff; border: 1px solid #e2e8f0;
-  border-radius: 12px; padding: 10px 4px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border-radius: 12px; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px;
   transition: 0.2s;
 }
 .method-item.active .item-inner { background: #f0fdfa; border-color: #05c0b8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(5,192,184,0.1); }
 .icon-wrap { width: 32px; height: 32px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 .icon-wrap img { width: 20px; height: 20px; object-fit: contain; }
-.icon-wrap img.auto { filter: hue-rotate(-60deg); }
-.icon-wrap img.lgpay { filter: hue-rotate(60deg); }
+.gateway-icon {
+  width: 20px;
+  height: 20px;
+  color: #64748b;
+}
+.method-item.active .gateway-icon {
+  color: #05c0b8;
+}
 .icon-wrap.usdt { font-size: 1rem; color: #26a17b; font-weight: 900; }
 .item-inner .name { font-size: 0.65rem; font-weight: 700; color: #475569; text-align: center; }
 .method-item.active .name { color: #0f172a; }
