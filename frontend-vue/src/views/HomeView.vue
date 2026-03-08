@@ -711,7 +711,7 @@ const cardGamesList = computed(() => {
   const combined = [...dynamic]
   const existingIds = new Set(dynamic.map(g => String(g.id)))
   
-  const FIXED_GAMES = [...JILI_CARD_GAMES, ...RICH88_CARD_GAMES, ...KM_CARD_GAMES, ...JDB_CARD_GAMES]
+  const FIXED_GAMES = [...JILI_CARD_GAMES, ...RICH88_CARD_GAMES, ...KM_CARD_GAMES, ...JDB_CARD_GAMES, ...CQ9_CARD_GAMES]
   FIXED_GAMES.forEach(g => {
     if (!existingIds.has(String(g.id))) combined.push(g)
   })

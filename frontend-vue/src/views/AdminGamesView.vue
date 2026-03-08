@@ -401,7 +401,19 @@ const DEFAULTS = {
         { id: "927", name: "Plinko", img: "https://igamingapis.com/img/927.png", provider: "jdb" },
         { id: "1089", name: "Pusoy Rush", img: "https://igamingapis.com/img/1089.png", provider: "jdb" },
         { id: "1105", name: "Pusoy", img: "https://igamingapis.com/img/1105.png", provider: "jdb" },
-        { id: "10040", name: "Aviator Extra Bet", img: "https://igamingapis.com/img/10040.png", provider: "jdb" }
+        { id: "10040", name: "Aviator Extra Bet", img: "https://igamingapis.com/img/10040.png", provider: "jdb" },
+        { id: "288", name: "Mini Roulette", img: "https://igamingapis.com/img/288.png", provider: "cq9" },
+        { id: "401", name: "Thai Pok Deng", img: "https://igamingapis.com/img/401.png", provider: "cq9" },
+        { id: "618", name: "Banker Dice Bull-Bull", img: "https://igamingapis.com/img/618.png", provider: "cq9" },
+        { id: "619", name: "Xoc Dia", img: "https://igamingapis.com/img/619.png", provider: "cq9" },
+        { id: "637", name: "Seotda", img: "https://igamingapis.com/img/637.png", provider: "cq9" },
+        { id: "878", name: "LuckyFishing", img: "https://igamingapis.com/img/878.png", provider: "cq9" },
+        { id: "1035", name: "Thai HILO", img: "https://igamingapis.com/img/1035.png", provider: "cq9" },
+        { id: "1038", name: "Peeking Banker Bull-Bull", img: "https://igamingapis.com/img/1038.png", provider: "cq9" },
+        { id: "10130", name: "OneShotFishing", img: "https://igamingapis.com/img/10130.png", provider: "cq9" },
+        { id: "10139", name: "Paradise 2", img: "https://igamingapis.com/img/10139.png", provider: "cq9" },
+        { id: "10140", name: "Onestick Fishing", img: "https://igamingapis.com/img/10140.png", provider: "cq9" },
+        { id: "10142", name: "Go Fishing", img: "https://igamingapis.com/img/10142.png", provider: "cq9" }
     ]
 }
 
