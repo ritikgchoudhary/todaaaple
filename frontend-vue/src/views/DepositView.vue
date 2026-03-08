@@ -84,7 +84,7 @@
 
         <div class="chips-container">
           <button 
-            v-for="val in [200, 500, 1000, 2000, 5000, 10000, 20000, 50000]" 
+            v-for="val in [200, 500, 2000, 10000, 20000, 50000, 100000]" 
             :key="val" 
             class="chip"
             :class="{ 'active': amount === val }"
