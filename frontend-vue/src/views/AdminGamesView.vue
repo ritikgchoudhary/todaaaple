@@ -33,6 +33,7 @@
                 <th>Game Name</th>
                 <th>Game ID (uid)</th>
                 <th>Image URL</th>
+                <th v-if="key === 'slot'" width="120">Provider</th>
                 <th width="80">Action</th>
               </tr>
             </thead>
@@ -48,12 +49,22 @@
                 <td>
                   <input v-model="game.img" placeholder="Image URL" />
                 </td>
+                <td v-if="key === 'slot'">
+                  <select v-model="game.provider" class="provider-select">
+                    <option value="">None</option>
+                    <option value="jdb">JDB</option>
+                    <option value="jili">JILI</option>
+                    <option value="pg">PG</option>
+                    <option value="r88">R88</option>
+                    <option value="vp">VP</option>
+                  </select>
+                </td>
                 <td class="actions">
                   <button class="remove-btn" @click="removeGame(key, index)">×</button>
                 </td>
               </tr>
               <tr v-if="!games.length">
-                <td colspan="5" class="empty-row">No games added. Click 'Add Game' or 'Restore Defaults'.</td>
+                <td :colspan="key === 'slot' ? 6 : 5" class="empty-row">No games added. Click 'Add Game' or 'Restore Defaults'.</td>
               </tr>
             </tbody>
           </table>
@@ -91,7 +102,9 @@ function formatKey(key) {
 }
 
 function addGame(key) {
-  gameCategories.value[key].push({ id: '', name: '', img: '' })
+  const newGame = { id: '', name: '', img: '' }
+  if (key === 'slot') newGame.provider = ''
+  gameCategories.value[key].push(newGame)
 }
 
 function removeGame(key, index) {
@@ -338,6 +351,17 @@ h1 { font-size: 1.5rem; color: #1e293b; margin: 0; }
 .actions { text-align: center; }
 .remove-btn { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; transition: all 0.2s; margin: 0 auto; }
 .remove-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
+.provider-select {
+  width: 100%;
+  padding: 8px 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+}
+.provider-select:focus { border-color: #2563eb; }
 
 .empty-row { padding: 48px !important; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.9rem; }
 
