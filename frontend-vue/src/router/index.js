@@ -28,6 +28,7 @@ import AccountSecurityView from '../views/AccountSecurityView.vue'
 import AboutUsView from '../views/AboutUsView.vue'
 import ApiDocsView from '../views/ApiDocsView.vue'
 import WithdrawView from '../views/WithdrawView.vue'
+import LuckySportsView from '../views/LuckySportsView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -62,6 +63,7 @@ const routes = [
   { path: '/about-us', name: 'AboutUs', component: AboutUsView, meta: { title: 'About Us', showNav: true } },
   { path: '/api-docs', name: 'ApiDocs', component: ApiDocsView, meta: { title: 'API Docs', requiresAuth: true, showNav: false } },
   { path: '/withdrawal', name: 'Withdraw', component: WithdrawView, meta: { title: 'Withdraw', requiresAuth: true, showNav: true } },
+  { path: '/lucky-sports', name: 'LuckySports', component: LuckySportsView, meta: { title: 'Sports', requiresAuth: true, showNav: true } },
   { path: '/admin/games', name: 'AdminGames', component: () => import('../views/AdminGamesView.vue'), meta: { title: 'Master Admin - Games', requiresAuth: true } },
 ]
 

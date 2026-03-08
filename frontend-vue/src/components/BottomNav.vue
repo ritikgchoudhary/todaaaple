@@ -4,9 +4,9 @@
       <img :src="route.path === '/account' ? 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_account_active.png' : 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_account.png'" alt="" class="navIconImg" />
       <span class="navLabel">Account</span>
     </router-link>
-    <router-link to="/deposit" class="navItem" :class="{ active: route.path === '/deposit' }">
-      <img src="https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_deposit.png" alt="" class="navIconImg" />
-      <span class="navLabel">Deposit</span>
+    <router-link to="/lucky-sports" class="navItem" :class="{ active: route.path === '/lucky-sports' }">
+      <img :src="route.path === '/lucky-sports' ? 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/4_active.png' : 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/gowin11/4.png'" alt="" class="navIconImg" />
+      <span class="navLabel">Sports</span>
     </router-link>
     <router-link to="/" class="navItem" :class="{ active: route.path === '/' }">
       <img :src="route.path === '/' ? 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_home_active.png' : 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_home.png'" alt="" class="navIconImg" />
