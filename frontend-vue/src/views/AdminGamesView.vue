@@ -353,7 +353,22 @@ const DEFAULTS = {
         { id: "3013", name: "LUCKY LOTTERY", img: "https://igamingapis.com/img/3013.png" },
         { id: "9166", name: "Mania Lotto", img: "https://igamingapis.com/img/9166.png" }
     ],
-    cards: []
+    cards: [
+        { id: "21", name: "Caribbean Stud Poker", img: "https://igamingapis.com/img/21.png", provider: "jili" },
+        { id: "107", name: "TeenPatti Joker", img: "https://igamingapis.com/img/107.png", provider: "jili" },
+        { id: "110", name: "TeenPatti 20-20", img: "https://igamingapis.com/img/110.png", provider: "jili" },
+        { id: "183", name: "Video Poker", img: "https://igamingapis.com/img/183.png", provider: "jili" },
+        { id: "267", name: "Blackjack", img: "https://igamingapis.com/img/267.png", provider: "jili" },
+        { id: "296", name: "Pool Rummy", img: "https://igamingapis.com/img/296.png", provider: "jili" },
+        { id: "505", name: "Andar Bahar", img: "https://igamingapis.com/img/505.png", provider: "jili" },
+        { id: "595", name: "Ultimate Texas Hold'em", img: "https://igamingapis.com/img/595.png", provider: "jili" },
+        { id: "793", name: "Poker King", img: "https://igamingapis.com/img/793.png", provider: "jili" },
+        { id: "810", name: "Rummy", img: "https://igamingapis.com/img/810.png", provider: "jili" },
+        { id: "855", name: "Baccarat", img: "https://igamingapis.com/img/855.png", provider: "jili" },
+        { id: "951", name: "Blackjack Lucky Ladies", img: "https://igamingapis.com/img/951.png", provider: "jili" },
+        { id: "1119", name: "TeenPatti", img: "https://igamingapis.com/img/1119.png", provider: "jili" },
+        { id: "10498", name: "Domino Go", img: "https://igamingapis.com/img/10498.png", provider: "jili" }
+    ]
 }
 
 async function fetchData() {
