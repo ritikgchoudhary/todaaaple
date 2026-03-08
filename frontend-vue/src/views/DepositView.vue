@@ -229,66 +229,159 @@ onMounted(() => {
 <style scoped>
 .deposit-page {
   min-height: 100vh;
-  background-color: #F1F5F9;
+  background-color: #121212;
   display: flex;
   justify-content: center;
   font-family: system-ui, -apple-system, sans-serif;
+  color: white;
 }
 .mobileContainer {
   width: 100%;
   max-width: 500px;
-  background-color: #fff;
+  background-color: #121212;
   min-height: 100vh;
+  position: relative;
+  padding-bottom: 140px; /* space for action bar + nav */
 }
 
+/* Header */
 .header {
   display: flex;
   align-items: center;
   padding: 15px 20px;
-  background: #05c0b8;
+  background: #1a1a1a;
   color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .backIcon { cursor: pointer; }
 .headerTitle { flex: 1; text-align: center; font-weight: 600; font-size: 17px; }
-.spacer { width: 24px; }
+.headerRightText { font-size: 13px; color: #05c0b8; text-decoration: none; font-weight: 500; }
 
-.balanceSection {
-  padding: 30px 20px;
-  text-align: center;
-  background: #fff;
-  border-bottom: 8px solid #F1F5F9;
+.mainContent {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
-.balanceLabel { font-size: 13px; color: #64748B; margin-bottom: 8px; font-weight: 600; }
-.balanceValue { font-size: 2rem; font-weight: 800; color: #05c0b8; }
 
-.tabContent { padding: 20px; }
-
-.sectionTitle { display: flex; align-items: center; gap: 8px; font-weight: 700; color: #1e293b; margin-bottom: 12px; font-size: 15px; }
-.sectionIcon { margin-bottom: -2px; }
-
-.inputSection { margin-bottom: 16px; }
-.inputGroup {
+/* Balance Card */
+.balanceCard {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+.bcTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.bcLabel {
   display: flex;
   align-items: center;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 0 16px;
-  min-height: 52px;
+  gap: 6px;
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 8px;
 }
-.currency { font-weight: 800; color: #05c0b8; margin-right: 12px; font-size: 20px; }
-.inputGroup input {
-  flex: 1;
+.bcBalRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bcBal {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.bcRefreshBtn {
+  background: rgba(255,255,255,0.2);
   border: none;
-  background: none;
-  padding: 14px 0;
-  font-size: 18px;
-  outline: none;
-  font-weight: 700;
-  color: #0F172A;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
-.clearBtn { background: none; border: none; font-size: 20px; color: #94A3B8; cursor: pointer; padding: 4px; }
+.bcBottom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bcDots {
+  font-family: monospace;
+  font-size: 18px;
+  letter-spacing: 2px;
+  opacity: 0.8;
+}
 
+/* Method Grid */
+.methodGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.methodItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.methodIconBox {
+  width: 56px;
+  height: 56px;
+  background: #1a1a1a;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+.methodItem.active .methodIconBox {
+  border-color: #fdb05d;
+  background: rgba(253, 176, 93, 0.1);
+}
+.methodImg {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+.methodName {
+  font-size: 12px;
+  color: #a3a3a3;
+  text-align: center;
+}
+.methodItem.active .methodName {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Sections */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+/* Channel Section */
+.channelSection {
+  background: #1a1a1a;
+  padding: 16px;
+  border-radius: 12px;
+}
 .channelBoxes {
   display: flex;
   flex-direction: column;
@@ -307,9 +400,8 @@ onMounted(() => {
   color: #1a1a1a;
   display: block;
 }
-.channelBox:not(.active) {
-  color: #a3a3a3;
-}
+.cbName { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.cbRange { font-size: 12px; opacity: 0.8; }
 
 /* Amount Section */
 .amountSection {
@@ -340,26 +432,75 @@ onMounted(() => {
   color: #1a1a1a;
   border-color: transparent;
 }
-
-.actionBtn {
-  width: 100%;
-  padding: 16px;
-  background: #05c0b8;
-  color: #fff;
+.inputGroup {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0 16px;
+  min-height: 48px;
+}
+.currency { font-weight: 800; color: #05c0b8; margin-right: 12px; font-size: 18px; }
+.inputGroup input {
+  flex: 1;
   border: none;
-  border-radius: 14px;
-  font-weight: 700;
-  font-size: 17px;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(5, 192, 184, 0.3);
+  background: none;
+  padding: 12px 0;
+  font-size: 16px;
+  outline: none;
+  font-weight: 600;
+  color: #1a1a1a;
 }
-.actionBtn:disabled { background: #E2E8F0; color: #94A3B8; cursor: not-allowed; box-shadow: none; }
+.clearBtn { background: none; border: none; font-size: 20px; color: #94A3B8; cursor: pointer; padding: 4px; }
 
-.footerSummary {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 24px; font-size: 12px; color: #94A3B8; font-weight: 500;
+/* Bottom Action Bar */
+.bottomActionBar {
+  position: fixed;
+  bottom: 60px; /* Above BottomNav */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  background: #1a1a1a;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+  z-index: 20;
 }
-.historyLink { color: #05c0b8; text-decoration: none; font-weight: 600; font-size: 14px; }
+@media screen and (max-width: 500px) {
+  .bottomActionBar {
+    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+}
+.baLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.baLabel {
+  font-size: 12px;
+  color: #a3a3a3;
+}
+.baMethod {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.actionBtn {
+  padding: 12px 24px;
+  background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(253, 176, 93, 0.3);
+}
+.actionBtn:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
 
 /* Dialog */
 .dialogOverlay {
