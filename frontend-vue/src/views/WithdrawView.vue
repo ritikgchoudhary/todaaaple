@@ -6,7 +6,7 @@
         <router-link to="/wallet" class="back-link-inner" style="text-decoration: none;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </router-link>
-        <span class="back-title">Withdrawal</span>
+        <span class="back-title" style="font-weight: 500;">Withdrawal</span>
       </div>
 
       <div class="balance-title">
@@ -43,7 +43,7 @@
         <div class="info-text">Amount: ₹0 - ₹1000, fee ₹30</div>
         <div class="info-text">Amount: ₹1000 and above, fee 3%</div>
 
-        <div class="input-label">Withdrawal Amount</div>
+        <div class="input-label" style="font-size: 1rem; color: black;">Withdrawal Amount</div>
         <div class="input-card">
           <div class="input-wrap">
             <span class="prefix">₹</span>
@@ -52,12 +52,12 @@
         </div>
 
         <div class="limit-info">
-          <div class="info-text bold limit-title">Now you can withdrawal 3 times a day</div>
-          <div class="input-label">Single Withdrawal Limit</div>
-          <div class="info-text">maximum amount: ₹50000</div>
-          <div class="info-text">minimum amount: ₹230</div>
-          <div class="input-label service-time">Service Time</div>
-          <div class="info-text black-text">Monday 11:30-17:30</div>
+          <div class="info-text bold limit-title" style="margin-bottom: 5px; color: black; font-size: 1rem;">Now you can withdrawal 3 times a day</div>
+          <div class="input-label" style="font-size: 1rem; color: black;">Single Withdrawal Limit</div>
+          <div class="info-text" style="color: #666; margin-top: 5px;">maximum amount: ₹50000</div>
+          <div class="info-text" style="color: #666;">minimum amount: ₹230</div>
+          <div class="input-label service-time" style="font-size: 1rem; color: black;">Service Time</div>
+          <div class="info-text black-text" style="margin-top: 5px;">Monday 11:30-17:30</div>
           <div class="info-text black-text">Tuesday 11:30-17:30</div>
           <div class="info-text black-text">Wednesday 11:30-17:30</div>
           <div class="info-text black-text">Thursday 11:30-17:30</div>
@@ -98,7 +98,7 @@
         <div class="info-text">Withdrawal Fee: 3% (deducted from withdrawal amount)</div>
         <div class="info-text sub-text">Minimum fee: 3 USDT</div>
 
-        <div class="input-label">USDT Withdrawal Amount</div>
+        <div class="input-label" style="font-size: 1rem; color: black;">USDT Withdrawal Amount</div>
         <div class="input-card">
           <div class="input-wrap">
             <span class="prefix usdt-text">USDT</span>
@@ -122,9 +122,9 @@
         </div>
 
         <div class="limit-info">
-          <div class="input-label">USDT Withdrawal Limits</div>
-          <div class="info-text">minimum amount: 10 USDT</div>
-          <div class="info-text">maximum amount: {{ Math.floor(50000 / 95) }} USDT</div>
+          <div class="input-label" style="font-size: 1rem; color: black;">USDT Withdrawal Limits</div>
+          <div class="info-text" style="color: #666; margin-top: 5px;">minimum amount: 10 USDT</div>
+          <div class="info-text" style="color: #666;">maximum amount: {{ Math.floor(50000 / 95) }} USDT</div>
         </div>
 
         <div class="wagering-info">
@@ -480,23 +480,24 @@ onMounted(fetchData)
 }
 
 .btn-container {
-  padding: 0 15px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .withdraw-btn { 
-  width: 100%; height: 50px; border-radius: 8px; 
-  border: none; color: #fff; font-size: 0.875rem; text-transform: none; 
+  width: calc(100% - 30px); height: 50px; border-radius: 8px; 
+  border: none; color: #fff; font-size: 1rem; text-transform: none; 
   cursor: pointer; display: block; box-sizing: border-box;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
-  margin-top: 15px;
 }
-.primary-btn { background-color: #00b8a9; }
-.warning-btn { background-color: #f39c12; }
+.primary-btn { background-color: #00b8a9; margin: 15px auto;}
+.warning-btn { background-color: #f39c12; margin: 15px auto;}
 
 .historical-btn {
   display: block; background-color: grey; margin: 15px 20px 100px 20px;
   height: 50px; border-radius: 8px; color: white; text-align: center;
-  line-height: 50px; text-decoration: none; font-size: 1rem;
+  line-height: 50px; text-decoration: none; font-size: 1rem; text-transform: none;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
 }
 
@@ -552,7 +553,7 @@ onMounted(fetchData)
   cursor: pointer; border: none; font-size: 0.875rem; text-transform: uppercase;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
 }
-.btn-cancel { background: transparent; color: #1976d2; border: none; font-weight: 500;}
+.btn-cancel { background: transparent; color: rgba(0, 0, 0, 0.87); border: 1px solid rgba(0, 0, 0, 0.23); font-weight: 500;}
 .warning-bg { background-color: #1976d2; color: white; font-weight: 500;}
 
 .toast-card { text-align: left; padding: 24px; max-width: 400px; }
