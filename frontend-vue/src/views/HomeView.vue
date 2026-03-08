@@ -258,7 +258,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as api from '../api/home'
@@ -296,7 +296,11 @@ function onSliderTouchEnd(e) {
 }
 
 const noticeText = ref('Announcement | 13:50 (UTC+5.5) We apologize for any inconvenience.')
-const activeCategory = ref('sports')
+const activeCategory = ref(localStorage.getItem('activeCategory') || 'sports')
+
+watch(activeCategory, (newVal) => {
+  localStorage.setItem('activeCategory', newVal)
+})
 
 const gameCategories = ref({
   sports: [],
@@ -352,8 +356,12 @@ const crashGamesList = computed(() => {
 })
 const heartIcon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ef4444"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')
 
-const slotFilterActive = ref('hot')
+const slotFilterActive = ref(localStorage.getItem('slotFilterActive') || 'hot')
 const slotSearchQuery = ref('')
+
+watch(slotFilterActive, (newVal) => {
+  localStorage.setItem('slotFilterActive', newVal)
+})
 const bannerBase = `${baseImg}/game/banner`
 const slotFilterItems = [
   { id: 'search', label: 'Search', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/search.png` },
@@ -894,14 +902,15 @@ onMounted(async () => {
 }
 .game-item .img-content {
   flex: 0 0 auto;
+  margin-top: auto; /* Push to bottom if needed, or give it space */
 }
 .game-item .img-content img {
-  max-width: 72px;
-  max-height: 32px;
+  max-width: 100px;
+  max-height: 48px;
   object-fit: contain;
 }
 .game-item.card-b .name { font-size: 1.1rem; }
-.game-item.card-b .img-content img { max-width: 80px; max-height: 36px; }
+.game-item.card-b .img-content img { max-width: 120px; max-height: 56px; }
 
 /* Slot Game: left sidebar + search + card-f grid (reference game-menu-wrapper) */
 .game-menu-wrapper--slot {
