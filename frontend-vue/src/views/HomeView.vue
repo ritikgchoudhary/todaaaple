@@ -192,21 +192,22 @@
               placeholder="Search game name"
             />
           </div>
-          <div class="card-f-wrapper">
+            <div class="card-f-wrapper">
             <a
               v-for="g in displaySlotGames"
               :key="g.id"
               href="#"
               class="game-link card-f"
-              :style="{ backgroundImage: g.img ? `url(${g.img})` : 'none' }"
               @click.prevent="onProviderClick(g)"
             >
-              <div>
-                <img class="heart" :src="heartIcon" alt="heart" />
+              <div class="img-container" :style="{ backgroundImage: g.img ? `url(${g.img})` : 'none' }">
+                <div>
+                  <img class="heart" :src="heartIcon" alt="heart" />
+                </div>
+                <div v-if="g.isNew" class="new-icon"><span class="new-text">NEW</span></div>
               </div>
-              <div v-if="g.isNew" class="new-icon"><span class="new-text">NEW</span></div>
               <div class="game-name-box">
-                <span style="width: 80%;">{{ g.name }}</span>
+                <span>{{ g.name }}</span>
               </div>
             </a>
           </div>
@@ -1022,70 +1023,66 @@ onMounted(async () => {
   margin-top: 10px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 8px;
   padding: 0 0 6px;
 }
 .game-link.card-f {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  aspect-ratio: 0.85;
-  min-height: 0;
-  background-color: #1a1a1a;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #1a1a1a;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.game-link.card-f .img-container {
+  width: 100%;
+  aspect-ratio: 1;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 12px;
-  overflow: hidden;
   position: relative;
-  text-decoration: none;
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
-.game-link.card-f > div:first-child {
+.game-link.card-f .img-container > div:first-child {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 4px;
+  right: 4px;
   z-index: 2;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
+  background: rgba(239, 68, 68, 0.9);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
 }
 .game-link.card-f .heart {
-  width: 20px;
-  height: 20px;
-  max-width: 20px;
-  max-height: 20px;
+  width: 14px;
+  height: 14px;
   display: block;
   object-fit: contain;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 1px rgba(0,0,0,0.3));
+  filter: none;
 }
 .game-link.card-f .game-name-box {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 6px 8px;
-  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  padding: 6px 4px;
+  background: #f1f5f9;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
-  min-width: 0;
 }
 .game-link.card-f .game-name-box span {
   font-size: 0.65rem;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 500;
+  color: #334155;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: center;
   width: 100%;
-  min-width: 0;
-  max-width: 100%;
-  word-break: normal;
   display: block;
 }
 
