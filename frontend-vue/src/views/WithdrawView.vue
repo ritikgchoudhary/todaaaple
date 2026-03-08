@@ -3,15 +3,15 @@
     <div class="mobile-container">
       <!-- Back Link -->
       <div class="back-link">
-        <router-link to="/wallet" class="back-link-inner">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </router-link>
+        <div class="back-link-inner" @click="router.back()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </div>
         <span class="back-title">Withdrawal</span>
       </div>
 
       <div class="balance-title">
         <span class="balance-label">My Balance</span>
-        <span class="balance-amount">₹{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }}</span>
+        <span class="balance-amount">₹{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
       </div>
       
       <!-- Tab Switcher -->
@@ -52,7 +52,7 @@
         </div>
 
         <div class="limit-info">
-          <div class="info-text bold">Now you can withdrawal 3 times a day</div>
+          <div class="info-text bold limit-title">Now you can withdrawal 3 times a day</div>
           <div class="input-label">Single Withdrawal Limit</div>
           <div class="info-text">maximum amount: ₹50000</div>
           <div class="info-text">minimum amount: ₹230</div>
@@ -346,7 +346,7 @@ onMounted(fetchData)
   align-items: center;
   padding: 15px 20px;
   background: white;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 .back-link-inner {
   color: #000;
@@ -356,13 +356,14 @@ onMounted(fetchData)
   cursor: pointer;
 }
 .back-link-inner svg {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 .back-title {
-  width: 33%;
+  flex: 1;
   text-align: center;
   font-size: 1.1rem;
+  padding-right: 33%;
 }
 
 .mobile-container { 
@@ -371,19 +372,19 @@ onMounted(fetchData)
 }
 
 .balance-title {
-  padding: 0 35px 15px 35px;
+  padding: 10px 35px 15px 35px;
   display: flex;
   align-items: center;
   gap: 5px;
-  background-color: #f5f5f5;
+  background-color: transparent;
 }
 .balance-label {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 500;
   color: #00b8a9;
 }
 .balance-amount {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 500;
   color: #00b8a9;
 }
@@ -433,6 +434,7 @@ onMounted(fetchData)
   line-height: 1.5;
 }
 .info-text.bold { font-weight: bold; padding-left: 28px; }
+.limit-title { padding-left: 28px !important; margin-bottom: 5px; }
 .black-text { color: black !important; }
 
 .input-label {

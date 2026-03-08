@@ -354,7 +354,10 @@ const crashGamesList = computed(() => {
         { id: 'avi2', name: 'Aviator', img: `${gameImgBase}/GPYL2/MV84MDQjMTc1NDQ2ODQ2Mg==.png` },
         { id: 'crash', name: 'Crash', img: `${gameImgBase}/GPYL2/MV84MDEjMTcyOTY2Nzc3MQ==.png` },
       ]
-  return list.map(g => ({ ...g, img: g.img || g.logo }))
+  return list.map(g => ({ 
+    ...g, 
+    img: g.img || g.logo || g.charImageUrl || g.logoUrl || defaultCardBg 
+  }))
 })
 const heartIcon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ef4444"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')
 
@@ -392,7 +395,10 @@ const slotGamesList = computed(() => {
         { id: 's12', name: 'Double Ace MultiXPLUS', img: `${gameImgBase}/GPVP/U0xPVF9WUF8yMzAwMzhfMSMxNzY1NTI0MTYx.png`, isNew: true },
         // ... many more
       ]
-  return list.map(g => ({ ...g, img: g.img || g.logo }))
+  return list.map(g => ({ 
+    ...g, 
+    img: g.img || g.logo || g.charImageUrl || g.logoUrl || defaultCardBg 
+  }))
 })
 const displaySlotGames = computed(() => {
   const q = (slotSearchQuery.value || '').trim().toLowerCase()
@@ -974,31 +980,34 @@ onMounted(async () => {
 .gt-wrapper--slot {
   display: block;
 }
-.gt-wrapper--slot .search-bar {
+.game-menu-wrapper--slot .search-bar {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  background: #f1f5f9;
-  border-radius: 10px;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   margin-bottom: 12px;
 }
-.gt-wrapper--slot .icon-container {
+.game-menu-wrapper--slot .icon-container {
   flex-shrink: 0;
-  color: #64748b;
-  font-size: 1.2rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
 }
-.gt-wrapper--slot .search-input {
+.game-menu-wrapper--slot .search-input {
   flex: 1;
   min-width: 0;
   border: none;
   background: transparent;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #1a1a1a;
   outline: none;
+  padding: 4px 0;
 }
-.gt-wrapper--slot .search-input::placeholder {
-  color: #94a3b8;
+.game-menu-wrapper--slot .search-input::placeholder {
+  color: #cbd5e1;
 }
 .gt-wrapper--slot .card-f-wrapper {
   margin-top: 0;
@@ -1080,12 +1089,15 @@ onMounted(async () => {
   font-size: 0.65rem;
   font-weight: 500;
   color: #334155;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   text-align: center;
   width: 100%;
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  height: 1.6rem;
 }
 
 .navIconImg {
