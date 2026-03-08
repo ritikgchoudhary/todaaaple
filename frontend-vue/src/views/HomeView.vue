@@ -1032,18 +1032,17 @@ onMounted(async () => {
 }
 
 .homeUserWidget {
-  background: #111111;
-  margin: 10px 12px 15px;
-  border-radius: 12px;
-  padding: 16px 20px;
+  background: transparent;
+  margin: 10px 0 15px;
+  padding: 0;
   color: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
 .huTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 12px;
 }
 
 .huLeft {
@@ -1057,7 +1056,7 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #a3a3a3;
+  color: #666;
 }
 
 .huBalContainer {
@@ -1067,16 +1066,16 @@ onMounted(async () => {
 }
 
 .huBal {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: #fde047;
+  color: #1a1a1a;
 }
 
 .huRefreshBtn {
   background: none;
   border: none;
-  color: #a3a3a3;
+  color: #1a1a1a;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1097,14 +1096,15 @@ onMounted(async () => {
   text-decoration: none;
   font-size: 13px;
   font-weight: 700;
-  padding: 10px 16px;
+  padding: 8px 16px;
   border-radius: 8px;
   text-align: center;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
-  min-width: 80px;
+  justify-content: center;
+  gap: 6px;
+  min-width: 100px;
   transition: all 0.2s;
   box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
 }
