@@ -273,7 +273,18 @@ const DEFAULTS = {
         { id: "1788", name: "Color Dish", img: "https://igamingapis.com/img/1788.png", provider: "r88" },
         { id: "1789", name: "Color Dish 2", img: "https://igamingapis.com/img/1789.png", provider: "r88" },
         { id: "1821", name: "Crazy Rich Man", img: "https://igamingapis.com/img/1821.png", provider: "r88" },
-        { id: "1977", name: "Double slot", img: "https://igamingapis.com/img/1977.png", provider: "r88" }
+        { id: "1977", name: "Double slot", img: "https://igamingapis.com/img/1977.png", provider: "r88" },
+        { id: "74", name: "Mahjong Ways", img: "https://igamingapis.com/img/74.png", provider: "pg" },
+        { id: "858", name: "Mahjong Ways 2", img: "https://igamingapis.com/img/858.png", provider: "pg" },
+        { id: "649", name: "Fortune Ox", img: "https://igamingapis.com/img/649.png", provider: "pg" },
+        { id: "710", name: "Fortune Tiger", img: "https://igamingapis.com/img/710.png", provider: "pg" },
+        { id: "654", name: "Fortune Mouse", img: "https://igamingapis.com/img/654.png", provider: "pg" },
+        { id: "1031", name: "Fortune Rabbit", img: "https://igamingapis.com/img/1031.png", provider: "pg" },
+        { id: "1033", name: "Lucky Neko", img: "https://igamingapis.com/img/1033.png", provider: "pg" },
+        { id: "651", name: "Ganesha Gold", img: "https://igamingapis.com/img/651.png", provider: "pg" },
+        { id: "898", name: "Ganesha Fortune", img: "https://igamingapis.com/img/898.png", provider: "pg" },
+        { id: "172", name: "Candy Burst", img: "https://igamingapis.com/img/172.png", provider: "pg" },
+        { id: "870", name: "Candy Bonanza", img: "https://igamingapis.com/img/870.png", provider: "pg" }
     ],
     lottery: [
         { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },
