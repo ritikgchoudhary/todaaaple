@@ -630,8 +630,8 @@ async function handleSubmit(e) {
   .forgetRow span { width: 82px; }
 }
 @media (max-width: 360px) {
-  .mobileContainer { padding: 0 10px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
-  .head { margin-left: calc(-1 * max(10px, env(safe-area-inset-left))); margin-right: calc(-1 * max(10px, env(safe-area-inset-right))); padding: 0 10px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); margin-bottom: 14px; }
+  .mobileContainer { padding: 0 10px 24px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .head { margin-left: calc(-1 * max(10px, env(safe-area-inset-left))); margin-right: calc(-1 * max(10px, env(safe-area-inset-right))); padding: 0 10px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); padding-top: env(safe-area-inset-top); margin-bottom: 14px; }
   .backBtn { width: 40px; height: 40px; }
   .logoWrap { gap: 6px; }
   .logoIcon { width: 32px; height: 32px; }
