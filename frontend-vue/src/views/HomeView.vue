@@ -109,7 +109,7 @@
     </div>
 
     <!-- Game items: Sports / Live Casino (provider cards) -->
-    <div v-if="activeCategory !== 'crash' && activeCategory !== 'slot' && activeCategory !== 'lottery' && activeCategory !== 'cards'" class="game-item-box-wrapper">
+    <div v-if="activeCategory === 'sports' || activeCategory === 'casino'" class="game-item-box-wrapper">
       <div class="game-item-box">
         <div class="gt-wrapper" :class="{ 'gt-wrapper--live-casino': activeCategory === 'casino' }">
           <a
@@ -265,6 +265,29 @@
             </a>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Cockfight: card-f grid -->
+    <div v-else-if="activeCategory === 'cockfight'" class="game-item-box-wrapper">
+      <div class="card-f-wrapper">
+        <a
+          v-for="g in cockfightGamesList"
+          :key="g.id"
+          href="#"
+          class="game-link card-f"
+          @click.prevent="onProviderClick(g)"
+        >
+          <div class="img-container" :style="{ backgroundImage: g.img ? `url(${g.img})` : 'none' }">
+            <div>
+              <img class="heart" :src="heartIcon" alt="heart" />
+            </div>
+            <div v-if="g.isNew" class="new-icon"><span class="new-text">NEW</span></div>
+          </div>
+          <div class="game-name-box">
+            <span>{{ g.name }}</span>
+          </div>
+        </a>
       </div>
     </div>
 
@@ -675,6 +698,22 @@ const CQ9_CARD_GAMES = [
   { id: "10140", name: "Onestick Fishing", img: "https://igamingapis.com/img/10140.png", provider: "cq9" },
   { id: "10142", name: "Go Fishing", img: "https://igamingapis.com/img/10142.png", provider: "cq9" }
 ]
+
+const COCKFIGHT_GAMES = [
+  { id: "7005", name: "WCC", img: "https://igamingapis.com/img/7005.png", provider: "cockfight" },
+  { id: "7006", name: "WGC", img: "https://igamingapis.com/img/7006.png", provider: "cockfight" },
+  { id: "7007", name: "WGB", img: "https://igamingapis.com/img/7007.png", provider: "cockfight" }
+]
+
+const cockfightGamesList = computed(() => {
+  const dynamic = Array.isArray(gameCategories.value.cockfight) ? gameCategories.value.cockfight : []
+  const existingIds = new Set(dynamic.map(g => String(g.id || g.game_id || g.game_uid)))
+  const combined = [...dynamic]
+  COCKFIGHT_GAMES.forEach(g => {
+    if (!existingIds.has(String(g.id))) combined.push(g)
+  })
+  return combined
+})
 
 const slotGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
