@@ -3,7 +3,7 @@
     <div class="mobile-container">
       <!-- Back Link -->
       <div class="back-link">
-        <router-link to="/wallet" class="back-link-inner">
+        <router-link to="/wallet" class="back-link-inner" style="text-decoration: none;">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </router-link>
         <span class="back-title">Withdrawal</span>
@@ -150,8 +150,9 @@
     <!-- TRC Dialog -->
     <div v-if="showTrcDialog" class="modal-overlay" @click="showTrcDialog = false">
       <div class="modal-content" @click.stop>
-        <h3 class="modal-title">Enter TRC20 Wallet Address</h3>
-        <div class="modal-summary">
+        <div class="modal-header">
+           <h3 class="modal-title">Enter TRC20 Wallet Address</h3>
+        </div>
            <div class="sum-row sub-text"><strong>Withdrawal Amount:</strong> {{ usdtAmount }} USDT</div>
            <div class="sum-row warning-text"><strong>Fee (3%):</strong> {{ calculateUsdtFee().toFixed(2) }} USDT</div>
            <div class="sum-row primary-text bold"><strong>Net Amount You'll Receive:</strong> {{ Math.max(0, usdtAmount - calculateUsdtFee()).toFixed(2) }} USDT</div>
@@ -170,17 +171,17 @@
     </div>
 
     <!-- Toast Modal -->
-    <div v-if="dialog.open" class="modal-overlay" @click="dialog.open = false">
-      <div class="modal-content toast-card" @click.stop>
-        <p class="toast-body">{{ dialog.body }}</p>
+    <div v-if="dialog.open" class="modal-overlay" @click="dialog.open = false" style="background: transparent;">
+      <div class="modal-content toast-card" @click.stop style="background: rgba(0,0,0,0.8); color: white; border-radius: 4px; padding: 15px; margin-top: auto; margin-bottom: 20px;">
+        <p class="toast-body" style="color: white; margin: 0; font-size: 14px;">{{ dialog.body }}</p>
       </div>
     </div>
 
     <!-- Page Loader -->
-    <div v-if="loading && !showTrcDialog" class="modal-overlay">
-       <div class="loader-content">
-         <div class="loader-circle"></div>
-         <div class="loader-text">Please Wait!</div>
+    <div v-if="loading && !showTrcDialog" class="modal-overlay" style="background: transparent;">
+       <div class="loader-content" style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 4px; width: 150px; text-align: center;">
+         <div class="loader-circle" style="border-top-color: white; width: 40px; height: 40px; border-width: 4px; margin: 0 auto 10px;"></div>
+         <div class="loader-text" style="color: white; font-weight: normal;">Please Wait!</div>
        </div>
     </div>
   </div>
@@ -551,8 +552,8 @@ onMounted(fetchData)
   cursor: pointer; border: none; font-size: 0.875rem; text-transform: uppercase;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
 }
-.btn-cancel { background: transparent; color: rgba(0, 0, 0, 0.87); border: 1px solid rgba(0, 0, 0, 0.23) !important; box-shadow: none !important;}
-.warning-bg { background-color: #f39c12; color: white; }
+.btn-cancel { background: transparent; color: #1976d2; border: none; font-weight: 500;}
+.warning-bg { background-color: #1976d2; color: white; font-weight: 500;}
 
 .toast-card { text-align: left; padding: 24px; max-width: 400px; }
 .toast-body { font-size: 1rem; margin: 0; color: rgba(0, 0, 0, 0.87); white-space: pre-wrap;}
