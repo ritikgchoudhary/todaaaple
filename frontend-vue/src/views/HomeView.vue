@@ -171,7 +171,7 @@
             @click="onSlotFilterClick(f.id)"
           >
             <div class="gp-item-inner">
-              <span v-if="f.label" class="gp-label">{{ f.label }}</span>
+              <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <template v-else>
                 <img v-if="slotFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo grayscale" />
