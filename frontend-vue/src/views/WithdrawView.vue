@@ -468,7 +468,7 @@ onMounted(fetchData)
 .change-tag:hover { border-color: #05c0b8; }
 
 .empty-state {
-  padding: 20px 24px;
+  padding: 16px 20px;
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
@@ -483,14 +483,14 @@ onMounted(fetchData)
 }
 .empty-state p {
   margin: 0;
-  font-size: 0.95rem;
-  color: #334155;
-  font-weight: 500;
+  font-size: 1.05rem;
+  color: #0f172a;
+  font-weight: 400;
 }
 .add-bank-link {
   color: #4b0082;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
