@@ -469,27 +469,27 @@ onMounted(fetchData)
 
 .empty-state {
   padding: 30px 20px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
   border-radius: 12px;
   background-color: #fff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
 }
 .empty-state p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: #000;
+  font-weight: 500;
 }
 .add-bank-link {
   color: #4b0082;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
