@@ -620,7 +620,7 @@ onMounted(async () => {
   text-decoration: none;
 }
 .headerLogo {
-  height: 40px;
+  height: 32px;
   width: auto;
   object-fit: contain;
 }
@@ -658,19 +658,19 @@ onMounted(async () => {
 .btnRegister { background: #dc2626; }
 .btnLogin { background: #2563eb; }
 .btnIcon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
 }
 
 /* Slider: swipe to slide */
 .sliderSection {
   position: relative;
-  height: 180px;
-  margin: 0 0 12px;
-  border-radius: 12px;
+  height: 150px;
+  margin: 0 0 10px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
   touch-action: pan-y;
   cursor: grab;
   user-select: none;
@@ -785,11 +785,11 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 6px 10px;
+  padding: 4px 8px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 500;
   color: #666;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -808,8 +808,8 @@ onMounted(async () => {
   transition: width 0.3s ease;
 }
 .type-item img {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   margin-bottom: 2px;
   transition: transform 0.2s;
@@ -974,20 +974,20 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 10px;
+  padding: 6px 8px;
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 64px;
+  min-width: 56px;
 }
 .gp-item-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   width: 100%;
 }
 .gp-label {
@@ -998,8 +998,8 @@ onMounted(async () => {
   letter-spacing: 0.02em;
 }
 .gp-publisher-logo {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   transition: all 0.3s ease;
 }
@@ -1150,7 +1150,7 @@ onMounted(async () => {
   filter: none;
 }
 .game-link.card-f .game-name-box {
-  padding: 4px;
+  padding: 2px;
   background: #f1f5f9;
   display: flex;
   align-items: center;
