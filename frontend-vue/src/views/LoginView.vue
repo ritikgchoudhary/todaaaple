@@ -289,6 +289,9 @@ async function handleSubmit(e) {
         router.push(route.query.redirect || '/')
       }
     } else {
+      if (formData.password !== formData.cpassword) {
+        throw new Error("Passwords do not match!")
+      }
       const { data } = await api.signup(formData)
       if (data?.token) {
         authStore.setUser(data)
