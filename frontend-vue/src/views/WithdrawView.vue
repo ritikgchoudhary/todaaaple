@@ -468,11 +468,13 @@ onMounted(fetchData)
 .change-tag:hover { border-color: #05c0b8; }
 
 .empty-state {
-  padding: 24px;
-  margin-bottom: 24px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  border-radius: 12px;
+  background-color: #fff;
 }
 .empty-state p {
   margin: 0;
