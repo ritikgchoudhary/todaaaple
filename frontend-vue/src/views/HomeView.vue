@@ -421,6 +421,11 @@ async function onProviderClick(p) {
   }
 }
 
+function handleLogout() {
+  auth.logout()
+  router.push('/login')
+}
+
 onMounted(() => {
   sliderTimer = setInterval(() => {
     sliderIndex.value = (sliderIndex.value + 1) % sliderImages.length
@@ -512,7 +517,39 @@ onMounted(async () => {
   width: auto;
   object-fit: contain;
 }
-.headerActions { display: flex; align-items: center; gap: 10px; }
+.headerActions { display: flex; align-items: center; gap: 8px; }
+
+.headerBalance {
+  background: #0f766e;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(15, 118, 110, 0.2);
+}
+
+.btnLogout {
+  background: #f43f5e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 4px rgba(244, 63, 94, 0.2);
+}
+.btnLogout:active {
+  transform: scale(0.95);
+}
+
 .btnRegister, .btnLogin {
   padding: 8px 16px;
   color: #fff;
