@@ -6,28 +6,20 @@
         <router-link to="/" class="logoWrap">
           <img src="https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png" alt="DELTIN SPORT" class="headerLogo" />
         </router-link>
-        <div class="headerActions">
-          <button class="btnLogout" @click="handleLogout" title="Logout">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          </button>
-        </div>
-      </header>
-
-      <!-- Balance Widget -->
-      <div v-if="auth.isLoggedIn" class="balanceWidget">
-        <div class="huLeft">
-          <div class="huWalletLabel">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-            <span>Wallet balance</span>
+        
+        <div v-if="auth.isLoggedIn" class="headerBalance">
+          <div class="hBalTop">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+            <span>Balance</span>
           </div>
-          <div class="huBalContainer">
-             <div class="huBal">₹{{ (userBalance || 0).toFixed(2) }}</div>
-             <button class="huRefreshBtn" @click="fetchBalance" :class="{ 'spinning': isRefreshing }">
+          <div class="hBalBottom">
+             <span class="hBalVal">₹{{ (userBalance || 0).toFixed(2) }}</span>
+             <button class="hRefreshBtn" @click="fetchBalance" :class="{ 'spinning': isRefreshing }">
                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
              </button>
           </div>
         </div>
-      </div>
+      </header>
 
       <!-- Game Iframe Container -->
       <div class="iframe-wrap" v-if="iframeUrl">
@@ -106,11 +98,6 @@ async function launchSports() {
   }
 }
 
-function handleLogout() {
-  auth.logout()
-  router.push('/login')
-}
-
 onMounted(() => {
   fetchBalance()
   launchSports()
@@ -135,69 +122,56 @@ onMounted(() => {
 
 /* Header */
 .header {
-  height: 56px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 12px;
   background: #fff;
   border-bottom: 1px solid #f1f5f9;
   z-index: 100;
   flex-shrink: 0;
 }
 .headerLogo {
-  height: 28px;
+  height: 24px;
   object-fit: contain;
 }
-.btnLogout {
-  background: #f1f5f9;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #64748b;
-  cursor: pointer;
-}
 
-/* Balance Widget */
-.balanceWidget {
-  padding: 8px 16px;
-  background: #fff;
-  border-bottom: 1px solid #f1f5f9;
-  flex-shrink: 0;
+/* Header Balance */
+.headerBalance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
 }
-.huWalletLabel {
+.hBalTop {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.7rem;
+  gap: 4px;
+  font-size: 0.65rem;
   color: #64748b;
   font-weight: 600;
   text-transform: uppercase;
-  margin-bottom: 2px;
 }
-.huBalContainer {
+.hBalBottom {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
-.huBal {
-  font-size: 1.1rem;
+.hBalVal {
+  font-size: 0.95rem;
   font-weight: 800;
   color: #0f172a;
 }
-.huRefreshBtn {
+.hRefreshBtn {
   background: none;
   border: none;
   color: #05c0b8;
-  padding: 4px;
+  padding: 2px;
   cursor: pointer;
   display: flex;
 }
-.huRefreshBtn.spinning {
+.hRefreshBtn.spinning {
   animation: spin 1s linear infinite;
 }
 
