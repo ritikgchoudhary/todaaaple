@@ -468,7 +468,7 @@ onMounted(fetchData)
 .change-tag:hover { border-color: #05c0b8; }
 
 .empty-state {
-  padding: 16px;
+  padding: 16px 20px;
   margin-bottom: 24px;
   display: flex;
   flex-direction: column;
@@ -476,8 +476,9 @@ onMounted(fetchData)
   border-radius: 12px;
   background-color: #fff;
   border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
   text-align: left;
 }
 .empty-state p {
