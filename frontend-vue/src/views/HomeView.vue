@@ -410,9 +410,35 @@ const slotGamesList = computed(() => {
   }))
 })
 const displaySlotGames = computed(() => {
+  let list = slotGamesList.value
+  
+  // 1. Filter by provider (Sidebar)
+  const active = (slotFilterActive.value || 'hot').toLowerCase()
+  if (active !== 'hot' && active !== 'search') {
+    list = list.filter(g => {
+      const p = (g.provider || g.publisher || g.vendor || '').toLowerCase()
+      const gid = (g.id || g.game_id || '').toLowerCase()
+      const img = (g.img || '').toLowerCase()
+      
+      // Match explicitly by field or infer from ID/Path (GPJD, GPJL, etc.)
+      if (p.includes(active)) return true
+      if (active === 'jdb' && (gid.includes('gpjd') || img.includes('gpjd'))) return true
+      if (active === 'jili' && (gid.includes('gpjl') || img.includes('gpjl'))) return true
+      if (active === 'r88' && (gid.includes('gpr8') || img.includes('gpr8'))) return true
+      if (active === 'vp' && (gid.includes('gpvp') || img.includes('gpvp'))) return true
+      if (active === 'pg' && (gid.includes('gppg') || img.includes('gppg'))) return true
+      
+      return false
+    })
+  }
+  
+  // 2. Filter by search query
   const q = (slotSearchQuery.value || '').trim().toLowerCase()
-  if (!q) return slotGamesList.value
-  return slotGamesList.value.filter((g) => g.name.toLowerCase().includes(q))
+  if (q) {
+    list = list.filter((g) => g.name.toLowerCase().includes(q))
+  }
+  
+  return list
 })
 
 const liveCasinoBg = `${baseImg}/site_common/H5_7_mobile/game_item_background/bg-3.png`
