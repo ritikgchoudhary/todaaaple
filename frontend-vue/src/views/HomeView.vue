@@ -165,12 +165,12 @@
       <div class="type-wrapper type-wrapper--slot">
         <div class="left-type-wrapper">
           <div
-            v-for="f in slotFilterItems"
+            v-for="f in slotFilterItems.filter(i => i.id !== 'search')"
             :key="f.id"
             :class="['gp-type-item', { active: slotFilterActive === f.id }]"
             @click="onSlotFilterClick(f.id)"
           >
-            <div>
+            <div class="gp-item-inner">
               <span v-if="f.label" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <template v-else>
@@ -974,50 +974,51 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 12px;
+  padding: 8px 10px;
   background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #475569;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-  min-width: 56px;
+  transition: all 0.2s ease;
+  min-width: 64px;
 }
-.gp-type-item > div {
+.gp-item-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
+  width: 100%;
 }
 .gp-label {
-  font-size: 0.65rem;
-  margin-bottom: 2px;
-  opacity: 0.8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 .gp-publisher-logo {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
   transition: all 0.3s ease;
 }
 .gp-publisher-logo.grayscale {
-  filter: grayscale(1) opacity(0.6);
+  filter: grayscale(1) opacity(0.5);
 }
-.gp-type-item .gp-icon,
-.gp-type-item .gpPublisherLogoIsHide,
-.gp-type-item .gpPublisherLogoIsShow {
-  width: 28px;
-  height: 28px;
+.gp-type-item .gp-icon {
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 .gp-type-item.active {
-  background: #fff;
+  background: #eff6ff;
   border-color: #3b82f6;
   color: #3b82f6;
-  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
-  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
+.gp-type-item.active .gp-label {
+  color: #2563eb;
 }
 .game-menu-wrapper--slot .game-item-box-wrapper {
   flex: 1;
@@ -1031,13 +1032,14 @@ onMounted(async () => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  margin-bottom: 16px;
   transition: all 0.2s ease;
+  height: 44px;
 }
 .game-menu-wrapper--slot .search-bar:focus-within {
   border-color: #3b82f6;
@@ -1046,9 +1048,13 @@ onMounted(async () => {
 }
 .game-menu-wrapper--slot .icon-container {
   flex-shrink: 0;
-  color: #94a3b8;
+  color: #64748b;
   display: flex;
   align-items: center;
+  transition: color 0.2s;
+}
+.game-menu-wrapper--slot .search-bar:focus-within .icon-container {
+  color: #3b82f6;
 }
 .game-menu-wrapper--slot .icon-container svg {
   width: 18px;
@@ -1060,11 +1066,11 @@ onMounted(async () => {
   min-width: 0;
   border: none;
   background: transparent;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: #1e293b;
+  color: #0f172a;
   outline: none;
-  padding: 0;
+  padding: 4px 0;
 }
 .game-menu-wrapper--slot .search-input::placeholder {
   color: #cbd5e1;
