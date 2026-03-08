@@ -64,7 +64,7 @@
         </div>
         <div v-else class="empty-state glass-card">
           <p>No valid bank account found.</p>
-          <router-link to="/bank" class="btn-primary-sm">Add Bank Account</router-link>
+          <router-link to="/bank" class="add-bank-link">Add Bank Account</router-link>
         </div>
 
         <!-- Input Section -->
@@ -466,6 +466,29 @@ onMounted(fetchData)
 .bank-footer { display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: #64748b; font-weight: 700; }
 .change-tag { color: #05c0b8; text-decoration: none; border-bottom: 1.5px solid transparent; transition: 0.2s; }
 .change-tag:hover { border-color: #05c0b8; }
+
+.empty-state {
+  padding: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.empty-state p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+.add-bank-link {
+  color: #6366f1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.add-bank-link:hover {
+  color: #4f46e5;
+}
 
 .usdt-card { background: #f0fdfa; border-color: #ccfbf1; }
 .usdt-card .card-type { color: #10b981; }

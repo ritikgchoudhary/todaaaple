@@ -36,7 +36,13 @@
       </div>
 
       <!-- Payment Methods -->
-      <div class="section-title">Select Payment Method</div>
+      <div class="channel-header">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+        </div>
+        <div class="section-title">Select channel</div>
+      </div>
+      
       <div class="methods-grid">
         <div 
           v-for="gateway in gatewayList" 
@@ -46,24 +52,16 @@
           @click="selectedGateway = gateway.toLowerCase()"
         >
           <div class="item-inner">
-            <div class="icon-wrap">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="gateway-icon" :class="gateway.toLowerCase()">
-                <rect x="2" y="5" width="20" height="14" rx="2"/>
-                <line x1="2" y1="10" x2="22" y2="10"/>
-              </svg>
-            </div>
-            <span class="name">{{ gateway }}</span>
-            <div class="check-mark" v-if="selectedGateway === gateway.toLowerCase()">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
+            <div class="name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
+            <div class="limit">Balance:{{ getLimits(gateway) }}</div>
           </div>
         </div>
         
         <!-- USDT Placeholder -->
-        <div class="method-item disabled" @click="showToast('USDT coming soon!')">
+        <div class="method-item" @click="showToast('USDT coming soon!')">
           <div class="item-inner">
-            <div class="icon-wrap usdt">₮</div>
-            <span class="name">USDT</span>
+            <div class="name">USDT-TRC20</div>
+            <div class="limit">Balance:500 - 1M</div>
           </div>
         </div>
       </div>
@@ -197,11 +195,19 @@ const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual'])
 const dialog = reactive({ open: false, body: '' })
 
 const GATEWAY_LABELS = {
-  auto: "Phonepe QR",
-  manual: "Paytm Direct",
-  lgpay: "UPI Fast QR",
-  watchpay: "WatchPay UPI",
-  rupeerush: "Express UPI",
+  auto: "UPI-QR",
+  manual: "PayPay-QR",
+  lgpay: "Fast-QR",
+  watchpay: "WatchPay-QR",
+  rupeerush: "Express-QR",
+}
+
+function getLimits(gateway) {
+    const g = gateway.toLowerCase()
+    if (g === 'lgpay') return '100 - 50K'
+    if (g === 'watchpay') return '100 - 50K'
+    if (g === 'rupeerush') return '200 - 50K'
+    return '100 - 10K'
 }
 
 async function fetchData() {
@@ -301,8 +307,8 @@ onMounted(() => {
 <style scoped>
 .deposit-page {
   min-height: 100vh;
-  background-color: #f5f5f5;
-  color: #0f172a;
+  background-color: #1a181e;
+  color: #fff;
   font-family: 'Outfit', sans-serif;
   overflow-x: hidden;
 }
@@ -322,8 +328,8 @@ onMounted(() => {
 .mobile-container { 
   max-width: 430px; 
   margin: 0 auto; 
-  padding: 12px 10px; 
-  background: #ffffff; 
+  padding: 12px 14px; 
+  background: transparent; 
   min-height: calc(100vh - 56px);
   padding-bottom: 24px;
 }
@@ -357,53 +363,42 @@ onMounted(() => {
 .secure-tag { display: flex; align-items: center; gap: 4px; font-size: 0.65rem; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.1); padding: 4px 8px; border-radius: 30px; }
 
 /* Section Title */
-.section-title { font-size: 0.8rem; font-weight: 800; color: #0f172a; margin: 0 0 10px 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.channel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; margin-left: 4px; }
+.channel-icon { width: 20px; height: 20px; color: #d9a05b; border-bottom: 2px solid #d9a05b; display: flex; align-items: center; justify-content: center; padding-bottom: 2px; }
+.section-title { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; margin: 0; }
 
 /* Methods Grid */
 .methods-grid { 
   display: grid; 
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 12px; 
-  margin-bottom: 20px; 
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 10px; 
+  margin-bottom: 24px; 
 }
 .method-item { cursor: pointer; }
 .item-inner {
   position: relative; 
-  background: #ffffff; 
-  border: 1px solid #e2e8f0;
-  border-radius: 16px; 
-  padding: 12px 6px; 
+  background: #322e36; 
+  border-radius: 12px; 
+  padding: 14px 12px; 
   display: flex; 
   flex-direction: column; 
-  align-items: center; 
+  align-items: flex-start; 
   justify-content: center;
-  gap: 8px;
-  aspect-ratio: 1/0.95;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 4px;
+  min-height: 70px;
+  transition: all 0.2s;
 }
 .method-item.active .item-inner { 
-  background: #f0fdfa; 
-  border-color: #05c0b8; 
-  border-width: 2px;
-  transform: translateY(-4px); 
-  box-shadow: 0 10px 20px -5px rgba(5,192,184,0.2); 
+  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%); 
+  transform: scale(0.98); 
+  box-shadow: 0 4px 15px rgba(251,191,36,0.3); 
 }
-.icon-wrap { width: 32px; height: 32px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-.icon-wrap img { width: 20px; height: 20px; object-fit: contain; }
-.gateway-icon {
-  width: 20px;
-  height: 20px;
-  color: #64748b;
-}
-.method-item.active .gateway-icon {
-  color: #05c0b8;
-}
-.icon-wrap.usdt { font-size: 1rem; color: #26a17b; font-weight: 900; }
-.item-inner .name { font-size: 0.65rem; font-weight: 700; color: #475569; text-align: center; }
-.method-item.active .name { color: #0f172a; }
-.check-mark { position: absolute; top: -4px; right: -4px; width: 18px; height: 18px; background: #05c0b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; border: 2px solid #ffffff; }
-.check-mark svg { width: 10px; height: 10px; }
-.method-item.disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+
+.item-inner .name { font-size: 0.95rem; font-weight: 700; color: #9ca3af; }
+.method-item.active .name { color: #000; }
+
+.item-inner .limit { font-size: 0.85rem; font-weight: 600; color: #6b7280; }
+.method-item.active .limit { color: #000; opacity: 0.8; }
 
 /* Amount Card */
 .amount-card { padding: 12px 16px; margin-bottom: 20px; background: #ffffff; border-radius: 12px; }
