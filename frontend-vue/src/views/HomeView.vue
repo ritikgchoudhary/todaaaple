@@ -603,11 +603,33 @@ const liveCasinoProvidersList = computed(() => {
   return list.map((p, i) => normalizeProvider(p, i, 'casino'))
 })
 
+const LOTTERY_GAMES = [
+  { id: "237", name: "CQ9 Lottery", logo: "https://igamingapis.com/img/237.png" },
+  { id: "213", name: "Gold Rooster Lottery", logo: "https://igamingapis.com/img/213.png" },
+  { id: "981", name: "Happy Lottery", logo: "https://igamingapis.com/img/981.png" },
+  { id: "2969", name: "Lottery Ticket", logo: "https://igamingapis.com/img/2969.png" },
+  { id: "2971", name: "Lotto Boom", logo: "https://igamingapis.com/img/2971.png" },
+  { id: "2972", name: "Lotto Madness", logo: "https://igamingapis.com/img/2972.png" },
+  { id: "3013", name: "LUCKY LOTTERY", logo: "https://igamingapis.com/img/3013.png" },
+  { id: "9166", name: "Mania Lotto", logo: "https://igamingapis.com/img/9166.png" }
+]
+
 const lotteryProvidersList = computed(() => {
-  const list = (gameCategories.value.lottery && gameCategories.value.lottery.length) 
+  const dynamic = (gameCategories.value.lottery && gameCategories.value.lottery.length) 
     ? gameCategories.value.lottery 
     : lotteryProvidersList_Raw
-  return list.map((p, i) => normalizeProvider(p, i, 'lottery'))
+
+  // Combine dynamic games and fixed LOTTERY_GAMES, unique by ID
+  const combined = [...dynamic]
+  const existingIds = new Set(dynamic.map(g => String(g.id || g.game_id || g.game_uid)))
+  
+  LOTTERY_GAMES.forEach(g => {
+    if (!existingIds.has(String(g.id))) {
+      combined.push(g)
+    }
+  })
+
+  return combined.map((p, i) => normalizeProvider(p, i, 'lottery'))
 })
 
 const displayProviders = computed(() => {

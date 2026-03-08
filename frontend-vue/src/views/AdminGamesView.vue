@@ -299,7 +299,15 @@ const DEFAULTS = {
     lottery: [
         { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },
         { id: 'sea-tcg', name: 'SEA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/sea_tcgaming.png' },
-        { id: 'bbin', name: 'BBIN', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/bbin.png' }
+        { id: 'bbin', name: 'BBIN', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/bbin.png' },
+        { id: "237", name: "CQ9 Lottery", img: "https://igamingapis.com/img/237.png" },
+        { id: "213", name: "Gold Rooster Lottery", img: "https://igamingapis.com/img/213.png" },
+        { id: "981", name: "Happy Lottery", img: "https://igamingapis.com/img/981.png" },
+        { id: "2969", name: "Lottery Ticket", img: "https://igamingapis.com/img/2969.png" },
+        { id: "2971", name: "Lotto Boom", img: "https://igamingapis.com/img/2971.png" },
+        { id: "2972", name: "Lotto Madness", img: "https://igamingapis.com/img/2972.png" },
+        { id: "3013", name: "LUCKY LOTTERY", img: "https://igamingapis.com/img/3013.png" },
+        { id: "9166", name: "Mania Lotto", img: "https://igamingapis.com/img/9166.png" }
     ],
     cards: []
 }
@@ -321,11 +329,19 @@ async function fetchData() {
       if (isEmpty) {
           resetAllToDefaults()
       } else {
-          // Merge JILI games from defaults into slots if IDs are missing
+          // Merge JILI/Other games from defaults into slots if IDs are missing
           const existingSlotIds = new Set(formatted.slot.map(g => String(g.id)))
           DEFAULTS.slot.forEach(g => {
             if (!existingSlotIds.has(String(g.id))) {
               formatted.slot.push(JSON.parse(JSON.stringify(g)))
+            }
+          })
+
+          // Merge Lottery games from defaults if IDs are missing
+          const existingLotteryIds = new Set(formatted.lottery.map(g => String(g.id)))
+          DEFAULTS.lottery.forEach(g => {
+            if (!existingLotteryIds.has(String(g.id))) {
+              formatted.lottery.push(JSON.parse(JSON.stringify(g)))
             }
           })
           gameCategories.value = formatted
