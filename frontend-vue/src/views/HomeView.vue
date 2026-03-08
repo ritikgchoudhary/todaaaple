@@ -171,11 +171,11 @@
             @click="slotFilterActive = f.id"
           >
             <div>
-              <span>{{ f.label }}</span>
+              <span v-if="f.label" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <template v-else>
-                <img v-if="f.logoHide" :src="f.logoHide" alt="" class="gpPublisherLogoIsHide" />
-                <img v-if="f.logoShow" :src="f.logoShow" alt="" class="gpPublisherLogoIsShow" />
+                <img v-if="slotFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo grayscale" />
+                <img v-if="slotFilterActive === f.id && f.logoShow" :src="f.logoShow" alt="" class="gp-publisher-logo" />
               </template>
             </div>
           </div>
@@ -961,6 +961,20 @@ onMounted(async () => {
   align-items: center;
   gap: 4px;
 }
+.gp-label {
+  font-size: 0.65rem;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+.gp-publisher-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+}
+.gp-publisher-logo.grayscale {
+  filter: grayscale(1) opacity(0.6);
+}
 .gp-type-item .gp-icon,
 .gp-type-item .gpPublisherLogoIsHide,
 .gp-type-item .gpPublisherLogoIsShow {
@@ -976,19 +990,27 @@ onMounted(async () => {
 .game-menu-wrapper--slot .game-item-box-wrapper {
   flex: 1;
   min-width: 0;
+  padding-top: 4px;
 }
 .gt-wrapper--slot {
   display: block;
 }
 .game-menu-wrapper--slot .search-bar {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+}
+.game-menu-wrapper--slot .search-bar:focus-within {
+  border-color: #3b82f6;
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  margin-bottom: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 .game-menu-wrapper--slot .icon-container {
   flex-shrink: 0;
@@ -996,15 +1018,21 @@ onMounted(async () => {
   display: flex;
   align-items: center;
 }
+.game-menu-wrapper--slot .icon-container svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
 .game-menu-wrapper--slot .search-input {
   flex: 1;
   min-width: 0;
   border: none;
   background: transparent;
-  font-size: 0.85rem;
-  color: #1a1a1a;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1e293b;
   outline: none;
-  padding: 4px 0;
+  padding: 0;
 }
 .game-menu-wrapper--slot .search-input::placeholder {
   color: #cbd5e1;
