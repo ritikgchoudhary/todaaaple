@@ -485,24 +485,6 @@ const RICH88_GAMES = [
   { id: "1977", name: "Double slot", img: "https://igamingapis.com/img/1977.png", provider: "r88" }
 ]
 
-const RICH88_GAMES = [
-  { id: "1163", name: "100 PokDeng", img: "https://igamingapis.com/img/1163.png", provider: "r88" },
-  { id: "1164", name: "100 Teen Patti", img: "https://igamingapis.com/img/1164.png", provider: "r88" },
-  { id: "1223", name: "88 Fortunes", img: "https://igamingapis.com/img/1223.png", provider: "r88" },
-  { id: "1330", name: "Ancient Giant Elephant", img: "https://igamingapis.com/img/1330.png", provider: "r88" },
-  { id: "1425", name: "Battle of Five Carp", img: "https://igamingapis.com/img/1425.png", provider: "r88" },
-  { id: "1456", name: "Big and Small", img: "https://igamingapis.com/img/1456.png", provider: "r88" },
-  { id: "1457", name: "Big and Small 2", img: "https://igamingapis.com/img/1457.png", provider: "r88" },
-  { id: "1480", name: "Bingo Football", img: "https://igamingapis.com/img/1480.png", provider: "r88" },
-  { id: "1745", name: "Christmas Gift", img: "https://igamingapis.com/img/1745.png", provider: "r88" },
-  { id: "1766", name: "Cleopatra", img: "https://igamingapis.com/img/1766.png", provider: "r88" },
-  { id: "1776", name: "CockFighting", img: "https://igamingapis.com/img/1776.png", provider: "r88" },
-  { id: "1788", name: "Color Dish", img: "https://igamingapis.com/img/1788.png", provider: "r88" },
-  { id: "1789", name: "Color Dish 2", img: "https://igamingapis.com/img/1789.png", provider: "r88" },
-  { id: "1821", name: "Crazy Rich Man", img: "https://igamingapis.com/img/1821.png", provider: "r88" },
-  { id: "1977", name: "Double slot", img: "https://igamingapis.com/img/1977.png", provider: "r88" }
-]
-
 const PG_GAMES = [
   { id: "74", name: "Mahjong Ways", img: "https://igamingapis.com/img/74.png", provider: "pg" },
   { id: "858", name: "Mahjong Ways 2", img: "https://igamingapis.com/img/858.png", provider: "pg" },
