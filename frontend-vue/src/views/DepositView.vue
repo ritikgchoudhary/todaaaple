@@ -204,9 +204,9 @@ const GATEWAY_LABELS = {
 
 function getLimits(gateway) {
     const g = gateway.toLowerCase()
-    if (g === 'lgpay') return '100 - 50K'
-    if (g === 'watchpay') return '100 - 50K'
-    if (g === 'rupeerush') return '200 - 50K'
+    if (g === 'lgpay') return '100 - 100K'
+    if (g === 'watchpay') return '100 - 100K'
+    if (g === 'rupeerush') return '200 - 100K'
     return '100 - 10K'
 }
 
@@ -277,7 +277,8 @@ async function handleRecharge() {
             throw new Error("Invalid response from payment server")
         }
     } catch (err) {
-        showToast(err.response?.data?.error || err.message || "Failed to initiate. Check your connection.")
+        const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to initiate. Check your connection."
+        showToast(errorMsg)
     } finally {
         loading.value = false
     }
