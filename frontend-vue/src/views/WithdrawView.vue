@@ -43,11 +43,14 @@
         <div class="info-text">Amount: ₹0 - ₹1000, fee ₹30</div>
         <div class="info-text" style="margin-bottom: 10px;">Amount: ₹1000 and above, fee 3%</div>
 
-        <div class="input-label" style="font-size: 1rem; color: black;">Withdrawal Amount</div>
+        <div class="input-label" style="font-size: 1rem; color: black; margin-bottom: 5px;">Withdrawal Amount</div>
         <div class="input-card">
           <div class="input-wrap">
-            <span class="prefix">₹</span>
-            <input type="number" v-model.number="amount" placeholder="Enter Amount" class="main-input" />
+            <div class="input-label-small">Enter Amount</div>
+            <div class="input-inner">
+              <span class="prefix">₹</span>
+              <input type="number" v-model.number="amount" class="main-input" />
+            </div>
           </div>
         </div>
 
@@ -69,10 +72,10 @@
             You need to play total bids equal to your last recharge amount<br/>
             <span class="hindi-text">आपको अपनी अंतिम रिचार्ज राशि के बराबर कुल बिड खेलने की आवश्यकता है</span>
           </div>
-          <div class="info-text">
-            Last recharge amount is ₹{{ withdrawalLimits.recharge }}, play ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid) }} more amount bids to withdraw<br/>
-            <span class="hindi-text">अंतिम रिचार्ज राशि ₹{{ withdrawalLimits.recharge }} है, निकासी के लिए ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid) }} और अधिक राशि की बिड खेलें</span>
-          </div>
+        <div class="info-text" style="color: black; margin-top: 5px;">
+          Last recharge amount is ₹{{ withdrawalLimits.recharge }}, play ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid).toFixed(2) }} more amount bids to withdraw<br/>
+          <span class="hindi-text">अंतिम रिचार्ज राशि ₹{{ withdrawalLimits.recharge }} है, निकासी के लिए ₹{{ Math.max(0, withdrawalLimits.recharge - withdrawalLimits.bid).toFixed(2) }} और अधिक राशि की बिड खेलें</span>
+        </div>
         </div>
 
         <div class="btn-container">
@@ -98,11 +101,14 @@
         <div class="info-text">Withdrawal Fee: 3% (deducted from withdrawal amount)</div>
         <div class="info-text sub-text" style="margin-bottom: 10px;">Minimum fee: 3 USDT</div>
 
-        <div class="input-label" style="font-size: 1rem; color: black;">USDT Withdrawal Amount</div>
+        <div class="input-label" style="font-size: 1rem; color: black; margin-bottom: 5px;">USDT Withdrawal Amount</div>
         <div class="input-card">
           <div class="input-wrap">
-            <span class="prefix usdt-text">USDT</span>
-            <input type="number" v-model.number="usdtAmount" placeholder="Enter USDT Amount" class="main-input" />
+            <div class="input-label-small">Enter USDT Amount</div>
+            <div class="input-inner">
+              <span class="prefix usdt-text" style="color: black;">USDT</span>
+              <input type="number" v-model.number="usdtAmount" class="main-input" />
+            </div>
           </div>
         </div>
         
@@ -378,6 +384,7 @@ onMounted(fetchData)
   align-items: center;
   gap: 5px;
   background-color: transparent;
+  color: #00b8a9;
 }
 .balance-label {
   font-size: 1.15rem;
@@ -447,21 +454,23 @@ onMounted(fetchData)
 .service-time { color: black !important; }
 
 .input-card {
-  padding: 20px 20px 0 22px;
+  padding: 10px 20px 0 22px;
 }
 .input-wrap { 
-  display: flex; align-items: center;
   background: rgba(0, 0, 0, 0.09);
   border-radius: 4px 4px 0 0;
-  padding: 0 12px;
+  padding: 8px 12px 0 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
   margin-bottom: 1px;
 }
 .input-wrap:focus-within { border-bottom: 2px solid #3f51b5; padding-bottom: 0; margin-bottom: 0;}
+.input-inner {
+  display: flex; align-items: center;
+}
 .prefix { font-weight: bold; font-size: 1rem; margin-right: 10px; }
 .main-input { 
   flex: 1; background: none; border: none; outline: none; color: #000; 
-  font-size: 1rem; padding: 20px 0 6px 0;
+  font-size: 1rem; padding: 4px 0;
 }
 .main-input::placeholder { color: rgba(0,0,0,0.54); }
 
