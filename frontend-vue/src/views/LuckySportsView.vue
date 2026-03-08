@@ -90,7 +90,7 @@ async function launchSports() {
   
   try {
     const userId = auth.user.id
-    const gameId = 'lucky' // Lucky Sports ID
+    const gameId = '7004' // Lucky Sports ID (7004)
     
     const res = await api.launchGame(userId, gameId)
     if (res.data && res.data.success && res.data.url) {

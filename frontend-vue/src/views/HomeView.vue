@@ -395,7 +395,7 @@ const categories = [
 const defaultCardBg = `${baseImg}/site_common/H5_7_mobile/game_item_background/bg-4.png`
 const defaultProviders = [
   { id: '9w', name: '9WICKETS', bg: defaultCardBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/4-GP9W.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/4-GP9W.png` },
-  { id: 'lucky', name: 'Lucky Sports', bg: defaultCardBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/4-GPLS.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/4-GPLS.png` },
+  { id: '7004', name: 'Lucky Sports', bg: defaultCardBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/4-GPLS.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/4-GPLS.png` },
   { id: 'saba', name: 'SABA', bg: defaultCardBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/4-GPOW.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/4-GPOW-en_US.png` },
   { id: 'newbb', name: 'NewBB', bg: defaultCardBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/4-GPNBB.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/4-GPBB-new bb.png` },
   { id: 'sbo', name: 'SBO', bg: defaultCardBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/4-GPSB2.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/4-GPSB2.png` },
