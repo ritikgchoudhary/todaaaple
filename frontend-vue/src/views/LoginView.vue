@@ -5,18 +5,18 @@
 
     <!-- Main content: mobile-width container on all screen sizes -->
     <div class="mobileContainer">
-    <!-- Head: dark solid background (image match) -->
+    <!-- Head: match rest of the website (white with logo) -->
     <div class="head">
       <header class="header">
         <button type="button" class="backBtn" aria-label="Back" @click="router.push('/')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
         </button>
         <div class="logoWrap">
-          <span class="logoClub">CLUB</span>
+          <img src="https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png" alt="DELTIN SPORT" class="headerLogo" />
         </div>
-        <div class="langWrap">
+        <div class="langWrap" style="color: #000;">
           <span class="langFlag" aria-hidden="true">&#127482;&#127480;</span>
           <span class="langText">EN</span>
         </div>
@@ -351,10 +351,10 @@ async function handleSubmit(e) {
   display: none;
 }
 
-/* Head: very dark solid strip (no transparency) */
+/* Head: white background like rest of the website */
 .head {
   position: relative;
-  background: #0a0a0c;
+  background: #fff;
   margin: 0 -20px 0;
   margin-left: calc(-1 * max(20px, env(safe-area-inset-left)));
   margin-right: calc(-1 * max(20px, env(safe-area-inset-right)));
@@ -392,11 +392,10 @@ async function handleSubmit(e) {
   align-items: center;
   justify-content: center;
 }
-.logoClub {
-  color: #fff;
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+.headerLogo {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
 }
 
 .langWrap {
