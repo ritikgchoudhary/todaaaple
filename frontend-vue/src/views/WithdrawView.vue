@@ -1,15 +1,14 @@
 <template>
   <div class="withdrawal-page">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-left" @click="router.back()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      </div>
-      <h1 class="header-title">Withdrawal</h1>
-      <div class="header-right"></div>
-    </div>
-
     <div class="mobile-container">
+      <!-- Back Link -->
+      <div class="back-link">
+        <router-link to="/wallet" class="back-link-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </router-link>
+        <span class="back-title">Withdrawal</span>
+      </div>
+
       <div class="balance-title">
         <span class="balance-label">My Balance</span>
         <span class="balance-amount">₹{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) }}</span>
@@ -339,15 +338,32 @@ onMounted(fetchData)
 
 /* Header */
 .header {
-  display: flex; align-items: center; justify-content: space-between; 
+  display: none;
+}
+
+.back-link {
+  display: flex;
+  align-items: center;
   padding: 15px 20px;
   background: white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  margin-bottom: 20px;
 }
-.header-left { color: #000; cursor: pointer; display: flex; align-items: center; }
-.header-left svg { width: 20px; height: 20px; }
-.header-title { font-size: 1.1rem; font-weight: 500; color: #000; margin: 0; text-align: center; flex: 1; text-transform: none;}
-.header-right { width: 24px; }
+.back-link-inner {
+  color: #000;
+  display: flex;
+  align-items: center;
+  width: 33%;
+  cursor: pointer;
+}
+.back-link-inner svg {
+  width: 24px;
+  height: 24px;
+}
+.back-title {
+  width: 33%;
+  text-align: center;
+  font-size: 1.1rem;
+}
 
 .mobile-container { 
   max-width: 100%; 
@@ -355,10 +371,11 @@ onMounted(fetchData)
 }
 
 .balance-title {
-  padding: 15px 35px;
+  padding: 0 35px 15px 35px;
   display: flex;
   align-items: center;
   gap: 5px;
+  background-color: #f5f5f5;
 }
 .balance-label {
   font-size: 1.25rem;
@@ -371,9 +388,14 @@ onMounted(fetchData)
   color: #00b8a9;
 }
 
+.tab-switcher-container {
+  padding: 0 20px;
+  margin-bottom: 10px;
+}
+
 /* Switcher */
 .tab-switcher {
-  display: flex; background: white; margin: 20px; margin-bottom: 10px;
+  display: flex; background: white;
   border-radius: 4px;
   box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
   overflow: hidden;
@@ -384,12 +406,17 @@ onMounted(fetchData)
   border-bottom: 2px solid transparent;
   transition: all 0.3s ease;
 }
-.tab-btn.active { color: #3f51b5; border-bottom: 2px solid #3f51b5; }
+.tab-btn.active { color: #1976d2; border-bottom: 2px solid #1976d2; }
+
+.card-container {
+  padding: 0 20px;
+  margin-bottom: 15px;
+}
 
 /* Bank Card */
 .bank-card {
   background: #fff;
-  border-radius: 10px; padding: 10px; margin: 0 20px 15px 20px;
+  border-radius: 10px; padding: 10px;
   box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
 }
 .bank-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -406,6 +433,7 @@ onMounted(fetchData)
   line-height: 1.5;
 }
 .info-text.bold { font-weight: bold; padding-left: 28px; }
+.black-text { color: black !important; }
 
 .input-label {
   padding-left: 22px;
@@ -413,6 +441,7 @@ onMounted(fetchData)
   font-weight: bold;
   font-size: 1rem;
 }
+.service-time { color: black !important; }
 
 .input-card {
   padding: 20px 20px 0 22px;
@@ -448,12 +477,16 @@ onMounted(fetchData)
   font-size: 14px;
 }
 
+.btn-container {
+  padding: 0 15px;
+}
+
 .withdraw-btn { 
-  width: auto; margin: 15px; height: 50px; border-radius: 8px; 
+  width: 100%; height: 50px; border-radius: 8px; 
   border: none; color: #fff; font-size: 0.875rem; text-transform: none; 
   cursor: pointer; display: block; box-sizing: border-box;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
-  width: calc(100% - 30px);
+  margin-top: 15px;
 }
 .primary-btn { background-color: #00b8a9; }
 .warning-btn { background-color: #f39c12; }
