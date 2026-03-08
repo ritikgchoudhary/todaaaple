@@ -30,27 +30,51 @@ API.interceptors.request.use((config) => {
 
 // Add response interceptor for Auth errors
 API.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Some endpoints might return 200 but with an "Auth Failed" message
+    if (response.data?.message === 'Auth Failed' || response.data?.msg === 'Auth Failed') {
+      return handleAuthFailure(response)
+    }
+    return response
+  },
   (error) => {
     const isAuthError = error.response?.status === 401 || 
                        error.response?.data?.msg === 'Auth Failed' || 
                        error.response?.data?.message === 'Auth Failed';
                        
     if (isAuthError) {
-      localStorage.removeItem('user')
-      localStorage.removeItem('auth_token')
-      
-      // Redirect to login if not already there
-      if (router.currentRoute.value.name !== 'Login') {
-        router.push({ 
-          name: 'Login', 
-          query: { redirect: router.currentRoute.value.fullPath } 
-        })
-      }
+      return handleAuthFailure(error.response)
     }
     return Promise.reject(error)
   }
 )
+
+function handleAuthFailure(response) {
+  console.warn('Authentication failure detected, redirecting to login...', response?.data);
+  
+  localStorage.removeItem('user')
+  localStorage.removeItem('auth_token')
+  
+  // Try to redirect using router
+  if (router.currentRoute.value.name !== 'Login') {
+    router.push({ 
+      name: 'Login', 
+      query: { redirect: router.currentRoute.value.fullPath } 
+    }).catch(err => {
+      console.error('Router push failed:', err);
+      window.location.href = '/login';
+    });
+    
+    // Fallback if router doesn't navigate within 500ms
+    setTimeout(() => {
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }, 500);
+  }
+  
+  return Promise.reject(new Error('Auth Failed'))
+}
 
 export default API
 export const url = apiBase
