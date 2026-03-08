@@ -385,62 +385,73 @@ const slotFilterItems = computed(() => {
     ...dynamic
   ]
 })
+const JILI_GAMES = [
+  { id: "3", name: "Crazy Pusher", img: "https://igamingapis.com/img/3.png", provider: "jili" },
+  { id: "4", name: "Crash Touchdown", img: "https://igamingapis.com/img/4.png", provider: "jili" },
+  { id: "17", name: "Devil Fire 2", img: "https://igamingapis.com/img/17.png", provider: "jili" },
+  { id: "21", name: "Caribbean Stud Poker", img: "https://igamingapis.com/img/21.png", provider: "jili" },
+  { id: "26", name: "Golden Land", img: "https://igamingapis.com/img/26.png", provider: "jili" },
+  { id: "33", name: "MINI FLUSH", img: "https://igamingapis.com/img/33.png", provider: "jili" },
+  { id: "42", name: "Fengshen", img: "https://igamingapis.com/img/42.png", provider: "jili" },
+  { id: "44", name: "Pearls of Bingo", img: "https://igamingapis.com/img/44.png", provider: "jili" },
+  { id: "53", name: "Journey West M", img: "https://igamingapis.com/img/53.png", provider: "jili" },
+  { id: "59", name: "Super Ace Scratch", img: "https://igamingapis.com/img/59.png", provider: "jili" },
+  { id: "75", name: "JILI CAISHEN", img: "https://igamingapis.com/img/75.png", provider: "jili" },
+  { id: "76", name: "Dragon Fortune", img: "https://igamingapis.com/img/76.png", provider: "jili" },
+  { id: "82", name: "Legacy of Egypt", img: "https://igamingapis.com/img/82.png", provider: "jili" },
+  { id: "104", name: "Keno Extra Bet", img: "https://igamingapis.com/img/104.png", provider: "jili" },
+  { id: "107", name: "TeenPatti Joker", img: "https://igamingapis.com/img/107.png", provider: "jili" },
+  { id: "110", name: "TeenPatti 20-20", img: "https://igamingapis.com/img/110.png", provider: "jili" },
+  { id: "113", name: "Devil Fire", img: "https://igamingapis.com/img/113.png", provider: "jili" },
+  { id: "119", name: "Secret Treasure", img: "https://igamingapis.com/img/119.png", provider: "jili" },
+  { id: "128", name: "Happy Taxi", img: "https://igamingapis.com/img/128.png", provider: "jili" },
+  { id: "142", name: "God Of Martial", img: "https://igamingapis.com/img/142.png", provider: "jili" },
+  { id: "148", name: "Bingo Adventure", img: "https://igamingapis.com/img/148.png", provider: "jili" },
+  { id: "155", name: "Boxing Extravaganza", img: "https://igamingapis.com/img/155.png", provider: "jili" },
+  { id: "158", name: "Chin Shi Huang", img: "https://igamingapis.com/img/158.png", provider: "jili" },
+  { id: "162", name: "Big Small", img: "https://igamingapis.com/img/162.png", provider: "jili" },
+  { id: "163", name: "3 Coin Wild Horse", img: "https://igamingapis.com/img/163.png", provider: "jili" },
+  { id: "170", name: "Tongits Go", img: "https://igamingapis.com/img/170.png", provider: "jili" },
+  { id: "177", name: "World Cup", img: "https://igamingapis.com/img/177.png", provider: "jili" },
+  { id: "182", name: "Charge Buffalo Ascent", img: "https://igamingapis.com/img/182.png", provider: "jili" },
+  { id: "183", name: "Video Poker", img: "https://igamingapis.com/img/183.png", provider: "jili" },
+  { id: "185", name: "Jogo do Bicho", img: "https://igamingapis.com/img/185.png", provider: "jili" },
+  { id: "189", name: "Super Ace Joker", img: "https://igamingapis.com/img/189.png", provider: "jili" },
+  { id: "192", name: "Gold Rush", img: "https://igamingapis.com/img/192.png", provider: "jili" },
+  { id: "193", name: "Color Game", img: "https://igamingapis.com/img/193.png", provider: "jili" },
+  { id: "195", name: "Crash Cricket", img: "https://igamingapis.com/img/195.png", provider: "jili" },
+  { id: "197", name: "Medusa", img: "https://igamingapis.com/img/197.png", provider: "jili" },
+  { id: "202", name: "Candy Baby", img: "https://igamingapis.com/img/202.png", provider: "jili" },
+  { id: "211", name: "Wild Racer", img: "https://igamingapis.com/img/211.png", provider: "jili" },
+  { id: "216", name: "Fortune Bingo", img: "https://igamingapis.com/img/216.png", provider: "jili" },
+  { id: "245", name: "Number King", img: "https://igamingapis.com/img/245.png", provider: "jili" },
+  { id: "257", name: "Bonus Hunter", img: "https://igamingapis.com/img/257.png", provider: "jili" },
+  { id: "259", name: "Jhandi Munda", img: "https://igamingapis.com/img/259.png", provider: "jili" },
+  { id: "261", name: "Money Coming Expand Bets", img: "https://igamingapis.com/img/261.png", provider: "jili" },
+  { id: "262", name: "Golden Bank 2", img: "https://igamingapis.com/img/262.png", provider: "jili" },
+  { id: "264", name: "7up7down", img: "https://igamingapis.com/img/264.png", provider: "jili" },
+  { id: "267", name: "Blackjack", img: "https://igamingapis.com/img/267.png", provider: "jili" },
+  { id: "270", name: "Jackpot Fishing", img: "https://igamingapis.com/img/270.png", provider: "jili" },
+  { id: "296", name: "Pool Rummy", img: "https://igamingapis.com/img/296.png", provider: "jili" },
+  { id: "299", name: "Penalty Kick", img: "https://igamingapis.com/img/299.png", provider: "jili" },
+  { id: "306", name: "Go For Champion", img: "https://igamingapis.com/img/306.png", provider: "jili" },
+  { id: "315", name: "Pirate Queen 2", img: "https://igamingapis.com/img/315.png", provider: "jili" }
+]
+
 const slotGamesList = computed(() => {
-  const list = (gameCategories.value.slot && gameCategories.value.slot.length) 
-    ? gameCategories.value.slot 
-    : [
-        { id: "3", name: "Crazy Pusher", img: "https://igamingapis.com/img/3.png", provider: "jili" },
-        { id: "4", name: "Crash Touchdown", img: "https://igamingapis.com/img/4.png", provider: "jili" },
-        { id: "17", name: "Devil Fire 2", img: "https://igamingapis.com/img/17.png", provider: "jili" },
-        { id: "21", name: "Caribbean Stud Poker", img: "https://igamingapis.com/img/21.png", provider: "jili" },
-        { id: "26", name: "Golden Land", img: "https://igamingapis.com/img/26.png", provider: "jili" },
-        { id: "33", name: "MINI FLUSH", img: "https://igamingapis.com/img/33.png", provider: "jili" },
-        { id: "42", name: "Fengshen", img: "https://igamingapis.com/img/42.png", provider: "jili" },
-        { id: "44", name: "Pearls of Bingo", img: "https://igamingapis.com/img/44.png", provider: "jili" },
-        { id: "53", name: "Journey West M", img: "https://igamingapis.com/img/53.png", provider: "jili" },
-        { id: "59", name: "Super Ace Scratch", img: "https://igamingapis.com/img/59.png", provider: "jili" },
-        { id: "75", name: "JILI CAISHEN", img: "https://igamingapis.com/img/75.png", provider: "jili" },
-        { id: "76", name: "Dragon Fortune", img: "https://igamingapis.com/img/76.png", provider: "jili" },
-        { id: "82", name: "Legacy of Egypt", img: "https://igamingapis.com/img/82.png", provider: "jili" },
-        { id: "104", name: "Keno Extra Bet", img: "https://igamingapis.com/img/104.png", provider: "jili" },
-        { id: "107", name: "TeenPatti Joker", img: "https://igamingapis.com/img/107.png", provider: "jili" },
-        { id: "110", name: "TeenPatti 20-20", img: "https://igamingapis.com/img/110.png", provider: "jili" },
-        { id: "113", name: "Devil Fire", img: "https://igamingapis.com/img/113.png", provider: "jili" },
-        { id: "119", name: "Secret Treasure", img: "https://igamingapis.com/img/119.png", provider: "jili" },
-        { id: "128", name: "Happy Taxi", img: "https://igamingapis.com/img/128.png", provider: "jili" },
-        { id: "142", name: "God Of Martial", img: "https://igamingapis.com/img/142.png", provider: "jili" },
-        { id: "148", name: "Bingo Adventure", img: "https://igamingapis.com/img/148.png", provider: "jili" },
-        { id: "155", name: "Boxing Extravaganza", img: "https://igamingapis.com/img/155.png", provider: "jili" },
-        { id: "158", name: "Chin Shi Huang", img: "https://igamingapis.com/img/158.png", provider: "jili" },
-        { id: "162", name: "Big Small", img: "https://igamingapis.com/img/162.png", provider: "jili" },
-        { id: "163", name: "3 Coin Wild Horse", img: "https://igamingapis.com/img/163.png", provider: "jili" },
-        { id: "170", name: "Tongits Go", img: "https://igamingapis.com/img/170.png", provider: "jili" },
-        { id: "177", name: "World Cup", img: "https://igamingapis.com/img/177.png", provider: "jili" },
-        { id: "182", name: "Charge Buffalo Ascent", img: "https://igamingapis.com/img/182.png", provider: "jili" },
-        { id: "183", name: "Video Poker", img: "https://igamingapis.com/img/183.png", provider: "jili" },
-        { id: "185", name: "Jogo do Bicho", img: "https://igamingapis.com/img/185.png", provider: "jili" },
-        { id: "189", name: "Super Ace Joker", img: "https://igamingapis.com/img/189.png", provider: "jili" },
-        { id: "192", name: "Gold Rush", img: "https://igamingapis.com/img/192.png", provider: "jili" },
-        { id: "193", name: "Color Game", img: "https://igamingapis.com/img/193.png", provider: "jili" },
-        { id: "195", name: "Crash Cricket", img: "https://igamingapis.com/img/195.png", provider: "jili" },
-        { id: "197", name: "Medusa", img: "https://igamingapis.com/img/197.png", provider: "jili" },
-        { id: "202", name: "Candy Baby", img: "https://igamingapis.com/img/202.png", provider: "jili" },
-        { id: "211", name: "Wild Racer", img: "https://igamingapis.com/img/211.png", provider: "jili" },
-        { id: "216", name: "Fortune Bingo", img: "https://igamingapis.com/img/216.png", provider: "jili" },
-        { id: "245", name: "Number King", img: "https://igamingapis.com/img/245.png", provider: "jili" },
-        { id: "257", name: "Bonus Hunter", img: "https://igamingapis.com/img/257.png", provider: "jili" },
-        { id: "259", name: "Jhandi Munda", img: "https://igamingapis.com/img/259.png", provider: "jili" },
-        { id: "261", name: "Money Coming Expand Bets", img: "https://igamingapis.com/img/261.png", provider: "jili" },
-        { id: "262", name: "Golden Bank 2", img: "https://igamingapis.com/img/262.png", provider: "jili" },
-        { id: "264", name: "7up7down", img: "https://igamingapis.com/img/264.png", provider: "jili" },
-        { id: "267", name: "Blackjack", img: "https://igamingapis.com/img/267.png", provider: "jili" },
-        { id: "270", name: "Jackpot Fishing", img: "https://igamingapis.com/img/270.png", provider: "jili" },
-        { id: "296", "name": "Pool Rummy", "img": "https://igamingapis.com/img/296.png", provider: "jili" },
-        { id: "299", "name": "Penalty Kick", "img": "https://igamingapis.com/img/299.png", provider: "jili" },
-        { id: "306", "name": "Go For Champion", "img": "https://igamingapis.com/img/306.png", provider: "jili" },
-        { id: "315", "name": "Pirate Queen 2", "img": "https://igamingapis.com/img/315.png", provider: "jili" }
-      ]
-  return list.map(g => ({ 
+  const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
+  
+  // Combine dynamic games and fixed JILI games, unique by ID
+  const combined = [...dynamic]
+  const existingIds = new Set(dynamic.map(g => String(g.id)))
+  
+  JILI_GAMES.forEach(g => {
+    if (!existingIds.has(String(g.id))) {
+      combined.push(g)
+    }
+  })
+  
+  return combined.map(g => ({ 
     ...g, 
     img: g.img || g.logo || g.charImageUrl || g.logoUrl || defaultCardBg 
   }))
