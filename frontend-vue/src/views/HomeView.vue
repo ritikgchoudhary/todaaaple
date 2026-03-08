@@ -247,6 +247,12 @@
       <iframe :src="iframeUrl" frameborder="0" allowfullscreen></iframe>
     </div>
 
+    <!-- Game Loader Overlay -->
+    <div v-if="isGameLoading" class="game-loader-overlay">
+      <div class="spinner"></div>
+      <p>Loading Game...</p>
+    </div>
+
   </div>
 </div>
 </template>
@@ -262,6 +268,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const userBalance = ref(0)
 const iframeUrl = ref(null)
+const isGameLoading = ref(false)
 
 const baseImg = 'https://img.bzvm68.com'
 const sliderImages = [
@@ -466,6 +473,9 @@ async function onProviderClick(p) {
       alert('Game ID not found')
       return
     }
+    
+    isGameLoading.value = true // Show loader
+    
     const res = await api.launchGame(userId, gameId)
     if (res.data && res.data.success && res.data.url) {
       iframeUrl.value = res.data.url
@@ -475,6 +485,8 @@ async function onProviderClick(p) {
   } catch (err) {
     console.error(err)
     alert('Error launching game: ' + (err.response?.data?.message || err.message))
+  } finally {
+    isGameLoading.value = false // Hide loader
   }
 }
 
@@ -1209,5 +1221,39 @@ onMounted(async () => {
   width: 100%;
   border: none;
   background: #000;
+}
+
+.game-loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  z-index: 9999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.game-loader-overlay .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #05c0b8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.game-loader-overlay p {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
