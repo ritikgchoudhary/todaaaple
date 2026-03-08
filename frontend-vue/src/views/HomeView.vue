@@ -529,19 +529,6 @@ onMounted(async () => {
 }
 .headerActions { display: flex; align-items: center; gap: 8px; }
 
-.headerBalance {
-  background: #0f766e;
-  color: white;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(15, 118, 110, 0.2);
-}
-
 .btnLogout {
   background: #f43f5e;
   color: white;
