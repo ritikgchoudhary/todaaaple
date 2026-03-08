@@ -25,32 +25,38 @@
           </div>
         </div>
 
-        <div class="games-grid">
-          <div v-for="(game, index) in games" :key="index" class="game-item">
-            <div class="game-top">
-              <span class="game-index">#{{ index + 1 }}</span>
-              <button class="remove-btn" @click="removeGame(key, index)">×</button>
-            </div>
-            
-            <div class="input-group">
-              <label>Game Name</label>
-              <input v-model="game.name" placeholder="e.g. Aviator" />
-            </div>
-
-            <div class="input-group">
-              <label>Game ID (game_uid)</label>
-              <input v-model="game.id" placeholder="e.g. av" />
-            </div>
-
-            <div class="input-group">
-              <label>Image URL (Optional)</label>
-              <input v-model="game.img" placeholder="https://..." />
-            </div>
-          </div>
-        </div>
-
-        <div v-if="!games.length" class="empty-state">
-          No games in this category.
+        <div class="table-container">
+          <table class="games-table">
+            <thead>
+              <tr>
+                <th width="50">#</th>
+                <th>Game Name</th>
+                <th>Game ID (uid)</th>
+                <th>Image URL</th>
+                <th width="80">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(game, index) in games" :key="index">
+                <td>{{ index + 1 }}</td>
+                <td>
+                  <input v-model="game.name" placeholder="Name" />
+                </td>
+                <td>
+                  <input v-model="game.id" placeholder="ID" />
+                </td>
+                <td>
+                  <input v-model="game.img" placeholder="Image URL" />
+                </td>
+                <td class="actions">
+                  <button class="remove-btn" @click="removeGame(key, index)">×</button>
+                </td>
+              </tr>
+              <tr v-if="!games.length">
+                <td colspan="5" class="empty-row">No games added. Click 'Add Game' or 'Restore Defaults'.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -137,19 +143,59 @@ const DEFAULTS = {
         { id: 'ezugi', name: 'Ezugi', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPEZ.png' },
         { id: 'sexy', name: 'SEXY', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPSX2.png' },
         { id: 'ssg', name: 'SSG', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPSS.png' },
-        { id: 'mg', name: 'MG', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPMG2.png' }
+        { id: 'mg', name: 'MG', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPMG2.png' },
+        { id: 'pa', name: 'PA', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/3-GPAG2.png' }
     ],
     crash: [
         { id: 'av', name: 'Aviator', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png' },
         { id: 'avx', name: 'AviatorX', img: 'https://img.bzvm68.com/game/img2/en-US/GPR8/NV9BdmlhdG9yWCMxNzU2Mjg1Mjg2.png' },
         { id: 'aeb', name: 'Aviator Extra Bet', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png' },
-        { id: 'cd', name: 'Chicken Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTAjMTVODA5ODc1Ng==.png' },
-        { id: 'fd', name: 'Frog Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTgjMTc2MjMyODYyNA==.png' }
+        { id: 'cd', name: 'Chicken Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTAjMTc1ODA5ODc1Ng==.png' },
+        { id: 'fd', name: 'Frog Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTgjMTc2MjMyODYyNA==.png' },
+        { id: 'cb', name: 'Cricket Burst', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDIyIzE3MzUwMjcxOTE=.png' },
+        { id: 'fb', name: 'Firework Burst', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDE1IzE3MzUwMjgyNjI=.png' },
+        { id: 'cp', name: 'Crash Puck', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF81MTIjMTc1NzU2OTUwNw==.png' },
+        { id: 'gr', name: 'Go Rush', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF8yMjQjMTY4MjA2MzYzNA==.png' },
+        { id: 'ct', name: 'Crash Touchdown', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF80NTkjMTc0MDYyNDQ4Ng==.png' },
+        { id: 'cc', name: 'Crash Cricket', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF80NjkjMTcyMjgzNjE5MA==.png' },
+        { id: 'cg', name: 'Crash Goal', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF80MDcjMTcxODI2NDgzNQ==.png' },
+        { id: 'flyx', name: 'FlyX', img: 'https://img.bzvm68.com/game/img2/en-US/GPMG2/Q3Jhc2hfU01HX2ZseVgjMTc1Mzc3MjgxOA==.png' }
     ],
     slot: [
+        { id: 's1', name: 'Aviator', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png' },
+        { id: 's2', name: 'Aviator Extra Bet', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png' },
+        { id: 's3', name: 'Chicken Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTAjMTc1ODA5ODc1Ng==.png' },
+        { id: 's4', name: 'Frog Dash', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF82OTgjMTc2MjMyODYyNA==.png' },
+        { id: 's5', name: 'Go Rush', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/OF8yMjQjMTY4MjA2MzYzNA==.png' },
+        { id: 's6', name: 'Cleopatra', img: 'https://img.bzvm68.com/game/img2/en-US/GPR8/Ml9TbG90Q2xlb3BhdHJhIzE3MTI4OTg5MzI=.png' },
         { id: 's7', name: 'Super Ace', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/MV80OSMxNjQ4NDM2OTA2.png' },
+        { id: 's8', name: 'Maya Gems', img: 'https://img.bzvm68.com/game/img2/en-US/GPR8/Ml9TbG90Rm9ydHVuZUdlbXMjMTc0NTU0NDMyMg==.png' },
+        { id: 's9', name: 'Piggy Bank', img: 'https://img.bzvm68.com/game/img2/en-US/GPJD/MF8xNDA5MSMxNzM1MDk2Nzgw.png' },
         { id: 's10', name: 'Fortune Gems', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/MV8xMDkjMTY0ODQzNjkwNg==.png' },
-        { id: 's12', name: 'Double Ace MultiXPLUS', img: 'https://img.bzvm68.com/game/img2/en-US/GPVP/U0xPVF9WUF8yMzAwMzhfMSMxNzY1NTI0MTYx.png' }
+        { id: 's11', name: 'Fortune Gems 2', img: 'https://img.bzvm68.com/game/img2/en-US/GPJL/MV8yMjMjMTY4ODU0MTY2NA==.png' },
+        { id: 's12', name: 'Double Ace MultiXPLUS', img: 'https://img.bzvm68.com/game/img2/en-US/GPVP/U0xPVF9WUF8yMzAwMzhfMSMxNzY1NTI0MTYx.png' },
+        { id: 's13', name: 'Mines', img: '' },
+        { id: 's14', name: 'Fortune Gems 3', img: '' },
+        { id: 's15', name: 'Golden Empire', img: '' },
+        { id: 's16', name: 'Super Ace Deluxe', img: '' },
+        { id: 's17', name: 'Super Ace 2', img: '' },
+        { id: 's18', name: 'Money Coming', img: '' },
+        { id: 's19', name: 'Money Coming 2', img: '' },
+        { id: 's20', name: 'Money Coming Expanded Bets', img: '' },
+        { id: 's21', name: '7 UP 7 DOWN', img: '' },
+        { id: 's22', name: 'Magic Ace', img: '' },
+        { id: 's23', name: 'Crazy777 2', img: '' },
+        { id: 's24', name: 'Monster Hunter S', img: '' },
+        { id: 's25', name: 'Monopoly', img: '' },
+        { id: 's26', name: 'Mighty Zeus', img: '' },
+        { id: 's27', name: 'Royal War', img: '' },
+        { id: 's28', name: 'Candy Island', img: '' },
+        { id: 's29', name: 'The Secret Life of Pets', img: '' },
+        { id: 's30', name: 'Mahjong 3+', img: '' },
+        { id: 's31', name: 'Big Bass Bonanza', img: '' },
+        { id: 's32', name: '777', img: '' },
+        { id: 's33', name: 'Golden kingdom', img: '' },
+        { id: 's34', name: 'Pirate Treasure', img: '' }
     ],
     lottery: [
         { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },
@@ -282,47 +328,18 @@ h1 { font-size: 1.5rem; color: #1e293b; margin: 0; }
 }
 .reset-btn:hover { background: #f8fafc; color: #1e293b; border-color: #cbd5e1; }
 
-.games-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-}
+.table-container { overflow-x: auto; margin: 0 -24px; }
+.games-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.games-table th { background: #f8fafc; text-align: left; padding: 12px 24px; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+.games-table td { padding: 12px 24px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.games-table input { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; outline: none; transition: border-color 0.2s; background: #fff; }
+.games-table input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.05); }
 
-.game-item {
-  background: #f8fafc;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.actions { text-align: center; }
+.remove-btn { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; transition: all 0.2s; margin: 0 auto; }
+.remove-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
 
-.game-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.game-index { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
-.remove-btn { 
-  background: #fef2f2; 
-  color: #ef4444; 
-  border: 1px solid #fee2e2; 
-  width: 24px; height: 24px; border-radius: 50%; 
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 1.2rem;
-}
-.remove-btn:hover { background: #fee2e2; }
-
-.input-group { display: flex; flex-direction: column; gap: 4px; }
-.input-group label { font-size: 0.75rem; font-weight: 600; color: #64748b; text-transform: uppercase; }
-.input-group input { 
-  padding: 8px 12px; 
-  border: 1px solid #cbd5e1; 
-  border-radius: 6px; 
-  font-size: 0.9rem;
-  outline: none;
-  background: #fff;
-}
-.input-group input:focus { border-color: #2563eb; ring: 2px solid rgba(37, 99, 235, 0.1); }
-
-.empty-state { padding: 40px; text-align: center; color: #94a3b8; font-style: italic; }
+.empty-row { padding: 48px !important; text-align: center; color: #94a3b8; font-style: italic; font-size: 0.9rem; }
 
 .message {
   position: fixed;
@@ -351,6 +368,8 @@ h1 { font-size: 1.5rem; color: #1e293b; margin: 0; }
 
 @media (max-width: 640px) {
   .header { flex-direction: column; gap: 16px; align-items: stretch; }
-  .games-grid { grid-template-columns: 1fr; }
+  .table-container { margin: 0 -24px; padding: 0 4px; }
+  .category-card { padding: 16px; }
+  .category-title { font-size: 1.1rem; }
 }
 </style>
