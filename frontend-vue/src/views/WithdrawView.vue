@@ -484,11 +484,11 @@ onMounted(fetchData)
 .empty-state p {
   margin: 0;
   font-size: 1.05rem;
-  color: #0f172a;
+  color: #000;
   font-weight: 500;
 }
 .add-bank-link {
-  color: #4f46e5;
+  color: #4b0082;
   font-size: 1.05rem;
   font-weight: 600;
   text-decoration: underline;
