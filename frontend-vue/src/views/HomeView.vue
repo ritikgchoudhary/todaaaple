@@ -499,6 +499,19 @@ const PG_GAMES = [
   { id: "870", name: "Candy Bonanza", img: "https://igamingapis.com/img/870.png", provider: "pg" }
 ]
 
+const CQ9_GAMES = [
+  { id: "9", name: "Monster Hunter", img: "https://igamingapis.com/img/9.png", provider: "cq9" },
+  { id: "23", name: "Empress Wu", img: "https://igamingapis.com/img/23.png", provider: "cq9" },
+  { id: "29", name: "Pyramid Raider", img: "https://igamingapis.com/img/29.png", provider: "cq9" },
+  { id: "31", name: "Ninja Raccoon", img: "https://igamingapis.com/img/31.png", provider: "cq9" },
+  { id: "41", name: "Da Hong Zhong", img: "https://igamingapis.com/img/41.png", provider: "cq9" },
+  { id: "55", name: "OrientalBeauty", img: "https://igamingapis.com/img/55.png", provider: "cq9" },
+  { id: "60", name: "WaterWorld", img: "https://igamingapis.com/img/60.png", provider: "cq9" },
+  { id: "64", name: "Zeus", img: "https://igamingapis.com/img/64.png", provider: "cq9" },
+  { id: "66", name: "Mummy's Treasure", img: "https://igamingapis.com/img/66.png", provider: "cq9" },
+  { id: "69", name: "Oo Ga Cha Ka", img: "https://igamingapis.com/img/69.png", provider: "cq9" }
+]
+
 const slotGamesList = computed(() => {
   const dynamic = Array.isArray(gameCategories.value.slot) ? gameCategories.value.slot : []
   
@@ -506,7 +519,7 @@ const slotGamesList = computed(() => {
   const combined = [...dynamic]
   const existingIds = new Set(dynamic.map(g => String(g.id)))
   
-  const FIXED_GAMES = [...JILI_GAMES, ...SPRIBE_GAMES, ...JDB_GAMES, ...RICH88_GAMES, ...PG_GAMES]
+  const FIXED_GAMES = [...JILI_GAMES, ...SPRIBE_GAMES, ...JDB_GAMES, ...RICH88_GAMES, ...PG_GAMES, ...CQ9_GAMES]
   
   FIXED_GAMES.forEach(g => {
     if (!existingIds.has(String(g.id))) {

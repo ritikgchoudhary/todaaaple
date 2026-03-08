@@ -284,7 +284,17 @@ const DEFAULTS = {
         { id: "651", name: "Ganesha Gold", img: "https://igamingapis.com/img/651.png", provider: "pg" },
         { id: "898", name: "Ganesha Fortune", img: "https://igamingapis.com/img/898.png", provider: "pg" },
         { id: "172", name: "Candy Burst", img: "https://igamingapis.com/img/172.png", provider: "pg" },
-        { id: "870", name: "Candy Bonanza", img: "https://igamingapis.com/img/870.png", provider: "pg" }
+        { id: "870", name: "Candy Bonanza", img: "https://igamingapis.com/img/870.png", provider: "pg" },
+        { id: "9", name: "Monster Hunter", img: "https://igamingapis.com/img/9.png", provider: "cq9" },
+        { id: "23", name: "Empress Wu", img: "https://igamingapis.com/img/23.png", provider: "cq9" },
+        { id: "29", name: "Pyramid Raider", img: "https://igamingapis.com/img/29.png", provider: "cq9" },
+        { id: "31", name: "Ninja Raccoon", img: "https://igamingapis.com/img/31.png", provider: "cq9" },
+        { id: "41", name: "Da Hong Zhong", img: "https://igamingapis.com/img/41.png", provider: "cq9" },
+        { id: "55", name: "OrientalBeauty", img: "https://igamingapis.com/img/55.png", provider: "cq9" },
+        { id: "60", name: "WaterWorld", img: "https://igamingapis.com/img/60.png", provider: "cq9" },
+        { id: "64", name: "Zeus", img: "https://igamingapis.com/img/64.png", provider: "cq9" },
+        { id: "66", name: "Mummy's Treasure", img: "https://igamingapis.com/img/66.png", provider: "cq9" },
+        { id: "69", name: "Oo Ga Cha Ka", img: "https://igamingapis.com/img/69.png", provider: "cq9" }
     ],
     lottery: [
         { id: 'india-lotto', name: 'INDIA LOTTO', img: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_logo/lottery/india_lotto.png' },
