@@ -20,7 +20,6 @@
         <div class="card-header">
           <h2 class="category-title">{{ formatKey(key) }}</h2>
           <div class="header-actions">
-            <button class="reset-btn" @click="resetCategory(key)">Restore Defaults</button>
             <button class="add-btn" @click="addGame(key)">+ Add Game</button>
           </div>
         </div>
