@@ -3,78 +3,103 @@
     <div class="mobileContainer">
       <!-- Header -->
       <header class="header">
-        <svg @click="router.back()" class="backIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg @click="router.back()" class="backIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f0c27b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m15 18-6-6 6-6"/>
         </svg>
-        <div class="headerTitle">Recharge</div>
-        <div class="spacer"></div>
+        <div class="headerTitle">Deposit</div>
+        <router-link to="/rechargeHistory" class="headerRightText">Deposit history</router-link>
       </header>
 
-      <!-- Balance Info -->
-      <div class="balanceSection">
-        <div class="balanceLabel">Total Balance</div>
-        <div class="balanceValue">₹ {{ (userBalance || 0).toFixed(2) }}</div>
-      </div>
-
-      <div class="tabContent">
-        <!-- Amount Input Group -->
-        <div class="inputSection">
-          <div class="sectionTitle">
-            <svg class="sectionIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#05c0b8" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            Recharge Amount
+      <div class="mainContent">
+        <!-- Balance Card (Dark gradient style) -->
+        <div class="balanceCard">
+          <div class="bcTop">
+            <div class="bcLabel">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+              <span>Balance</span>
+            </div>
+            <div class="bcBalRow">
+              <div class="bcBal">₹{{ (userBalance || 0).toFixed(2) }}</div>
+              <button class="bcRefreshBtn" @click="fetchBalance" title="Refresh">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </button>
+            </div>
           </div>
-          <div class="inputGroup">
-            <span class="currency">₹</span>
-            <input v-model.number="amount" type="number" placeholder="Enter Amount" />
-            <button v-if="amount" @click="amount = null" class="clearBtn">×</button>
+          <div class="bcBottom">
+             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+             <div class="bcDots">**** &nbsp;&nbsp;&nbsp; ****</div>
           </div>
         </div>
 
-        <!-- Quick Amount Grid -->
-        <div class="amountGrid">
-          <button 
-            v-for="amt in quickAmounts" 
-            :key="amt" 
-            :class="['amtBtn', { active: amount === amt }]"
-            @click="amount = amt"
-          >
-            ₹{{ amt }}
-          </button>
+        <!-- Payment Method Grid -->
+        <div class="methodGrid">
+          <div class="methodItem" v-for="gateway in gatewayList" :key="gateway" :class="{ active: selectedGateway === gateway }" @click="selectedGateway = gateway">
+            <div class="methodIconBox">
+              <img v-if="gateway === 'rupeerush'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" class="methodImg"/>
+              <img v-else-if="gateway === 'lgpay'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" class="methodImg" style="filter: grayscale(1);"/>
+              <img v-else-if="gateway === 'watchpay'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" class="methodImg" style="filter: grayscale(1);"/>
+              <img v-else-if="gateway === 'manual'" src="https://img.bzvm68.com/site_common/payment/paytm.png" alt="Paytm" class="methodImg" />
+              <img v-else-if="gateway === 'auto'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="PhonePe" class="methodImg" style="filter: sepia(1);"/>
+              <div v-else style="width:28px;height:28px;border-radius:50%;background:#26a17b;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:18px;">₮</div>
+            </div>
+            <span class="methodName">{{ GATEWAY_LABELS[gateway] || gateway }}</span>
+          </div>
         </div>
 
-        <!-- Payment Channel Grid -->
+        <!-- Selected Channel Details -->
         <div class="channelSection">
-          <div class="sectionTitle">
-            <svg class="sectionIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#05c0b8" stroke-width="2.5"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-14v10M7 12h10"/></svg>
-            Select Channel
+          <div class="sectionHeader">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0c27b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <span>Select channel</span>
           </div>
-          <div class="channelGrid">
-            <div 
-              v-for="gateway in gatewayList" 
-              :key="gateway"
-              :class="['channelCard', { active: selectedGateway === gateway }]"
-              @click="selectedGateway = gateway"
-            >
-              <div class="channelName">{{ GATEWAY_LABELS[gateway] || gateway.toUpperCase() }}</div>
-              <div class="channelRange">{{ GATEWAY_RANGES[gateway] || '200 - 50K' }}</div>
-              <div v-if="selectedGateway === gateway" class="checkIcon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
+          <div class="channelBoxes">
+            <div class="channelBox active" v-for="gateway in gatewayList" :key="gateway" @click="selectedGateway = gateway" v-show="selectedGateway === gateway || gatewayList.length === 1">
+               <div class="cbName">{{ GATEWAY_LABELS[gateway] || gateway }}</div>
+               <div class="cbRange">Balance:{{ GATEWAY_RANGES[gateway] || '100 - 50K' }}</div>
             </div>
           </div>
         </div>
 
-        <!-- Submit Button -->
-        <button class="actionBtn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
-          <span v-if="loading" class="btnLoader"></span>
-          <span v-else>Recharge Now</span>
-        </button>
+        <!-- Deposit Amount Section -->
+        <div class="amountSection">
+           <div class="sectionHeader">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0c27b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12h.01"/></svg>
+             <span>Deposit amount</span>
+           </div>
+           
+           <div class="amountGrid">
+              <button 
+                v-for="amt in [100, 200, 300, 400, 500, '1K', '2K', '3K', '5K']" 
+                :key="amt" 
+                :class="['amtBtn', { active: amount === (typeof amt === 'string' ? parseInt(amt)*1000 : amt) }]"
+                @click="amount = (typeof amt === 'string' ? parseInt(amt)*1000 : amt)"
+              >
+                <span class="rs">₹</span> {{ amt }}
+              </button>
+           </div>
 
-        <div class="footerSummary">
-           <span>Order ID: {{ (Math.random() * 1000000000).toFixed(0) }}</span>
-           <router-link to="/rechargeHistory" class="historyLink">Recharge History</router-link>
+           <div class="inputGroup">
+             <span class="currency">₹</span>
+             <input v-model.number="amount" type="number" placeholder="Please enter the amount" />
+             <button v-if="amount" @click="amount = null" class="clearBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+             </button>
+           </div>
         </div>
       </div>
+      
+      <!-- Bottom Fixed Action Bar -->
+      <div class="bottomActionBar">
+         <div class="baLeft">
+            <div class="baLabel">Recharge Method:</div>
+            <div class="baMethod">{{ GATEWAY_LABELS[selectedGateway] || selectedGateway || 'None' }}</div>
+         </div>
+         <button class="actionBtn" :disabled="loading || !amount || amount < 100" @click="handleRecharge">
+            <span v-if="loading" class="btnLoader"></span>
+            <span v-else>Deposit ₹{{ (amount || 0).toFixed(2) }}</span>
+         </button>
+      </div>
+
     </div>
 
     <!-- Notification Dialog -->
@@ -114,18 +139,18 @@ const gatewayList = ref(['auto', 'manual', 'lgpay', 'watchpay', 'rupeerush'])
 const dialog = reactive({ open: false, body: '' })
 
 const GATEWAY_LABELS = {
-  auto: "Auto QR",
-  manual: "Manual UPI",
-  lgpay: "LG Pay",
-  watchpay: "Watch Pay",
-  rupeerush: "Rupee Rush",
+  auto: "Phonepe_QR",
+  manual: "PAYTM",
+  lgpay: "Innate UPI-QR",
+  watchpay: "UPI-QR PAY",
+  rupeerush: "UPI-QR",
 }
 const GATEWAY_RANGES = {
   auto: "100 - 50k",
-  manual: "200 - 1L",
-  lgpay: "200 - 50k",
-  watchpay: "200 - 50k",
-  rupeerush: "200 - 50k",
+  manual: "100 - 50k",
+  lgpay: "100 - 50k",
+  watchpay: "100 - 50k",
+  rupeerush: "100 - 50k",
 }
 
 async function fetchData() {

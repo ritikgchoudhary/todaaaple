@@ -1,21 +1,4 @@
-import axios from 'axios'
-
-const API_PORT = import.meta.env.VITE_API_PORT || '4001'
-const isDev = import.meta.env.DEV
-const apiBase = import.meta.env.VITE_API_BASE_URL != null
-  ? import.meta.env.VITE_API_BASE_URL
-  : (isDev ? `http://localhost:${API_PORT}` : '')
-
-const API = axios.create({ baseURL: apiBase })
-
-// Add interceptor to include token
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+import API from './client'
 
 // User Home & Profile
 export const getUserHome = (userId) => API.get(`/getUserHome/${userId}`)
