@@ -388,7 +388,7 @@ function onSliderTouchEnd(e) {
 }
 
 const noticeText = ref('Announcement | 13:50 (UTC+5.5) We apologize for any inconvenience.')
-const activeCategory = ref(localStorage.getItem('activeCategory') || 'sports')
+const activeCategory = ref(localStorage.getItem('activeCategory') || 'slot')
 
 watch(activeCategory, (newVal) => {
   localStorage.setItem('activeCategory', newVal)
@@ -406,10 +406,10 @@ const gameCategories = ref({
 })
 
 const categories = [
+  { id: 'slot', label: 'Slot Game', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/2.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/2_active.png` },
   { id: 'sports', label: 'Sports', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/4.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/4_active.png` },
   { id: 'casino', label: 'Live Casino', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/3.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/3_active.png` },
   { id: 'crash', label: 'Crash Game', icon: `${baseImg}/GoWin11/crash_game_icon/crash.png`, iconActive: `${baseImg}/GoWin11/crash_game_icon/crash_active.png` },
-  { id: 'slot', label: 'Slot Game', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/2.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/2_active.png` },
   { id: 'lottery', label: 'Lottery', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/5.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/5_active.png` },
   { id: 'cards', label: 'Card Game', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/6.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/gowin11/6_active.png` },
   { id: 'cockfight', label: 'Cockfight Live', icon: `${baseImg}/site_common/H5_7_mobile/game_type_icon/8.png`, iconActive: `${baseImg}/site_common/H5_7_mobile/game_type_icon/8_active.png` },
