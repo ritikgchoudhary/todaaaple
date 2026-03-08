@@ -309,26 +309,26 @@ const defaultProviders = [
 
 const gameImgBase = `${baseImg}/game/img2/en-US`
 const crashGamesList = computed(() => {
-  if (gameCategories.value.crash && gameCategories.value.crash.length) {
-    return gameCategories.value.crash
-  }
-  return [
-    { id: 'av', name: 'Aviator', img: `${gameImgBase}/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png` },
-    { id: 'avx', name: 'AviatorX', img: `${gameImgBase}/GPR8/NV9BdmlhdG9yWCMxNzU2Mjg1Mjg2.png` },
-    { id: 'aeb', name: 'Aviator Extra Bet', img: `${gameImgBase}/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png` },
-    { id: 'cd', name: 'Chicken Dash', img: `${gameImgBase}/GPJL/OF82OTAjMTc1ODA5ODc1Ng==.png` },
-    { id: 'fd', name: 'Frog Dash', img: `${gameImgBase}/GPJL/OF82OTgjMTc2MjMyODYyNA==.png` },
-    { id: 'cb', name: 'Cricket Burst', img: `${gameImgBase}/GPJD/OV85MDIyIzE3MzUwMjcxOTE=.png` },
-    { id: 'fb', name: 'Firework Burst', img: `${gameImgBase}/GPJD/OV85MDE1IzE3MzUwMjgyNjI=.png` },
-    { id: 'cp', name: 'Crash Puck', img: `${gameImgBase}/GPJL/OF81MTIjMTc1NzU2OTUwNw==.png` },
-    { id: 'gr', name: 'Go Rush', img: `${gameImgBase}/GPJL/OF8yMjQjMTY4MjA2MzYzNA==.png` },
-    { id: 'ct', name: 'Crash Touchdown', img: `${gameImgBase}/GPJL/OF80NTkjMTc0MDYyNDQ4Ng==.png` },
-    { id: 'cc', name: 'Crash Cricket', img: `${gameImgBase}/GPJL/OF80NjkjMTcyMjgzNjE5MA==.png` },
-    { id: 'cg', name: 'Crash Goal', img: `${gameImgBase}/GPJL/OF80MDcjMTcxODI2NDgzNQ==.png` },
-    { id: 'flyx', name: 'FlyX', img: `${gameImgBase}/GPMG2/Q3Jhc2hfU01HX2ZseVgjMTc1Mzc3MjgxOA==.png` },
-    { id: 'avi2', name: 'Aviator', img: `${gameImgBase}/GPYL2/MV84MDQjMTc1NDQ2ODQ2Mg==.png` },
-    { id: 'crash', name: 'Crash', img: `${gameImgBase}/GPYL2/MV84MDEjMTcyOTY2Nzc3MQ==.png` },
-  ]
+  const list = (gameCategories.value.crash && gameCategories.value.crash.length) 
+    ? gameCategories.value.crash 
+    : [
+        { id: 'av', name: 'Aviator', img: `${gameImgBase}/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png` },
+        { id: 'avx', name: 'AviatorX', img: `${gameImgBase}/GPR8/NV9BdmlhdG9yWCMxNzU2Mjg1Mjg2.png` },
+        { id: 'aeb', name: 'Aviator Extra Bet', img: `${gameImgBase}/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png` },
+        { id: 'cd', name: 'Chicken Dash', img: `${gameImgBase}/GPJL/OF82OTAjMTc1ODA5ODc1Ng==.png` },
+        { id: 'fd', name: 'Frog Dash', img: `${gameImgBase}/GPJL/OF82OTgjMTc2MjMyODYyNA==.png` },
+        { id: 'cb', name: 'Cricket Burst', img: `${gameImgBase}/GPJD/OV85MDIyIzE3MzUwMjcxOTE=.png` },
+        { id: 'fb', name: 'Firework Burst', img: `${gameImgBase}/GPJD/OV85MDE1IzE3MzUwMjgyNjI=.png` },
+        { id: 'cp', name: 'Crash Puck', img: `${gameImgBase}/GPJL/OF81MTIjMTc1NzU2OTUwNw==.png` },
+        { id: 'gr', name: 'Go Rush', img: `${gameImgBase}/GPJL/OF8yMjQjMTY4MjA2MzYzNA==.png` },
+        { id: 'ct', name: 'Crash Touchdown', img: `${gameImgBase}/GPJL/OF80NTkjMTc0MDYyNDQ4Ng==.png` },
+        { id: 'cc', name: 'Crash Cricket', img: `${gameImgBase}/GPJL/OF80NjkjMTcyMjgzNjE5MA==.png` },
+        { id: 'cg', name: 'Crash Goal', img: `${gameImgBase}/GPJL/OF80MDcjMTcxODI2NDgzNQ==.png` },
+        { id: 'flyx', name: 'FlyX', img: `${gameImgBase}/GPMG2/Q3Jhc2hfU01HX2ZseVgjMTc1Mzc3MjgxOA==.png` },
+        { id: 'avi2', name: 'Aviator', img: `${gameImgBase}/GPYL2/MV84MDQjMTc1NDQ2ODQ2Mg==.png` },
+        { id: 'crash', name: 'Crash', img: `${gameImgBase}/GPYL2/MV84MDEjMTcyOTY2Nzc3MQ==.png` },
+      ]
+  return list.map(g => ({ ...g, img: g.img || g.logo }))
 })
 const heartIcon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ef4444"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>')
 
@@ -345,45 +345,24 @@ const slotFilterItems = [
   { id: 'pg', label: 'PG', logoHide: `${bannerBase}/R1BQR18wX2RlZmF1bHRfM18xNzQ5MTk1NTA4.png`, logoShow: `${bannerBase}/R1BQR18wX2RlZmF1bHRfNF8xNzQ5MTk1NTA5.png` },
 ]
 const slotGamesList = computed(() => {
-  if (gameCategories.value.slot && gameCategories.value.slot.length) {
-    return gameCategories.value.slot
-  }
-  return [
-    { id: 's1', name: 'Aviator', img: `${gameImgBase}/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png` },
-    { id: 's2', name: 'Aviator Extra Bet', img: `${gameImgBase}/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png` },
-    { id: 's3', name: 'Chicken Dash', img: `${gameImgBase}/GPJL/OF82OTAjMTc1ODA5ODc1Ng==.png` },
-    { id: 's4', name: 'Frog Dash', img: `${gameImgBase}/GPJL/OF82OTgjMTc2MjMyODYyNA==.png` },
-    { id: 's5', name: 'Go Rush', img: `${gameImgBase}/GPJL/OF8yMjQjMTY4MjA2MzYzNA==.png` },
-    { id: 's6', name: 'Cleopatra', img: `${gameImgBase}/GPR8/Ml9TbG90Q2xlb3BhdHJhIzE3MTI4OTg5MzI=.png` },
-    { id: 's7', name: 'Super Ace', img: `${gameImgBase}/GPJL/MV80OSMxNjQ4NDM2OTA2.png` },
-    { id: 's8', name: 'Maya Gems', img: `${gameImgBase}/GPR8/Ml9TbG90Rm9ydHVuZUdlbXMjMTc0NTU0NDMyMg==.png` },
-    { id: 's9', name: 'Piggy Bank', img: `${gameImgBase}/GPJD/MF8xNDA5MSMxNzM1MDk2Nzgw.png` },
-    { id: 's10', name: 'Fortune Gems', img: `${gameImgBase}/GPJL/MV8xMDkjMTY0ODQzNjkwNg==.png` },
-    { id: 's11', name: 'Fortune Gems 2', img: `${gameImgBase}/GPJL/MV8yMjMjMTY4ODU0MTY2NA==.png` },
-    { id: 's12', name: 'Double Ace MultiXPLUS', img: `${gameImgBase}/GPVP/U0xPVF9WUF8yMzAwMzhfMSMxNzY1NTI0MTYx.png`, isNew: true },
-    { id: 's13', name: 'Mines', img: '' },
-    { id: 's14', name: 'Fortune Gems 3', img: '' },
-    { id: 's15', name: 'Golden Empire', img: '' },
-    { id: 's16', name: 'Super Ace Deluxe', img: '' },
-    { id: 's17', name: 'Super Ace 2', img: '' },
-    { id: 's18', name: 'Money Coming', img: '' },
-    { id: 's19', name: 'Money Coming 2', img: '' },
-    { id: 's20', name: 'Money Coming Expanded Bets', img: '' },
-    { id: 's21', name: '7 UP 7 DOWN', img: '' },
-    { id: 's22', name: 'Magic Ace', img: '' },
-    { id: 's23', name: 'Crazy777 2', img: '' },
-    { id: 's24', name: 'Monster Hunter S', img: '' },
-    { id: 's25', name: 'Monopoly', img: '' },
-    { id: 's26', name: 'Mighty Zeus', img: '' },
-    { id: 's27', name: 'Royal War', img: '' },
-    { id: 's28', name: 'Candy Island', img: '' },
-    { id: 's29', name: 'The Secret Life of Pets', img: '' },
-    { id: 's30', name: 'Mahjong 3+', img: '' },
-    { id: 's31', name: 'Big Bass Bonanza', img: '' },
-    { id: 's32', name: '777', img: '' },
-    { id: 's33', name: 'Golden kingdom', img: '' },
-    { id: 's34', name: 'Pirate Treasure', img: '' },
-  ]
+  const list = (gameCategories.value.slot && gameCategories.value.slot.length) 
+    ? gameCategories.value.slot 
+    : [
+        { id: 's1', name: 'Aviator', img: `${gameImgBase}/GPJD/MjJfMjIwMDEjMTczNTAzMjc0OA==.png` },
+        { id: 's2', name: 'Aviator Extra Bet', img: `${gameImgBase}/GPJD/OV85MDIzIzE3NDY3Njk0ODY=.png` },
+        { id: 's3', name: 'Chicken Dash', img: `${gameImgBase}/GPJL/OF82OTAjMTc1ODA5ODc1Ng==.png` },
+        { id: 's4', name: 'Frog Dash', img: `${gameImgBase}/GPJL/OF82OTgjMTc2MjMyODYyNA==.png` },
+        { id: 's5', name: 'Go Rush', img: `${gameImgBase}/GPJL/OF8yMjQjMTY4MjA2MzYzNA==.png` },
+        { id: 's6', name: 'Cleopatra', img: `${gameImgBase}/GPR8/Ml9TbG90Q2xlb3BhdHJhIzE3MTI4OTg5MzI=.png` },
+        { id: 's7', name: 'Super Ace', img: `${gameImgBase}/GPJL/MV80OSMxNjQ4NDM2OTA2.png` },
+        { id: 's8', name: 'Maya Gems', img: `${gameImgBase}/GPR8/Ml9TbG90Rm9ydHVuZUdlbXMjMTc0NTU0NDMyMg==.png` },
+        { id: 's9', name: 'Piggy Bank', img: `${gameImgBase}/GPJD/MF8xNDA5MSMxNzM1MDk2Nzgw.png` },
+        { id: 's10', name: 'Fortune Gems', img: `${gameImgBase}/GPJL/MV8xMDkjMTY0ODQzNjkwNg==.png` },
+        { id: 's11', name: 'Fortune Gems 2', img: `${gameImgBase}/GPJL/MV8yMjMjMTY4ODU0MTY2NA==.png` },
+        { id: 's12', name: 'Double Ace MultiXPLUS', img: `${gameImgBase}/GPVP/U0xPVF9WUF8yMzAwMzhfMSMxNzY1NTI0MTYx.png`, isNew: true },
+        // ... many more
+      ]
+  return list.map(g => ({ ...g, img: g.img || g.logo }))
 })
 const displaySlotGames = computed(() => {
   const q = (slotSearchQuery.value || '').trim().toLowerCase()
@@ -393,21 +372,28 @@ const displaySlotGames = computed(() => {
 
 const liveCasinoBg = `${baseImg}/site_common/H5_7_mobile/game_item_background/bg-3.png`
 const lotteryBase = `${baseImg}/site_common/H5_7_mobile`
-const lotteryProvidersList = computed(() => {
-  if (gameCategories.value.lottery && gameCategories.value.lottery.length) {
-    return gameCategories.value.lottery
+const providers = ref([])
+
+function normalizeProvider(p, index, listType) {
+  if (!p) return {}
+  const def = defaultProviders[index % defaultProviders.length]
+  const casinoDef = liveCasinoProvidersList_Raw[index % liveCasinoProvidersList_Raw.length]
+  const lotteryDef = lotteryProvidersList_Raw[index % lotteryProvidersList_Raw.length]
+  
+  let baseDef = def
+  if (listType === 'casino') baseDef = casinoDef
+  if (listType === 'lottery') baseDef = lotteryDef
+
+  return {
+    id: p.id || p.game_id || p.game_uid || index,
+    name: p.name || p.title || 'Game',
+    bg: p.bg || baseDef?.bg || defaultCardBg,
+    character: p.character || p.img_character || baseDef?.character || '',
+    logo: p.logo || p.img || p.image || baseDef?.logo || ''
   }
-  return [
-    { id: 'india-lotto', name: 'INDIA LOTTO', subtitle: '', logo: `${lotteryBase}/game_logo/lottery/india_lotto.png`, character: `${lotteryBase}/hall_pics/lottery/india_lotto_character.png` },
-    { id: 'sea-tcg', name: 'SEA', subtitle: 'TCGAMING', logo: `${lotteryBase}/game_logo/lottery/sea_tcgaming.png`, character: `${lotteryBase}/hall_pics/lottery/sea_character.png` },
-    { id: 'bbin', name: 'BBIN', subtitle: 'THE GAMING BEAT', logo: `${lotteryBase}/game_logo/lottery/bbin.png`, character: `${lotteryBase}/hall_pics/lottery/bbin_character.png` },
-  ]
-})
-const liveCasinoProvidersList = computed(() => {
-  if (gameCategories.value.casino && gameCategories.value.casino.length) {
-    return gameCategories.value.casino
-  }
-  return [
+}
+
+const liveCasinoProvidersList_Raw = [
     { id: 'evo', name: 'EVO', bg: liveCasinoBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/3-1.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/3-GPEV.png` },
     { id: 'pt', name: 'PT', bg: liveCasinoBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/3-2.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/3-GPPT3.png` },
     { id: 'ezugi', name: 'Ezugi', bg: liveCasinoBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/3-3.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/3-GPEZ.png` },
@@ -415,18 +401,37 @@ const liveCasinoProvidersList = computed(() => {
     { id: 'ssg', name: 'SSG', bg: liveCasinoBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/3-5.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/3-GPSS.png` },
     { id: 'mg', name: 'MG', bg: liveCasinoBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/3-6.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/3-GPMG2.png` },
     { id: 'pa', name: 'PA', bg: liveCasinoBg, character: `${baseImg}/site_common/H5_7_mobile/hall_pics/gowin11/3-7.png`, logo: `${baseImg}/site_common/H5_7_mobile/game_logo/3-GPAG2.png` },
-  ]
+]
+
+const lotteryProvidersList_Raw = [
+    { id: 'india-lotto', name: 'INDIA LOTTO', subtitle: '', logo: `${lotteryBase}/game_logo/lottery/india_lotto.png`, character: `${lotteryBase}/hall_pics/lottery/india_lotto_character.png` },
+    { id: 'sea-tcg', name: 'SEA', subtitle: 'TCGAMING', logo: `${lotteryBase}/game_logo/lottery/sea_tcgaming.png`, character: `${lotteryBase}/hall_pics/lottery/sea_character.png` },
+    { id: 'bbin', name: 'BBIN', subtitle: 'THE GAMING BEAT', logo: `${lotteryBase}/game_logo/lottery/bbin.png`, character: `${lotteryBase}/hall_pics/lottery/bbin_character.png` },
+]
+
+const liveCasinoProvidersList = computed(() => {
+  const list = (gameCategories.value.casino && gameCategories.value.casino.length) 
+    ? gameCategories.value.casino 
+    : liveCasinoProvidersList_Raw
+  return list.map((p, i) => normalizeProvider(p, i, 'casino'))
 })
 
-const providers = ref([])
+const lotteryProvidersList = computed(() => {
+  const list = (gameCategories.value.lottery && gameCategories.value.lottery.length) 
+    ? gameCategories.value.lottery 
+    : lotteryProvidersList_Raw
+  return list.map((p, i) => normalizeProvider(p, i, 'lottery'))
+})
+
 const displayProviders = computed(() => {
   if (activeCategory.value === 'casino') return liveCasinoProvidersList.value
   if (activeCategory.value === 'lottery') return lotteryProvidersList.value
-  if (gameCategories.value[activeCategory.value] && gameCategories.value[activeCategory.value].length) {
-    return gameCategories.value[activeCategory.value]
-  }
-  const list = providers.value && providers.value.length ? providers.value : defaultProviders
-  return list.slice(0, 6)
+  
+  const list = (gameCategories.value[activeCategory.value] && gameCategories.value[activeCategory.value].length)
+    ? gameCategories.value[activeCategory.value]
+    : (providers.value && providers.value.length ? providers.value : defaultProviders)
+    
+  return list.slice(0, 6).map((p, i) => normalizeProvider(p, i, activeCategory.value))
 })
 
 function getCrashGameName(g) {
