@@ -313,8 +313,8 @@ async function handleSubmit(e) {
   width: 100%;
   max-width: 100vw;
   margin: 0 auto;
-  background: #fff;
-  color: #fff;
+  background: #f5f5f5;
+  color: #1a1a1a;
   padding: 0;
   padding-left: max(20px, env(safe-area-inset-left));
   padding-right: max(20px, env(safe-area-inset-right));
@@ -339,7 +339,7 @@ async function handleSubmit(e) {
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  background: #000;
+  background: #fff;
   overflow-y: auto;
 }
 
@@ -427,7 +427,7 @@ async function handleSubmit(e) {
   gap: 4px;
   background: none;
   border: none;
-  color: rgba(255,255,255,0.6);
+  color: #64748b;
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -436,13 +436,13 @@ async function handleSubmit(e) {
   transition: color 0.2s;
 }
 .tab:hover {
-  color: rgba(255,255,255,0.9);
+  color: #334155;
 }
 .tab.tabActive {
-  color: #f59e0b;
+  color: #05c0b8;
   font-weight: 600;
 }
-.tab.tabActive .tabIcon { color: #f59e0b; }
+.tab.tabActive .tabIcon { color: #05c0b8; }
 .tab.tabActive::after {
   content: '';
   position: absolute;
@@ -450,17 +450,17 @@ async function handleSubmit(e) {
   right: 0;
   bottom: -1px;
   height: 2px;
-  background: #f59e0b;
+  background: #05c0b8;
 }
 .tabIcon {
-  color: rgba(255,255,255,0.6);
+  color: #94a3b8;
   display: flex;
   transition: color 0.2s;
 }
-.tabIcon.accent { color: #f59e0b; }
+.tabIcon.accent { color: #05c0b8; }
 .tabLabel { white-space: nowrap; }
 
-.accent { color: #f59e0b; }
+.accent { color: #05c0b8; }
 .fieldBlock { margin-bottom: 12px; }
 .fieldLabel {
   display: flex;
@@ -468,18 +468,18 @@ async function handleSubmit(e) {
   gap: 6px;
   margin-bottom: 6px;
   font-size: 0.85rem;
-  color: #fff;
+  color: #475569;
   font-weight: 500;
 }
 .fieldLabelIcon { display: flex; }
-.fieldLabelIcon.accent { color: #f59e0b; }
+.fieldLabelIcon.accent { color: #05c0b8; }
 .phoneRow {
   display: flex;
   align-items: stretch;
   gap: 0;
   min-height: 42px;
-  background: rgba(45,45,52,0.8);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -490,9 +490,9 @@ async function handleSubmit(e) {
   padding: 0 12px;
   min-height: 42px;
   box-sizing: border-box;
-  background: rgba(55,55,60,0.8);
-  border-right: 1px solid rgba(255,255,255,0.1);
-  color: #fff;
+  background: #f1f5f9;
+  border-right: 1px solid #e2e8f0;
+  color: #334155;
   font-size: 0.9rem;
 }
 .countryWrap svg { opacity: 0.7; flex-shrink: 0; }
@@ -505,12 +505,12 @@ async function handleSubmit(e) {
   border-radius: 0;
   border: none;
   background: transparent;
-  color: #fff;
+  color: #0f172a;
   outline: none;
   box-sizing: border-box;
 }
 .inputPhone::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: #94a3b8;
 }
 .formFooter {
   display: flex;
@@ -518,20 +518,20 @@ async function handleSubmit(e) {
   gap: 12px;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid #e2e8f0;
 }
 .footerLink {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  color: rgba(255,255,255,0.85);
+  color: #64748b;
   font-size: 0.8rem;
   text-decoration: none;
 }
-.footerLink:hover { color: #fff; }
+.footerLink:hover { color: #05c0b8; }
 .footerIcon { display: flex; }
-.footerIcon.accent { color: #f59e0b; }
+.footerIcon.accent { color: #05c0b8; }
 
 .formPanel {
   position: relative;
@@ -561,7 +561,7 @@ async function handleSubmit(e) {
   flex-shrink: 0;
   width: 100px;
   font-size: 0.95rem;
-  color: #fff;
+  color: #334155;
   font-weight: 500;
 }
 
@@ -571,17 +571,15 @@ async function handleSubmit(e) {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(45,45,52,0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 0 12px;
   min-height: 42px;
   box-sizing: border-box;
 }
 .inputWrapPhone .inputIcon {
-  color: rgba(255,255,255,0.5);
+  color: #94a3b8;
   display: flex;
   flex-shrink: 0;
 }
@@ -594,12 +592,12 @@ async function handleSubmit(e) {
   min-width: 0;
   border: none;
   background: none;
-  color: #fff;
+  color: #0f172a;
   font-size: 15px;
   outline: none;
 }
 .input::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: #94a3b8;
 }
 
 /* Responsive: mobile container & phone field */
