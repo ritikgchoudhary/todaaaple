@@ -69,6 +69,7 @@ app.use(
           'https://www.googletagmanager.com',
           'https://www.google-analytics.com',
           'https://*.google-analytics.com',
+          'https://www.magnusminds.net',
         ],
         // Allow game URLs to load inside iframe (Sports, /play)
         'frame-src': ["'self'", 'https:', 'blob:'],
