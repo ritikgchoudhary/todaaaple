@@ -41,7 +41,7 @@
         </div>
 
         <div class="info-text">Amount: ₹0 - ₹1000, fee ₹30</div>
-        <div class="info-text">Amount: ₹1000 and above, fee 3%</div>
+        <div class="info-text" style="margin-bottom: 10px;">Amount: ₹1000 and above, fee 3%</div>
 
         <div class="input-label" style="font-size: 1rem; color: black;">Withdrawal Amount</div>
         <div class="input-card">
@@ -96,7 +96,7 @@
         <div class="info-text">Conversion Rate: 1 USDT = ₹95</div>
         <div class="info-text">Minimum: 10 USDT</div>
         <div class="info-text">Withdrawal Fee: 3% (deducted from withdrawal amount)</div>
-        <div class="info-text sub-text">Minimum fee: 3 USDT</div>
+        <div class="info-text sub-text" style="margin-bottom: 10px;">Minimum fee: 3 USDT</div>
 
         <div class="input-label" style="font-size: 1rem; color: black;">USDT Withdrawal Amount</div>
         <div class="input-card">
@@ -153,6 +153,7 @@
         <div class="modal-header">
            <h3 class="modal-title">Enter TRC20 Wallet Address</h3>
         </div>
+        <div class="modal-summary">
            <div class="sum-row sub-text"><strong>Withdrawal Amount:</strong> {{ usdtAmount }} USDT</div>
            <div class="sum-row warning-text"><strong>Fee (3%):</strong> {{ calculateUsdtFee().toFixed(2) }} USDT</div>
            <div class="sum-row primary-text bold"><strong>Net Amount You'll Receive:</strong> {{ Math.max(0, usdtAmount - calculateUsdtFee()).toFixed(2) }} USDT</div>
@@ -454,7 +455,9 @@ onMounted(fetchData)
   border-radius: 4px 4px 0 0;
   padding: 0 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.42);
+  margin-bottom: 1px;
 }
+.input-wrap:focus-within { border-bottom: 2px solid #3f51b5; padding-bottom: 0; margin-bottom: 0;}
 .prefix { font-weight: bold; font-size: 1rem; margin-right: 10px; }
 .main-input { 
   flex: 1; background: none; border: none; outline: none; color: #000; 
@@ -480,22 +483,22 @@ onMounted(fetchData)
 }
 
 .btn-container {
-  padding: 0;
+  padding: 0 15px;
   display: flex;
   justify-content: center;
 }
 
 .withdraw-btn { 
-  width: calc(100% - 30px); height: 50px; border-radius: 8px; 
+  width: 100%; height: 50px; border-radius: 8px; 
   border: none; color: #fff; font-size: 1rem; text-transform: none; 
   cursor: pointer; display: block; box-sizing: border-box;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
 }
-.primary-btn { background-color: #00b8a9; margin: 15px auto;}
-.warning-btn { background-color: #f39c12; margin: 15px auto;}
+.primary-btn { background-color: #00b8a9; margin-top: 15px; margin-bottom: 15px;}
+.warning-btn { background-color: #f39c12; margin-top: 15px; margin-bottom: 15px;}
 
 .historical-btn {
-  display: block; background-color: grey; margin: 15px 20px 100px 20px;
+  display: block; background-color: grey; margin: 15px 15px 100px 15px;
   height: 50px; border-radius: 8px; color: white; text-align: center;
   line-height: 50px; text-decoration: none; font-size: 1rem; text-transform: none;
   box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
