@@ -283,9 +283,16 @@ onMounted(() => {
         if (res.data?.gateway) selectedGateway.value = res.data.gateway.toLowerCase()
         if (res.data?.gatewayList && Array.isArray(res.data.gatewayList)) {
             const working = ['watchpay', 'lgpay', 'rupeerush']
-            gatewayList.value = res.data.gatewayList
+            const filtered = res.data.gatewayList
                 .filter(g => working.includes(g.toLowerCase()))
                 .sort((a, b) => working.indexOf(a.toLowerCase()) - working.indexOf(b.toLowerCase()))
+            
+            gatewayList.value = filtered
+            
+            // Ensure one is selected
+            if (filtered.length > 0 && (!selectedGateway.value || !working.includes(selectedGateway.value))) {
+                selectedGateway.value = filtered[0].toLowerCase()
+            }
         }
     }).catch(() => {})
 })
@@ -353,14 +360,34 @@ onMounted(() => {
 .section-title { font-size: 0.8rem; font-weight: 800; color: #0f172a; margin: 0 0 10px 4px; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* Methods Grid */
-.methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.methods-grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 12px; 
+  margin-bottom: 20px; 
+}
 .method-item { cursor: pointer; }
 .item-inner {
-  position: relative; background: #ffffff; border: 1px solid #e2e8f0;
-  border-radius: 12px; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 4px;
-  transition: 0.2s;
+  position: relative; 
+  background: #ffffff; 
+  border: 1px solid #e2e8f0;
+  border-radius: 16px; 
+  padding: 12px 6px; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  gap: 8px;
+  aspect-ratio: 1/0.95;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.method-item.active .item-inner { background: #f0fdfa; border-color: #05c0b8; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(5,192,184,0.1); }
+.method-item.active .item-inner { 
+  background: #f0fdfa; 
+  border-color: #05c0b8; 
+  border-width: 2px;
+  transform: translateY(-4px); 
+  box-shadow: 0 10px 20px -5px rgba(5,192,184,0.2); 
+}
 .icon-wrap { width: 32px; height: 32px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 .icon-wrap img { width: 20px; height: 20px; object-fit: contain; }
 .gateway-icon {
