@@ -111,8 +111,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getPromotionMembers, claimContriBonus } from '../api/promotion'
-import axios from 'axios'
-import { url } from '../api/auth'
+import API from '../api/client'
 
 const router = useRouter()
 
@@ -141,18 +140,15 @@ onMounted(async () => {
   }
 
   const foundUser = JSON.parse(loggedInUserStr)
-  const AuthStr = `Bearer ${foundUser.token}`
 
   try {
     const memRes = await getPromotionMembers(foundUser.result.id)
     members.value = { ...members.value, ...memRes.data }
     
-    const userRes = await axios.get(`${url}/getUser/${foundUser.result.id}`, { headers: { Authorization: AuthStr } })
+    const userRes = await API.get(`/getUser/${foundUser.result.id}`)
     user.value = userRes.data[0]
   } catch (error) {
-    if (error.response?.status === 401) {
-      router.push('/login')
-    }
+    // Interceptor in client.js will handle 401 redirect
   } finally {
     loader.value = false
   }

@@ -164,14 +164,13 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
+import API, { url as URL } from '../api/client'
 import * as api from '../api/auth'
 import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const URL = api.url
 
 const formData = reactive({
   phone: '',
@@ -214,7 +213,7 @@ function sendOTP() {
   if (window.grecaptcha) {
     window.grecaptcha.ready(() => {
       window.grecaptcha.execute(SITE_KEY, { action: 'submit' }).then((token) => {
-        axios.post(`${URL}/sendOTP`, { token, phone: phoneStr }).catch(console.error)
+        API.post('/sendOTP', { token, phone: phoneStr }).catch(console.error)
       })
     })
   }
@@ -251,8 +250,7 @@ onMounted(() => {
   if (loggedInUser) {
     try {
       const foundUser = JSON.parse(loggedInUser)
-      const AuthStr = 'Bearer ' + foundUser.token
-      axios.get(`${URL}/getUser/${foundUser.result.id}`, { headers: { Authorization: AuthStr } })
+      API.get(`/getUser/${foundUser.result.id}`)
         .then(() => router.push('/'))
         .catch(() => {})
     } catch (_) {}

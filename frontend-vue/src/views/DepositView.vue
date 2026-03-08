@@ -44,6 +44,22 @@
             </div>
             <span class="methodName">{{ GATEWAY_LABELS[gateway] || gateway }}</span>
           </div>
+          
+          <div class="methodItem" @click="dialog.open = true; dialog.body = 'USDT channel is coming soon!'">
+            <div class="methodIconBox">
+               <div style="width:28px;height:28px;border-radius:50%;background:#26a17b;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:18px;">₮</div>
+            </div>
+            <span class="methodName">USDT</span>
+          </div>
+          <div class="methodItem" @click="dialog.open = true; dialog.body = 'ARPay channel is coming soon!'">
+            <div class="methodIconBox">
+               <div style="position:relative;">
+                 <div style="font-size:24px;font-weight:900;color:#fde047;">A</div>
+                 <div style="position:absolute;top:-8px;right:-18px;background:#ef4444;color:white;font-size:8px;padding:2px 4px;border-radius:4px;">+2%</div>
+               </div>
+            </div>
+            <span class="methodName">ARPay</span>
+          </div>
         </div>
 
         <!-- Selected Channel Details -->

@@ -38,8 +38,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
-import { url } from '../api/auth'
+import API from '../api/client'
 
 const router = useRouter()
 const record = ref(null)
@@ -53,12 +52,10 @@ onMounted(async () => {
 
   const foundUser = JSON.parse(loggedInUserStr)
   try {
-    const response = await axios.get(`${url}/getUser/${foundUser.result.id}`, {
-      headers: { Authorization: `Bearer ${foundUser.token}` }
-    })
+    const response = await API.get(`/getUser/${foundUser.result.id}`)
     record.value = response.data[0]
   } catch (error) {
-    router.push('/login')
+    // Interceptor in client.js will handle 401 redirect
   }
 })
 </script>
