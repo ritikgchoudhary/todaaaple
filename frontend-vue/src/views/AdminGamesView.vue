@@ -90,11 +90,9 @@
                 <td v-if="key === 'slot'">
                   <select v-model="game.provider" class="provider-select">
                     <option value="">None</option>
-                    <option value="jdb">JDB</option>
-                    <option value="jili">JILI</option>
-                    <option value="pg">PG</option>
-                    <option value="r88">R88</option>
-                    <option value="vp">VP</option>
+                    <option v-for="p in slotProviders" :key="p.id" :value="p.id">
+                      {{ p.label || p.id }}
+                    </option>
                   </select>
                 </td>
                 <td class="actions">
