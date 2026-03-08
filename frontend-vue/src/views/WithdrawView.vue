@@ -40,8 +40,8 @@
           </div>
         </div>
 
-        <div class="info-text">Amount: ₹0 - ₹1000, fee ₹30</div>
-        <div class="info-text" style="margin-bottom: 10px;">Amount: ₹1000 and above, fee 3%</div>
+        <div class="info-text" style="color: #666; padding-left: 28px;">Amount: ₹0 - ₹1000, fee ₹30</div>
+        <div class="info-text" style="margin-bottom: 10px; color: #666; padding-left: 28px;">Amount: ₹1000 and above, fee 3%</div>
 
         <div class="input-label" style="font-size: 1rem; color: black; margin-bottom: 5px;">Withdrawal Amount</div>
         <div class="input-card">
@@ -134,7 +134,7 @@
         </div>
 
         <div class="wagering-info">
-          <div class="info-text">
+          <div class="info-text" style="color: black;">
             • USDT will be sent to your TRC20 wallet address<br/>
             • Processing time: 24-48 hours<br/>
             • Network fee may apply
