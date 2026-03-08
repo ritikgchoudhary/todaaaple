@@ -1,138 +1,162 @@
 <template>
   <div class="deposit-page">
-    <div class="mobileContainer">
-      <!-- Header -->
-      <header class="header">
-        <svg @click="router.back()" class="backIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f0c27b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-        <div class="headerTitle">Deposit</div>
-        <router-link to="/rechargeHistory" class="headerRightText">Deposit history</router-link>
-      </header>
+    <div class="header">
+      <div class="header-left" @click="router.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </div>
+      <h1 class="header-title">Deposit</h1>
+      <router-link to="/rechargeHistory" class="header-right">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+      </router-link>
+    </div>
 
-      <div class="mainContent">
-        <!-- Balance Card (Dark gradient style) -->
-        <div class="balanceCard">
-          <div class="bcTop">
-            <div class="bcLabel">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#fbbf24" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
-              <span>Balance</span>
-            </div>
-            <div class="bcBalRow">
-              <div class="bcBal">₹{{ (userBalance || 0).toFixed(2) }}</div>
-              <button class="bcRefreshBtn" @click="fetchBalance" title="Refresh">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-              </button>
-            </div>
+    <div class="mobile-container">
+      <!-- Balance Card -->
+      <div class="glass-card balance-card">
+        <div class="card-glow"></div>
+        <div class="balance-info">
+          <div class="label-row">
+            <span class="label">Available Balance</span>
+            <button class="refresh-btn" @click="fetchData" :class="{ 'spinning': fetching }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
           </div>
-          <div class="bcBottom">
-             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-             <div class="bcDots">**** &nbsp;&nbsp;&nbsp; ****</div>
+          <div class="amount-row">
+            <span class="currency">₹</span>
+            <span class="amount">{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
           </div>
         </div>
-
-        <!-- Payment Method Grid -->
-        <div class="methodGrid">
-          <div class="methodItem" v-for="gateway in gatewayList" :key="gateway" :class="{ active: selectedGateway === gateway }" @click="selectedGateway = gateway">
-            <div class="methodIconBox">
-              <img v-if="gateway === 'rupeerush'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" class="methodImg"/>
-              <img v-else-if="gateway === 'lgpay'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" class="methodImg" style="filter: grayscale(1);"/>
-              <img v-else-if="gateway === 'watchpay'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" class="methodImg" style="filter: grayscale(1);"/>
-              <img v-else-if="gateway === 'manual'" src="https://img.bzvm68.com/site_common/payment/paytm.png" alt="Paytm" class="methodImg" />
-              <img v-else-if="gateway === 'auto'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="PhonePe" class="methodImg" style="filter: sepia(1);"/>
-              <div v-else style="width:28px;height:28px;border-radius:50%;background:#26a17b;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:18px;">₮</div>
-            </div>
-            <span class="methodName">{{ GATEWAY_LABELS[gateway] || gateway }}</span>
+        <div class="card-footer">
+          <div class="user-id">ID: {{ auth.user?.id || '----' }}</div>
+          <div class="secure-tag">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Verified Secure</span>
           </div>
-          
-          <div class="methodItem" @click="dialog.open = true; dialog.body = 'USDT channel is coming soon!'">
-            <div class="methodIconBox">
-               <div style="width:28px;height:28px;border-radius:50%;background:#26a17b;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:18px;">₮</div>
-            </div>
-            <span class="methodName">USDT</span>
-          </div>
-          <div class="methodItem" @click="dialog.open = true; dialog.body = 'ARPay channel is coming soon!'">
-            <div class="methodIconBox">
-               <div style="position:relative;">
-                 <div style="font-size:24px;font-weight:900;color:#fde047;">A</div>
-                 <div style="position:absolute;top:-8px;right:-18px;background:#ef4444;color:white;font-size:8px;padding:2px 4px;border-radius:4px;">+2%</div>
-               </div>
-            </div>
-            <span class="methodName">ARPay</span>
-          </div>
-        </div>
-
-        <!-- Selected Channel Details -->
-        <div class="channelSection">
-          <div class="sectionHeader">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0c27b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-            <span>Select channel</span>
-          </div>
-          <div class="channelBoxes">
-            <div class="channelBox" v-for="gateway in gatewayList" :key="gateway" :class="{ active: selectedGateway === gateway }" @click="selectedGateway = gateway" v-show="selectedGateway === gateway || gatewayList.length === 1">
-               <div class="cbName">{{ GATEWAY_LABELS[gateway] || gateway }}</div>
-               <div class="cbRange">Balance:{{ GATEWAY_RANGES[gateway] || '100 - 50K' }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Deposit Amount Section -->
-        <div class="amountSection">
-           <div class="sectionHeader">
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0c27b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12h.01"/></svg>
-             <span>Deposit amount</span>
-           </div>
-           
-           <div class="amountGrid">
-              <button 
-                v-for="amt in [100, 200, 300, 400, 500, '1K', '2K', '3K', '5K']" 
-                :key="amt" 
-                :class="['amtBtn', { active: amount === (typeof amt === 'string' ? parseInt(amt)*1000 : amt) }]"
-                @click="amount = (typeof amt === 'string' ? parseInt(amt)*1000 : amt)"
-              >
-                <span class="rs">₹</span> {{ amt }}
-              </button>
-           </div>
-
-           <div class="inputGroup">
-             <span class="currency">₹</span>
-             <input v-model.number="amount" type="number" placeholder="Please enter the amount" />
-             <button v-if="amount" @click="amount = null" class="clearBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-             </button>
-           </div>
         </div>
       </div>
-      
-      <!-- Bottom Fixed Action Bar -->
-      <div class="bottomActionBar">
-         <div class="baLeft">
-            <div class="baLabel">Recharge Method:</div>
-            <div class="baMethod">{{ GATEWAY_LABELS[selectedGateway] || selectedGateway || 'None' }}</div>
-         </div>
-         <button class="actionBtn" :disabled="loading || !amount || amount < 100" @click="handleRecharge">
-            <span v-if="loading" class="btnLoader"></span>
-            <span v-else>Deposit ₹{{ (amount || 0).toFixed(2) }}</span>
-         </button>
+
+      <!-- Payment Methods -->
+      <div class="section-title">Select Payment Method</div>
+      <div class="methods-grid">
+        <div 
+          v-for="gateway in gatewayList" 
+          :key="gateway" 
+          class="method-item" 
+          :class="{ 'active': selectedGateway === gateway }"
+          @click="selectedGateway = gateway"
+        >
+          <div class="item-inner">
+            <div class="icon-wrap">
+              <img v-if="gateway === 'rupeerush'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" />
+              <img v-else-if="gateway === 'lgpay'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" style="filter: hue-rotate(45deg);"/>
+              <img v-else-if="gateway === 'watchpay'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="UPI" />
+              <img v-else-if="gateway === 'manual'" src="https://img.bzvm68.com/site_common/payment/paytm.png" alt="Paytm" />
+              <img v-else-if="gateway === 'auto'" src="https://img.bzvm68.com/site_common/payment/upi_qr.png" alt="PhonePe" style="filter: hue-rotate(-45deg);"/>
+              <div v-else class="fallback-icon">₹</div>
+            </div>
+            <span class="name">{{ GATEWAY_LABELS[gateway] || gateway }}</span>
+            <div class="check-mark" v-if="selectedGateway === gateway">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+        </div>
+        
+        <!-- USDT Placeholder -->
+        <div class="method-item disabled" @click="showToast('USDT coming soon!')">
+          <div class="item-inner">
+            <div class="icon-wrap usdt">₮</div>
+            <span class="name">USDT</span>
+          </div>
+        </div>
       </div>
 
+      <!-- Amount Section -->
+      <div class="section-title">Deposit Amount</div>
+      <div class="amount-card glass-card">
+        <div class="input-container">
+          <span class="prefix">₹</span>
+          <input 
+            type="number" 
+            v-model.number="amount" 
+            placeholder="Min. 200" 
+            @focus="focused = true" 
+            @blur="focused = false"
+            class="amount-input"
+          />
+          <button v-if="amount" class="clear-btn" @click="amount = null">×</button>
+        </div>
+
+        <div class="chips-container">
+          <button 
+            v-for="val in [100, 500, 1000, 2000, 5000, 10000, 20000, 50000]" 
+            :key="val" 
+            class="chip"
+            :class="{ 'active': amount === val }"
+            @click="amount = val"
+          >
+            ₹{{ val >= 1000 ? (val/1000) + 'K' : val }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Details / Instructions -->
+      <div class="details-section">
+        <div class="details-card">
+          <h3>Payment Instructions</h3>
+          <ul class="instruction-list">
+            <li>
+              <span class="num">1</span>
+              <p>Select your preferred UPI or QR payment method above.</p>
+            </li>
+            <li>
+              <span class="num">2</span>
+              <p>Enter the amount (Minimum <b>₹200</b> for successful processing).</p>
+            </li>
+            <li>
+              <span class="num">3</span>
+              <p>Complete the transaction on the payment page. Keep the UTR/Reference number ready if required.</p>
+            </li>
+            <li>
+              <span class="num">4</span>
+              <p>Balance usually reflects within <b>1 to 5 minutes</b> after successful payment.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fixed Action Footer -->
+    <div class="action-footer">
+      <div class="footer-inner">
+        <div class="selection-summary">
+          <div class="summary-label">Recharging via</div>
+          <div class="summary-value">{{ GATEWAY_LABELS[selectedGateway] || 'Select Method' }}</div>
+        </div>
+        <button class="deposit-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
+          <span v-if="loading" class="spinner"></span>
+          <span v-else>Confirm Deposit ₹{{ (amount || 0).toLocaleString() }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Notification Dialog -->
-    <div v-if="dialog.open" class="dialogOverlay" @click="dialog.open = false">
-      <div class="dialogCard" @click.stop>
-        <div class="dialogHeader">
-          <span class="dialogTitle">Notice</span>
+    <div v-if="dialog.open" class="modal-overlay" @click="dialog.open = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <div class="modal-icon">!</div>
+          <h3>Notification</h3>
         </div>
-        <p class="dialogBody">{{ dialog.body }}</p>
-        <button @click="dialog.open = false" class="confirmBtn">OK</button>
+        <div class="modal-body">{{ dialog.body }}</div>
+        <button class="modal-btn" @click="dialog.open = false">Got it</button>
       </div>
     </div>
 
-    <!-- Loader -->
-    <div v-if="loading" class="pageLoader">
-       <div class="spinner"></div>
-       <p>Initiating Request...</p>
+    <!-- Full Page Loader -->
+    <div v-if="loading" class="global-loader">
+      <div class="loader-content">
+        <div class="loader-circle"></div>
+        <div class="loader-text">Securing Payment...</div>
+      </div>
     </div>
   </div>
 </template>
@@ -147,42 +171,45 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const amount = ref(500)
-const quickAmounts = [200, 500, 1000, 2000, 5000, 10000]
 const loading = ref(false)
+const fetching = ref(false)
 const userBalance = ref(0)
+const focused = ref(false)
 const selectedGateway = ref('watchpay')
-const gatewayList = ref(['auto', 'manual', 'lgpay', 'watchpay', 'rupeerush'])
+const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual'])
 const dialog = reactive({ open: false, body: '' })
 
 const GATEWAY_LABELS = {
-  auto: "Phonepe_QR",
-  manual: "PAYTM",
-  lgpay: "Innate UPI-QR",
-  watchpay: "UPI-QR PAY",
-  rupeerush: "UPI-QR",
-}
-const GATEWAY_RANGES = {
-  auto: "100 - 50k",
-  manual: "100 - 50k",
-  lgpay: "100 - 50k",
-  watchpay: "100 - 50k",
-  rupeerush: "100 - 50k",
+  auto: "Phonepe QR",
+  manual: "Paytm Direct",
+  lgpay: "UPI Fast QR",
+  watchpay: "WatchPay UPI",
+  rupeerush: "Express UPI",
 }
 
 async function fetchData() {
     if (!auth.user?.id) return
+    fetching.value = true
     try {
         const res = await walletApi.getUserHome(auth.user.id)
-        if (res.data) {
-            userBalance.value = res.data.balance || 0
+        if (res.data && res.data.length > 0) {
+            userBalance.value = res.data[0].balance || 0
         }
-    } catch (err) {}
+    } catch (err) {
+        console.error('Balance fetch failed')
+    } finally {
+        setTimeout(() => fetching.value = false, 800)
+    }
+}
+
+function showToast(msg) {
+    dialog.body = msg
+    dialog.open = true
 }
 
 async function handleRecharge() {
     if (!amount.value || amount.value < 200) {
-        dialog.body = "Minimum ₹200 required"
-        dialog.open = true
+        showToast("Minimum recharge amount is ₹200")
         return
     }
     loading.value = true
@@ -193,14 +220,13 @@ async function handleRecharge() {
             customer_mobile: auth.user.phone || '',
             userId: auth.user.id
         }
+        
         let res
         if (selectedGateway.value === 'watchpay') res = await walletApi.watchPayCreateOrder(auth.user.id, payload)
         else if (selectedGateway.value === 'lgpay') res = await walletApi.lgPayCreateOrder(auth.user.id, payload)
         else if (selectedGateway.value === 'rupeerush') res = await walletApi.rupeeRushCreateOrder(auth.user.id, payload)
         else {
-            // Placeholder for other gateways
-            dialog.body = `${selectedGateway.value.toUpperCase()} gateway is under maintenance. Please use WatchPay or LGPay.`
-            dialog.open = true
+            showToast(`${GATEWAY_LABELS[selectedGateway.value] || selectedGateway.value} is currently under maintenance. Please try another method.`)
             loading.value = false
             return
         }
@@ -208,20 +234,26 @@ async function handleRecharge() {
         if (res.data?.payment_url || res.data?.payUrl || res.data?.url) {
             window.location.href = res.data.payment_url || res.data.payUrl || res.data.url
         } else {
-            throw new Error("Payment link not found")
+            throw new Error("No payment URL received from gateway")
         }
     } catch (err) {
-        dialog.body = err.response?.data?.error || err.message || "Recharge failed"
-        dialog.open = true
+        showToast(err.response?.data?.error || err.message || "Failed to initiate deposit. Please try again.")
+    } finally {
+        loading.value = false
     }
-    loading.value = false
 }
 
 onMounted(() => {
     fetchData()
     walletApi.getCurrentGateway().then(res => {
         if (res.data?.gateway) selectedGateway.value = res.data.gateway.toLowerCase()
-        if (res.data?.gatewayList) gatewayList.value = res.data.gatewayList
+        if (res.data?.gatewayList && Array.isArray(res.data.gatewayList)) {
+            // Priority ordering
+            const preferred = ['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual']
+            gatewayList.value = res.data.gatewayList.sort((a, b) => {
+              return preferred.indexOf(a) - preferred.indexOf(b)
+            })
+        }
     }).catch(() => {})
 })
 </script>
@@ -229,299 +261,426 @@ onMounted(() => {
 <style scoped>
 .deposit-page {
   min-height: 100vh;
-  background-color: #121212;
-  display: flex;
-  justify-content: center;
-  font-family: system-ui, -apple-system, sans-serif;
-  color: white;
-}
-.mobileContainer {
-  width: 100%;
-  max-width: 500px;
-  background-color: #121212;
-  min-height: 100vh;
-  position: relative;
-  padding-bottom: 140px; /* space for action bar + nav */
+  background-color: #0c0d10;
+  color: #e2e8f0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  padding-bottom: 120px;
 }
 
 /* Header */
 .header {
-  display: flex;
-  align-items: center;
-  padding: 15px 20px;
-  background: #1a1a1a;
-  color: #fff;
   position: sticky;
   top: 0;
-  z-index: 10;
-}
-.backIcon { cursor: pointer; }
-.headerTitle { flex: 1; text-align: center; font-weight: 600; font-size: 17px; }
-.headerRightText { font-size: 13px; color: #05c0b8; text-decoration: none; font-weight: 500; }
-
-.mainContent {
-  padding: 16px;
+  z-index: 100;
+  height: 64px;
+  background: rgba(12, 13, 16, 0.85);
+  backdrop-filter: blur(20px);
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-left {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d1d5db;
+  cursor: pointer;
+}
+
+.header-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.header-right {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d9a05b; /* Gold accent */
+  text-decoration: none;
+}
+
+.mobile-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* Glass Card Global */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  position: relative;
 }
 
 /* Balance Card */
-.balanceCard {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-radius: 16px;
-  padding: 20px;
-  color: white;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
-}
-.bcTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-.bcLabel {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 8px;
-}
-.bcBalRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.bcBal {
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1;
-}
-.bcRefreshBtn {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  color: white;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.bcBottom {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.bcDots {
-  font-family: monospace;
-  font-size: 18px;
-  letter-spacing: 2px;
-  opacity: 0.8;
+.balance-card {
+  padding: 24px;
+  background: linear-gradient(145deg, rgba(217, 160, 91, 0.1) 0%, rgba(12, 13, 16, 0.05) 100%);
+  border-color: rgba(217, 160, 91, 0.2);
+  margin-bottom: 32px;
 }
 
-/* Method Grid */
-.methodGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+.card-glow {
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 100px; height: 100px;
+  background: radial-gradient(circle, rgba(217, 160, 91, 0.15) 0%, transparent 70%);
+  filter: blur(20px);
 }
-.methodItem {
+
+.label-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.refresh-btn {
+  background: none; border: none; color: #d9a05b; cursor: pointer;
+  padding: 4px; border-radius: 50%; display: flex;
+  transition: all 0.3s;
+}
+.refresh-btn.spinning { transform: rotate(360deg); opacity: 0.5; }
+
+.amount-row {
+  display: flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
+  margin-bottom: 20px;
 }
-.methodIconBox {
-  width: 56px;
-  height: 56px;
-  background: #1a1a1a;
-  border-radius: 16px;
+
+.currency {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #d9a05b;
+}
+
+.amount {
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.card-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border: 2px solid transparent;
-  transition: all 0.2s;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 16px;
 }
-.methodItem.active .methodIconBox {
-  border-color: #fdb05d;
-  background: rgba(253, 176, 93, 0.1);
-}
-.methodImg {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-.methodName {
-  font-size: 12px;
-  color: #a3a3a3;
-  text-align: center;
-}
-.methodItem.active .methodName {
-  color: #fff;
-  font-weight: 600;
+
+.user-id { font-size: 0.75rem; color: #64748b; font-weight: 600; }
+
+.secure-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 8px;
+  border-radius: 20px;
 }
 
 /* Sections */
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
   color: #fff;
   margin-bottom: 16px;
-  font-size: 15px;
+  padding-left: 4px;
 }
 
-/* Channel Section */
-.channelSection {
-  background: #1a1a1a;
-  padding: 16px;
-  border-radius: 12px;
-}
-.channelBoxes {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.channelBox {
-  background: #2a2a2a;
-  padding: 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: none;
-}
-.channelBox.active {
-  background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%);
-  color: #1a1a1a;
-  display: block;
-}
-.cbName { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-.cbRange { font-size: 12px; opacity: 0.8; }
-
-/* Amount Section */
-.amountSection {
-  background: #1a1a1a;
-  padding: 16px;
-  border-radius: 12px;
-}
-.amountGrid {
+/* Methods Grid */
+.methods-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 32px;
 }
-.amtBtn {
-  background: #2a2a2a;
-  border: 1px solid #333;
-  color: #a3a3a3;
-  padding: 12px 0;
-  border-radius: 8px;
+
+.method-item {
+  cursor: pointer;
+}
+
+.item-inner {
+  position: relative;
+  background: #1a1c23;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.method-item.active .item-inner {
+  background: rgba(217, 160, 91, 0.08);
+  border-color: #d9a05b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 160, 91, 0.15);
+}
+
+.icon-wrap {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrap img { width: 32px; height: 32px; object-fit: contain; }
+
+.icon-wrap.usdt { font-size: 1.5rem; color: #26a17b; font-weight: 900; }
+
+.item-inner .name {
+  font-size: 0.75rem;
   font-weight: 600;
-  font-size: 14px;
+  color: #94a3b8;
+  text-align: center;
+  transition: color 0.2s;
+}
+
+.method-item.active .name { color: #fff; }
+
+.check-mark {
+  position: absolute; top: -6px; right: -6px;
+  width: 20px; height: 20px;
+  background: #d9a05b;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  border: 2px solid #1a1c23;
+}
+
+.method-item.disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Amount Card */
+.amount-card {
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0 16px;
+  margin-bottom: 20px;
+  transition: border-color 0.2s;
+}
+
+.input-container:focus-within { border-color: #d9a05b; }
+
+.prefix { font-size: 1.5rem; font-weight: 800; color: #d9a05b; margin-right: 12px; }
+
+.amount-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  padding: 16px 0;
+}
+
+.amount-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.clear-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none; color: #94a3b8;
+  width: 24px; height: 24px; border-radius: 50%;
+  font-size: 1rem; cursor: pointer;
+}
+
+.chips-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 10px 4px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
-.amtBtn .rs { font-weight: normal; margin-right: 2px; }
-.amtBtn.active {
-  background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%);
-  color: #1a1a1a;
-  border-color: transparent;
-}
-.inputGroup {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-radius: 8px;
-  padding: 0 16px;
-  min-height: 48px;
-}
-.currency { font-weight: 800; color: #05c0b8; margin-right: 12px; font-size: 18px; }
-.inputGroup input {
-  flex: 1;
-  border: none;
-  background: none;
-  padding: 12px 0;
-  font-size: 16px;
-  outline: none;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-.clearBtn { background: none; border: none; font-size: 20px; color: #94A3B8; cursor: pointer; padding: 4px; }
 
-/* Bottom Action Bar */
-.bottomActionBar {
+.chip.active {
+  background: rgba(217, 160, 91, 0.1);
+  border-color: #d9a05b;
+  color: #d9a05b;
+}
+
+/* Instructions */
+.details-card {
+  background: rgba(217, 160, 91, 0.03);
+  border: 1px dashed rgba(217, 160, 91, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.details-card h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #d9a05b;
+  margin: 0 0 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.instruction-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+
+.instruction-list li { display: flex; gap: 12px; align-items: flex-start; }
+
+.num {
+  width: 20px; height: 20px;
+  background: rgba(217, 160, 91, 0.2);
+  color: #d9a05b;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 900; flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.instruction-list p {
+  margin: 0; font-size: 0.85rem; color: #94a3b8; line-height: 1.4;
+}
+
+.instruction-list b { color: #f1f5f9; font-weight: 700; }
+
+/* Action Footer */
+.action-footer {
   position: fixed;
-  bottom: 60px; /* Above BottomNav */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 500px;
-  background: #1a1a1a;
-  padding: 16px 20px;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  background: #0c0d10;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.footer-inner {
+  max-width: 460px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-  z-index: 20;
+  gap: 16px;
 }
-@media screen and (max-width: 500px) {
-  .bottomActionBar {
-    bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-  }
-}
-.baLeft {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.baLabel {
-  font-size: 12px;
-  color: #a3a3a3;
-}
-.baMethod {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-}
-.actionBtn {
-  padding: 12px 24px;
-  background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%);
-  color: #1a1a1a;
-  border: none;
-  border-radius: 24px;
-  font-weight: 700;
-  font-size: 15px;
+
+.selection-summary { flex: 1; }
+.summary-label { font-size: 0.7rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+.summary-value { font-size: 0.9rem; color: #fff; font-weight: 800; }
+
+.deposit-btn {
+  flex: 2;
+  height: 54px;
+  background: linear-gradient(180deg, #d9a05b 0%, #a67332 100%);
+  border: none; border-radius: 12px;
+  color: #fff; font-size: 1rem; font-weight: 800;
   cursor: pointer;
-  min-width: 140px;
-  box-shadow: 0 4px 12px rgba(253, 176, 93, 0.3);
-}
-.actionBtn:disabled { background: #333; color: #666; cursor: not-allowed; box-shadow: none; }
-
-/* Dialog */
-.dialogOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: flex; align-items: center; justify-content: center; z-index: 100;
-}
-.dialogCard {
-  background: #1a1a1a; padding: 24px; border-radius: 20px; width: 90%; max-width: 360px;
-  text-align: center; color: white;
-}
-.dialogTitle { font-weight: 700; font-size: 18px; color: #f0c27b; }
-.dialogBody { font-size: 14px; color: #a3a3a3; line-height: 1.5; margin: 16px 0 24px; }
-.confirmBtn {
-    width: 100%; padding: 12px; background: linear-gradient(180deg, #ffd180 0%, #fdb05d 100%); color: #1a1a1a;
-    border: none; border-radius: 10px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 15px rgba(217, 160, 91, 0.25);
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
 }
 
-.pageLoader {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: #f0c27b;
+.deposit-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; filter: grayscale(1); }
+.deposit-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
 }
-.spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #f0c27b; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 12px; }
+
+.modal-content {
+  background: #1a1c23;
+  width: 100%; max-width: 320px;
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  border: 1px solid rgba(217, 160, 91, 0.3);
+}
+
+.modal-header { margin-bottom: 20px; }
+.modal-icon {
+  width: 40px; height: 40px; background: rgba(217, 160, 91, 0.2);
+  color: #d9a05b; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px; font-weight: 900; font-size: 1.5rem;
+}
+.modal-header h3 { font-size: 1.25rem; margin: 0; color: #fff; }
+
+.modal-body { font-size: 0.95rem; color: #94a3b8; line-height: 1.5; margin-bottom: 32px; }
+
+.modal-btn {
+  width: 100%; height: 48px;
+  background: #d9a05b; color: #fff; border: none; border-radius: 12px;
+  font-weight: 800; cursor: pointer;
+}
+
+/* Loader */
+.global-loader {
+  position: fixed; inset: 0; z-index: 3000;
+  background: #0c0d10;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.loader-content { text-align: center; }
+.loader-circle {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(217, 160, 91, 0.1);
+  border-top-color: #d9a05b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.loader-text { font-size: 0.9rem; font-weight: 700; color: #d9a05b; letter-spacing: 0.1em; text-transform: uppercase; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 350px) {
+  .details-card { padding: 12px; }
+  .amount { font-size: 1.75rem; }
+  .methods-grid { grid-template-columns: repeat(2, 1fr); }
+  .chips-container { grid-template-columns: repeat(3, 1fr); }
+}
 </style>
