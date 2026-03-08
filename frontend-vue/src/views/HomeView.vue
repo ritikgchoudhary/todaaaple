@@ -420,15 +420,8 @@ const displaySlotGames = computed(() => {
       const gid = (g.id || g.game_id || '').toLowerCase()
       const img = (g.img || '').toLowerCase()
       
-      // Match explicitly by field or infer from ID/Path (GPJD, GPJL, etc.)
-      if (p.includes(active)) return true
-      if (active === 'jdb' && (gid.includes('gpjd') || img.includes('gpjd'))) return true
-      if (active === 'jili' && (gid.includes('gpjl') || img.includes('gpjl'))) return true
-      if (active === 'r88' && (gid.includes('gpr8') || img.includes('gpr8'))) return true
-      if (active === 'vp' && (gid.includes('gpvp') || img.includes('gpvp'))) return true
-      if (active === 'pg' && (gid.includes('gppg') || img.includes('gppg'))) return true
-      
-      return false
+      // Match ONLY by the provider field assigned in Admin
+      return p === active || p.includes(active)
     })
   }
   
