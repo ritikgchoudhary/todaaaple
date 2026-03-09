@@ -95,7 +95,7 @@ const isAdmin = computed(() => {
 
 const filteredMenuItems = computed(() => {
   return menuItems.filter(item => {
-    if (item.label === 'API Docs' || item.label === 'Manage Games') {
+    if (item.label === 'API Docs' || item.label === 'Manage Games' || item.label === 'Global Dashboard') {
       return isAdmin.value
     }
     return true
@@ -136,6 +136,7 @@ const menuItems = [
   { label: 'Customer Service', path: '/help', svg: icons.help, bg: tealBg, color: tealColor },
   { label: 'API Docs', path: '/api-docs', svg: icons.code, bg: tealBg, color: tealColor },
   { label: 'Manage Games', path: '/admin/games', svg: icons.security, bg: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' },
+  { label: 'Global Dashboard', path: '/masterAdmin', svg: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>', bg: 'rgba(13, 148, 136, 0.1)', color: '#0d9488' },
 ]
 
 onMounted(fetchBalance)

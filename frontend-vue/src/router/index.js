@@ -34,6 +34,7 @@ import DepositHistoryView from '../views/DepositHistoryView.vue'
 import InviteView from '../views/InviteView.vue'
 import InvitationRecordView from '../views/InvitationRecordView.vue'
 import InvitationRewardRuleView from '../views/InvitationRewardRuleView.vue'
+import MasterAdminView from '../views/MasterAdminView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -74,6 +75,7 @@ const routes = [
   { path: '/invite', name: 'Invite', component: InviteView, meta: { title: 'Invite Friends', requiresAuth: true, showNav: false } },
   { path: '/invitationRecord', name: 'InvitationRecord', component: InvitationRecordView, meta: { title: 'Invitation Record', requiresAuth: true, showNav: false } },
   { path: '/invitationRewardRule', name: 'InvitationRewardRule', component: InvitationRewardRuleView, meta: { title: 'Invitation Rules', requiresAuth: true, showNav: false } },
+  { path: '/masterAdmin', name: 'MasterAdmin', component: MasterAdminView, meta: { title: 'Master Admin Dashboard', requiresAuth: false, showNav: false } },
   { path: '/admin/games', name: 'AdminGames', component: () => import('../views/AdminGamesView.vue'), meta: { title: 'Master Admin - Games', requiresAuth: true } },
 ]
 
