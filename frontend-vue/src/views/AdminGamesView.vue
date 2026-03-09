@@ -520,7 +520,7 @@ onMounted(fetchData)
 <style scoped>
 .admin-games-page {
   padding: 40px 20px 80px;
-  max-width: min(430px, 100vw);
+  max-width: 1200px;
   margin: 0 auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background: #f8fafc;
