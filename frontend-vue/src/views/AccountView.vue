@@ -136,7 +136,7 @@ onMounted(fetchBalance)
 }
 .mobileContainer {
   width: 100%;
-  max-width: 500px;
+  max-width: min(430px, 100vw);
   background-color: #fff;
   min-height: 100vh;
   padding-bottom: 80px;
