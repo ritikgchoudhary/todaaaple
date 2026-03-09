@@ -5,9 +5,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </div>
       <h1 class="header-title">Deposit</h1>
-      <div class="header-right" @click="scrollToHistory">
+      <router-link to="/depositHistory" class="header-right">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
-      </div>
+      </router-link>
     </div>
 
     <div class="mobile-container">
@@ -129,7 +129,7 @@
       <div id="history-section" ref="historySection" class="history-section">
         <div class="section-header">
            <h2 class="section-title">Recent Deposits</h2>
-           <router-link to="/rechargeHistory" v-if="false" class="view-all">View All</router-link>
+           <router-link to="/depositHistory" class="view-all">View All</router-link>
         </div>
         
         <div v-if="rechargeHistory.length > 0" class="history-list">
