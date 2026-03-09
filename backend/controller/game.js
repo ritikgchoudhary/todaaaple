@@ -141,16 +141,43 @@ export const gameCallback = async (req, res) => {
 
         console.log(`Processing callback for User: ${user.phone} (ID: ${user.id}). Current Balance: ${user.balance}`);
         
-        // Logic: new_balance = current_balance - bet_amount + win_amount
-        const bet = parseFloat(bet_amount || 0);
-        const win = parseFloat(win_amount || 0);
+        const bet = parseFloat(bet_amount || payload.bet || 0);
+        const win = parseFloat(win_amount || payload.win || 0);
         const netChange = win - bet;
 
         console.log(`Transaction details: Bet=${bet}, Win=${win}, Net=${netChange}`);
 
+        // Prepare the update object
+        const updateQuery = {
+            $inc: { balance: netChange }
+        };
+
+        // Add history entries if there's activity
+        const historyEntries = [];
+        if (bet > 0) {
+            historyEntries.push({
+                amount: bet,
+                date: Date.now(),
+                credit: false, // Debit for bet
+                note: `Game Bet: ${game_uid || 'Casino'}`
+            });
+        }
+        if (win > 0) {
+            historyEntries.push({
+                amount: win,
+                date: Date.now(),
+                credit: true, // Credit for win
+                note: `Game Win: ${game_uid || 'Casino'}`
+            });
+        }
+
+        if (historyEntries.length > 0) {
+            updateQuery.$push = { walletHistory: { $each: historyEntries } };
+        }
+
         const updatedUser = await User.findOneAndUpdate(
             { id: Number(member_account) },
-            { $inc: { balance: netChange } },
+            updateQuery,
             { new: true }
         );
 
