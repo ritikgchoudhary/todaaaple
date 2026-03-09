@@ -30,7 +30,8 @@
       <aside v-if="!isMobile || showSidebar" class="sidebar">
         <div class="sidebar-header">
           <div class="admin-brand">
-            <span class="brand-text">Master Admin</span>
+            <span class="brand-brand">RUSH</span>
+            <span class="brand-text">PAY ADMIN</span>
           </div>
           <button v-if="isMobile" @click="showSidebar = false" class="close-sidebar">×</button>
         </div>
@@ -80,48 +81,49 @@
               <span class="stat-value">{{ formatStatVal(val, key) }}</span>
             </div>
             
-            <div class="full-card chart-placeholder">
-              <h3>Real-time Activity Summary</h3>
-              <p>System monitoring active. No anomalies detected.</p>
+            <div class="full-card welcome-card shadow-premium">
+              <div class="welcome-icon">⚡</div>
+              <h3>System Overview Active</h3>
+              <p>Welcome back, Master Admin. All systems are operational.</p>
             </div>
           </div>
 
           <!-- USER MANAGEMENT -->
-          <div v-if="activeTab === 'users'" class="users-view">
+          <div v-if="activeTab === 'users'" class="admin-view">
             <div class="action-bar">
               <div class="search-wrap">
-                <input v-model="userSearch" placeholder="Search by phone or ID..." />
+                <input v-model="userSearch" placeholder="Search by phone or UID..." />
               </div>
-              <button @click="fetchUsers" class="refresh-btn">Refresh List</button>
+              <button @click="fetchUsers" class="refresh-btn">Refresh Users</button>
             </div>
             
-            <div class="table-wrap shadow-premium">
-              <table>
+            <div class="table-container shadow-premium">
+              <table class="admin-table">
                 <thead>
                   <tr>
                     <th>UID</th>
                     <th>Phone</th>
                     <th>Name</th>
                     <th>Balance</th>
-                    <th>Joined</th>
                     <th>Status</th>
+                    <th>Joined</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="user in filteredUsers" :key="user.id">
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.phone }}</td>
+                    <td>#{{ user.id }}</td>
+                    <td class="bold">{{ user.phone }}</td>
                     <td>{{ user.username || 'Member' }}</td>
-                    <td>₹{{ user.balance?.toFixed(2) }}</td>
-                    <td>{{ new Date(user.date).toLocaleDateString() }}</td>
+                    <td class="amount">₹{{ user.balance?.toFixed(2) }}</td>
                     <td>
                       <span :class="['status-badge', user.block ? 'blocked' : 'active']">
                         {{ user.block ? 'Blocked' : 'Active' }}
                       </span>
                     </td>
-                    <td class="actions">
-                      <button @click="openEditUser(user)" class="edit-btn">Edit</button>
+                    <td>{{ new Date(user.date).toLocaleDateString() }}</td>
+                    <td>
+                      <button @click="openEditUser(user)" class="action-btn edit">Update</button>
                     </td>
                   </tr>
                 </tbody>
@@ -129,27 +131,100 @@
             </div>
           </div>
 
-          <!-- GAME MANAGEMENT -->
-          <div v-if="activeTab === 'games'" class="games-view">
-            <div class="info-banner">
-              <p>Consolidated Game Manager. Control which games appear on the home screen and sidebar.</p>
-              <router-link to="/admin/games" class="legacy-link">Go to Full Game Editor</router-link>
+          <!-- WITHDRAWALS -->
+          <div v-if="activeTab === 'withdrawals'" class="admin-view">
+            <div class="action-bar tabs-filter">
+              <div class="filter-group">
+                <button v-for="s in ['All', 'Placed', 'Success', 'Rejected']" :key="s" 
+                  :class="['filter-btn', { active: withdrawalFilter === s }]"
+                  @click="withdrawalFilter = s"
+                >
+                  {{ s }}
+                </button>
+              </div>
+              <button @click="fetchWithdrawals" class="refresh-btn">Refresh</button>
             </div>
-            <!-- More game controls can be added here -->
+            
+            <div class="table-container shadow-premium">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>UID</th>
+                    <th>Amount</th>
+                    <th>Fee</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="w in filteredWithdrawals" :key="w._id">
+                    <td>{{ w.id }}</td>
+                    <td>#{{ w.userId }}</td>
+                    <td class="amount danger">₹{{ w.amount }}</td>
+                    <td>₹{{ w.withdrawalFee || 0 }}</td>
+                    <td>
+                      <span :class="['status-badge', w.status.toLowerCase()]">{{ w.status }}</span>
+                    </td>
+                    <td>{{ new Date(w.date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) }}</td>
+                    <td>
+                      <div v-if="w.status === 'Placed'" class="action-set">
+                        <button @click="updateWithdrawal(w, 'Success')" class="action-btn success">Approve</button>
+                        <button @click="updateWithdrawal(w, 'Rejected')" class="action-btn reject">Reject</button>
+                      </div>
+                      <span v-else class="text-mute">-</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <!-- COMMISSION -->
-          <div v-if="activeTab === 'commission'" class="commission-view">
+          <!-- TRANSACTIONS (Recharges) -->
+          <div v-if="activeTab === 'transactions'" class="admin-view">
+             <div class="action-bar">
+               <h3>Cumulative Transaction Stream</h3>
+               <button @click="fetchTransactions" class="refresh-btn">Fetch Recent</button>
+             </div>
+             
+             <div class="table-container shadow-premium">
+               <table class="admin-table">
+                 <thead>
+                   <tr>
+                     <th>Order ID</th>
+                     <th>UID</th>
+                     <th>Amount</th>
+                     <th>Gateway</th>
+                     <th>Status</th>
+                     <th>Time</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   <tr v-for="t in transactions" :key="t._id">
+                     <td>{{ t.id }}</td>
+                     <td>#{{ t.userId }}</td>
+                     <td class="amount success">₹{{ t.amount }}</td>
+                     <td>{{ t.gateway }}</td>
+                     <td>
+                        <span :class="['status-badge', t.status?.toLowerCase()]">{{ t.status || 'Pending' }}</span>
+                     </td>
+                     <td>{{ new Date(t.date || t.createDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) }}</td>
+                   </tr>
+                 </tbody>
+               </table>
+             </div>
+          </div>
+
+          <!-- SITE SETTINGS -->
+          <div v-if="activeTab === 'settings'" class="settings-view">
              <div class="config-card shadow-premium">
-                <h3>Agent Commission Tiers</h3>
-                <div v-if="commLoading" class="local-loader">Loading configs...</div>
-                <div v-else class="comm-list">
-                   <div v-for="config in commConfigs" :key="config._id" class="comm-item">
-                      <span>{{ config.type }} Layer</span>
-                      <input v-model="config.percentage" type="number" step="0.1" />
-                      <span>%</span>
-                   </div>
-                   <button class="save-comm-btn" @click="saveCommission">Update Tiers</button>
+                <h3>Global Configurations</h3>
+                <p>Advanced site switches and parameter controls coming in the next update.</p>
+                <div class="settings-placeholder-grid">
+                   <div class="p-card">Logo Manager</div>
+                   <div class="p-card">Carousel Sync</div>
+                   <div class="p-card">Gateway Toggle</div>
                 </div>
              </div>
           </div>
@@ -159,23 +234,24 @@
 
     <!-- Edit User Modal -->
     <div v-if="editingUser" class="modal-overlay" @click.self="editingUser = null">
-      <div class="modal-card shadow-premium">
+      <div class="modal-card animate-pop">
         <h3>Edit User: {{ editingUser.phone }}</h3>
+        <p class="modal-hint">Updating UID: #{{ editingUser.id }}</p>
         <div class="form-group">
-          <label>Wallet Balance (₹)</label>
-          <input v-model.number="editForm.balance" type="number" />
+          <label>New Balance (₹)</label>
+          <input v-model.number="editForm.balance" type="number" step="0.01" />
         </div>
         <div class="form-group">
-          <label>Account Status</label>
+          <label>Restrict Account Access</label>
           <select v-model="editForm.block">
-            <option :value="false">Active (Normal)</option>
-            <option :value="true">Blocked (No Login)</option>
+            <option :value="false">Grant Full Access</option>
+            <option :value="true">Block Login Access</option>
           </select>
         </div>
         <div class="modal-actions">
-          <button @click="editingUser = null" class="cancel-btn">Cancel</button>
+          <button @click="editingUser = null" class="cancel-btn">Discard</button>
           <button @click="saveUserEdit" class="save-btn" :disabled="saving">
-            {{ saving ? 'Saving...' : 'Save User' }}
+            {{ saving ? 'Updating...' : 'Apply Changes' }}
           </button>
         </div>
       </div>
@@ -187,48 +263,45 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import * as adminApi from '../api/admin'
 
-// Auth State
 const isAuthenticated = ref(localStorage.getItem('admin_authenticated') === 'true')
 const adminPassword = ref('')
 const loading = ref(false)
 const error = ref('')
 
-// Tabs
 const tabs = [
-  { id: 'dashboard', label: 'Overview', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>' },
-  { id: 'users', label: 'User Manager', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-3-3.87"/><path d="M9 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
-  { id: 'games', label: 'Game Panel', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' },
-  { id: 'commission', label: 'Commission', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' },
+  { id: 'dashboard', label: 'Summary', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/></svg>' },
+  { id: 'users', label: 'Users', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M17 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M9 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg>' },
+  { id: 'withdrawals', label: 'Withdraw Requests', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2\"/><path d=\"M18 12h4\"/></svg>' },
+  { id: 'transactions', label: 'Transaction Audit', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"21 12 14 12 11 18 8 6 5 12 3 12\"/></svg>' },
+  { id: 'settings', label: 'System Preferences', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z\"/></svg>' },
 ]
 const activeTab = ref('dashboard')
 const activeTabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?.label)
 
-// Main Data
 const stats = ref({})
 const users = ref([])
+const withdrawals = ref([])
+const transactions = ref([])
 const userSearch = ref('')
-const commConfigs = ref([])
-const commLoading = ref(false)
+const withdrawalFilter = ref('All')
 
-// UI State
 const isMobile = ref(false)
 const showSidebar = ref(false)
 const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
 
-// User Editing
 const editingUser = ref(null)
 const editForm = ref({ balance: 0, block: false })
 const saving = ref(false)
 
-// Auth Logic
 const handleLogin = () => {
   if (adminPassword.value === 'Master@Rush2024') {
     isAuthenticated.value = true
     localStorage.setItem('admin_authenticated', 'true')
     error.value = ''
-    fetchDashboard()
+    refreshAll()
   } else {
-    error.value = 'Invalid administrative password.'
+    error.value = 'Administrative authentication failed.'
+    adminPassword.value = ''
   }
 }
 
@@ -237,7 +310,13 @@ const handleLogout = () => {
   localStorage.removeItem('admin_authenticated')
 }
 
-// Data Fetching
+const refreshAll = () => {
+  fetchDashboard()
+  fetchUsers()
+  fetchWithdrawals()
+  fetchTransactions()
+}
+
 const fetchDashboard = async () => {
   try {
     const res = await adminApi.getAdminStats(ADMIN_API_KEY)
@@ -252,25 +331,32 @@ const fetchUsers = async () => {
   } catch (err) {}
 }
 
-const fetchCommission = async () => {
-  commLoading.value = true
+const fetchWithdrawals = async () => {
   try {
-    const res = await adminApi.getCommissionConfigs(ADMIN_API_KEY)
-    commConfigs.value = res.data.data
-  } catch (err) {} finally { commLoading.value = false }
+    const res = await adminApi.getAllWithdrawals(ADMIN_API_KEY)
+    if (res.data.success) withdrawals.value = res.data.data
+  } catch (err) {}
+}
+
+const fetchTransactions = async () => {
+  try {
+    const res = await adminApi.getAdminTransactions(ADMIN_API_KEY)
+    if (res.data.success) transactions.value = res.data.data
+  } catch (err) {}
 }
 
 const filteredUsers = computed(() => {
-  if (!userSearch.value) return users.value
   const q = userSearch.value.toLowerCase()
   return users.value.filter(u => 
-    u.phone.toString().includes(q) || 
-    u.id.toString().includes(q) ||
-    u.username?.toLowerCase().includes(q)
+    u.phone.toString().includes(q) || u.id.toString().includes(q)
   )
 })
 
-// Edit User
+const filteredWithdrawals = computed(() => {
+  if (withdrawalFilter.value === 'All') return withdrawals.value
+  return withdrawals.value.filter(w => w.status === withdrawalFilter.value)
+})
+
 const openEditUser = (user) => {
   editingUser.value = user
   editForm.value = { balance: user.balance, block: user.block }
@@ -285,311 +371,194 @@ const saveUserEdit = async () => {
     })
     editingUser.value = null
     fetchUsers()
+  } catch (err) {} finally { saving.value = false }
+}
+
+const updateWithdrawal = async (withdraw, status) => {
+  if (!confirm(`Are you sure you want to mark this withdrawal as ${status}?`)) return
+  try {
+    const res = await adminApi.updateWithdrawal(ADMIN_API_KEY, {
+        _id: withdraw._id,
+        id: withdraw.id,
+        userId: withdraw.userId,
+        amount: withdraw.amount,
+        status: status
+    })
+    
+    if (res.data.success) {
+      alert(res.data.message)
+      fetchWithdrawals()
+      fetchDashboard()
+    }
   } catch (err) {
-    alert('Failed to update user')
-  } finally { saving.value = false }
+    alert('Operation failed')
+  }
 }
 
-const saveCommission = () => {
-  alert('Commission saving logic connected. (Mock for now)')
-}
+const formatStatKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+const formatStatVal = (val, key) => (key.includes('Recharge') || key.includes('Withdrawal')) ? `₹${val.toLocaleString()}` : val
 
-// Helpers
-const formatStatKey = (key) => {
-  return key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
-}
-const formatStatVal = (val, key) => {
-  if (key.includes('Recharge') || key.includes('Withdrawal')) return `₹${val.toLocaleString()}`
-  return val
-}
-
-// Lifecycle & Responsiveness
-const checkRes = () => {
-  isMobile.value = window.innerWidth < 1024
-}
+const checkRes = () => isMobile.value = window.innerWidth < 1024
 
 onMounted(() => {
   checkRes()
   window.addEventListener('resize', checkRes)
-  if (isAuthenticated.value) {
-    fetchDashboard()
-    fetchUsers()
-    fetchCommission()
-  }
+  if (isAuthenticated.value) refreshAll()
 })
 
 watch(activeTab, (newTab) => {
-  if (newTab === 'users' && users.value.length === 0) fetchUsers()
-  if (newTab === 'commission' && commConfigs.value.length === 0) fetchCommission()
+  if (newTab === 'dashboard') fetchDashboard()
+  if (newTab === 'users') fetchUsers()
+  if (newTab === 'withdrawals') fetchWithdrawals()
+  if (newTab === 'transactions') fetchTransactions()
 })
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
 
 .master-admin-container {
   min-height: 100vh;
-  background-color: #f8fafc;
-  color: #1e293b;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #f0f4f8;
+  color: #334155;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
 }
 
-/* Login Overlay */
+/* Auth Flow */
 .admin-login-overlay {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at top right, #f0fdfa, #f8fafc);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  padding: 20px;
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2000; padding: 20px;
 }
-
 .login-card {
-  background: #fff;
-  width: 100%;
-  max-width: 400px;
-  padding: 40px;
-  border-radius: 24px;
-  text-align: center;
-  border: 1px solid #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  width: 100%; max-width: 420px;
+  padding: 50px; border-radius: 32px;
+  text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
 }
+.login-card h2 { color: #fff; font-size: 1.75rem; font-weight: 800; margin-bottom: 12px; }
+.login-card p { color: #94a3b8; margin-bottom: 35px; }
 
-.admin-icon {
-  width: 80px;
-  height: 80px;
-  background: #f0fdfa;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
+.input-group input {
+  width: 100%; padding: 18px; border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff; font-size: 1.1rem; margin-bottom: 20px; outline: none;
 }
-
-.login-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; color: #0f172a; }
-.login-card p { color: #64748b; font-size: 0.9rem; margin-bottom: 32px; }
-
-.input-group { display: flex; flex-direction: column; gap: 16px; }
-.input-group input { 
-  padding: 16px; 
-  border-radius: 12px; 
-  border: 1.5px solid #e2e8f0; 
-  font-size: 1rem; 
-  outline: none;
-  transition: all 0.2s;
-}
-.input-group input:focus { border-color: #0d9488; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
 .input-group button {
-  background: #0d9488;
-  color: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+  width: 100%; padding: 18px; border-radius: 16px;
+  background: #38bdf8; color: #0f172a; font-weight: 800; font-size: 1.1rem;
+  border: none; cursor: pointer; transition: all 0.3s;
 }
+.input-group button:hover { background: #7dd3fc; transform: translateY(-2px); }
 
-.error-text { color: #ef4444; font-size: 0.85rem; font-weight: 600; margin-top: 16px; }
+/* Layout */
+.admin-layout { display: flex; height: 100vh; }
 
-/* Admin Layout */
-.admin-layout {
-  display: flex;
-  height: 100vh;
-}
-
-/* Sidebar */
+/* Sidebar Premium */
 .sidebar {
-  width: 280px;
-  background: #0f172a;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  z-index: 1000;
+  width: 280px; background: #0f172a;
+  color: #fff; display: flex; flex-direction: column;
 }
+.sidebar-header { padding: 40px 30px; }
+.brand-brand { color: #38bdf8; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.1em; }
+.brand-text { color: #fff; font-weight: 400; font-size: 0.9rem; margin-left: 5px; opacity: 0.6; }
 
-.sidebar-header {
-  padding: 32px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.brand-text { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.02em; color: #2dd4bf; }
-
-.sidebar-nav { flex: 1; padding: 0 12px; display: flex; flex-direction: column; gap: 4px; }
+.sidebar-nav { flex: 1; padding: 0 15px; display: flex; flex-direction: column; gap: 8px; }
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: none;
-  background: transparent;
-  color: #94a3b8;
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s;
+  display: flex; align-items: center; gap: 15px;
+  padding: 16px 20px; border-radius: 16px; border: none;
+  background: transparent; color: #64748b; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
 }
+.nav-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
+.nav-item.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
 
-.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-.nav-item.active { background: #0d9488; color: #fff; }
-
-.sidebar-footer { padding: 24px; border-top: 1px solid rgba(255,255,255,0.05); }
+.sidebar-footer { padding: 30px; }
 .logout-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(239, 68, 68, 0.1);
-  color: #f87171;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 14px; border-radius: 14px; background: rgba(239, 68, 68, 0.1);
+  color: #f87171; border: none; font-weight: 700; cursor: pointer;
 }
 
-/* Main Content */
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Content Area */
+.main-content { flex: 1; overflow-y: auto; background: #f8fafc; }
 .content-header {
-  height: 80px;
-  background: #fff;
-  border-bottom: 1px solid #f1f5f9;
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 900;
+  padding: 0 40px; height: 90px; background: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0; sticky: top; z-index: 10;
 }
+.content-header h1 { font-size: 1.6rem; font-weight: 800; color: #1e293b; }
 
-.header-left { display: flex; align-items: center; gap: 16px; }
-.header-left h1 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; }
+.tab-view { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #f0fdf4;
-  color: #166534;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e; }
-
-.tab-view { padding: 32px; }
-
-/* Dashboard Cards */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 24px;
-}
-
+/* Stats Widgets */
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
 .stat-card {
-  background: #fff;
-  padding: 24px;
-  border-radius: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+  background: #fff; padding: 30px; border-radius: 28px;
+  border: 1px solid #edf2f7; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
+.stat-title { font-size: 0.9rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 15px; display: block; }
+.stat-value { font-size: 2.2rem; font-weight: 800; color: #0f172a; }
 
-.stat-title { font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.02em; }
-.stat-value { font-size: 1.75rem; font-weight: 800; color: #0f172a; }
+.welcome-card { grid-column: 1/-1; background: #fff; padding: 60px; text-align: center; }
+.welcome-icon { font-size: 4rem; margin-bottom: 20px; }
 
-.full-card { 
-  grid-column: 1 / -1; 
-  background: #fff; 
-  padding: 32px; 
-  border-radius: 24px; 
-  border: 1px solid #f1f5f9; 
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+/* Table System */
+.action-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; gap: 20px; }
+.search-wrap { flex: 1; position: relative; }
+.search-wrap input { width: 100%; padding: 15px 25px; border-radius: 18px; border: 1px solid #e2e8f0; font-size: 1rem; outline: none; }
+.refresh-btn { padding: 12px 24px; border-radius: 14px; background: #fff; border: 1px solid #e2e8f0; font-weight: 700; cursor: pointer; }
 
-/* User Table */
-.action-bar {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  gap: 16px;
-}
+.filter-group { display: flex; background: #fff; padding: 6px; border-radius: 16px; border: 1px solid #e2e8f0; }
+.filter-btn { padding: 8px 20px; border-radius: 12px; border: none; background: none; font-weight: 700; color: #64748b; cursor: pointer; }
+.filter-btn.active { background: #334155; color: #fff; }
 
-.search-wrap { flex: 1; max-width: 400px; }
-.search-wrap input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none; }
+.table-container { background: #fff; border-radius: 30px; border: 1px solid #edf2f7; overflow: hidden; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { background: #f8fafc; padding: 20px 25px; text-align: left; color: #94a3b8; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
+.admin-table td { padding: 20px 25px; border-bottom: 1px solid #f8fafc; font-size: 0.95rem; }
 
-.table-wrap { background: #fff; border-radius: 20px; overflow: hidden; }
-table { width: 100%; border-collapse: collapse; }
-th { text-align: left; padding: 16px 24px; background: #f8fafc; color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; }
-td { padding: 16px 24px; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; }
+.bold { font-weight: 700; color: #0f172a; }
+.amount { font-weight: 800; font-family: monospace; font-size: 1.1rem; }
+.amount.success { color: #10b981; }
+.amount.danger { color: #f43f5e; }
 
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-.status-badge.active { background: #f0fdf4; color: #166534; }
-.status-badge.blocked { background: #fef2f2; color: #991b1b; }
+.status-badge { padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+.status-badge.active { background: #f0fdf4; color: #22c55e; }
+.status-badge.blocked { background: #fff1f2; color: #f43f5e; }
+.status-badge.placed { background: #eff6ff; color: #3b82f6; }
+.status-badge.success { background: #f0fdf4; color: #22c55e; }
+.status-badge.rejected { background: #fff1f2; color: #f43f5e; }
 
-.edit-btn { background: #f1f5f9; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; color: #475569; }
+.action-btn { padding: 8px 16px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.action-btn.edit { background: #f1f5f9; color: #475569; }
+.action-btn.success { background: #22c55e; color: #fff; }
+.action-btn.reject { background: #f43f5e; color: #fff; margin-left: 8px; }
 
-/* Modals */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 3000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.modal-card {
-  background: #fff;
-  width: 100%;
-  max-width: 450px;
-  padding: 32px;
-  border-radius: 24px;
-}
-.form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
-.form-group label { font-size: 0.85rem; font-weight: 700; color: #64748b; }
-.form-group input, .form-group select { padding: 12px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 1rem; }
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+.modal-card { background: #fff; width: 100%; max-width: 480px; padding: 45px; border-radius: 35px; }
+.modal-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; }
+.modal-hint { color: #94a3b8; font-size: 0.9rem; margin-bottom: 30px; }
 
-.modal-actions { display: flex; gap: 12px; margin-top: 32px; }
-.cancel-btn { flex: 1; padding: 12px; background: #f1f5f9; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
-.save-btn { flex: 2; padding: 12px; background: #0d9488; color: #fff; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+.form-group { margin-bottom: 25px; }
+.form-group label { display: block; font-size: 0.9rem; font-weight: 800; color: #64748b; margin-bottom: 10px; }
+.form-group input, .form-group select { width: 100%; padding: 15px; border-radius: 15px; border: 1.5px solid #e2e8f0; font-size: 1.1rem; outline: none; }
 
-/* Utilities */
-.shadow-premium { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
+.modal-actions { display: flex; gap: 15px; margin-top: 40px; }
+.cancel-btn { flex: 1; padding: 16px; border-radius: 16px; border: none; background: #f1f5f9; font-weight: 700; cursor: pointer; }
+.save-btn { flex: 2; padding: 16px; border-radius: 16px; border: none; background: #0f172a; color: #fff; font-weight: 700; cursor: pointer; }
 
-@media (max-width: 1024px) {
-  .sidebar { position: fixed; inset: 0 0 0 0; width: 100%; }
-}
+/* Settings Placeholder */
+.settings-placeholder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
+.p-card { background: #f8fafc; padding: 30px; border-radius: 20px; border: 2px dashed #e2e8f0; text-align: center; color: #94a3b8; font-weight: 700; }
+
+.animate-pop { animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+.shadow-premium { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); }
 </style>

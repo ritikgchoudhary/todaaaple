@@ -5,6 +5,9 @@ const ADMIN_KEY = 'RUSH_ADMIN_SECRET_2024' // User defined password for Master A
 export const getAdminStats = (api) => API.get(`/admin-api/stats/${api}`)
 export const getAllUsers = (api) => API.get(`/admin-api/users/${api}`)
 export const updateUser = (api, data) => API.post(`/admin-api/updateUser/${api}`, data)
+export const getAllWithdrawals = (api) => API.get(`/admin-api/withdrawals/${api}`)
+export const updateWithdrawal = (api, data) => API.post(`/admin-api/updateWithdrawal/${api}`, data)
+export const getAdminTransactions = (api) => API.get(`/admin-api/transactions/${api}`)
 
 // Site Settings
 export const getSiteSettings = () => API.get('/siteSettings')
