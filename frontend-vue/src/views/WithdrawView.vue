@@ -336,10 +336,10 @@ onMounted(fetchData)
 <style scoped>
 .withdrawal-page {
   min-height: 100vh;
-  background-color: #f5f5f5;
-  color: #000;
+  background-color: #F1F5F9;
+  display: flex;
+  justify-content: center;
   font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  padding-bottom: 20px;
 }
 
 /* Header */
@@ -373,9 +373,14 @@ onMounted(fetchData)
   padding-right: 33%;
 }
 
-.mobile-container { 
-  max-width: 100%; 
-  margin: 0 auto; 
+.mobile-container {
+  width: 100%;
+  max-width: 500px;
+  background-color: #fff;
+  min-height: 100vh;
+  padding-bottom: 100px;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
 }
 
 .balance-title {
