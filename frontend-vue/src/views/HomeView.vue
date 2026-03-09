@@ -42,6 +42,10 @@
           </div>
         </div>
         <div class="huRight">
+          <router-link to="/invite" class="huBtn huInvite">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+             Invite
+          </router-link>
           <router-link to="/withdrawal" class="huBtn huWithdraw">
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
              Withdraw
@@ -1657,14 +1661,16 @@ onMounted(async () => {
 
 .huRight {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .huBtn {
   text-decoration: none;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 6px;
   text-align: center;
   display: flex;
@@ -1672,9 +1678,18 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  min-width: 80px;
+  min-width: 72px;
   transition: all 0.2s;
   box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2);
+}
+
+.huInvite {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+  color: white;
+}
+.huInvite:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 
 .huWithdraw {
