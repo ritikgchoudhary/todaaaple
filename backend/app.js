@@ -149,6 +149,9 @@ if (!useViteDev) {
   });
 }
 
+// Game Callback Routes (Placed before main router for priority)
+app.post(['/api/gameCallback', '/api/gameCallback/'], (req, res, next) => gameCallback(req, res, next));
+
 // Mount main API router at root so API routes work: /getProviders, /carousel, /site-settings, /getNotice, /gamesCatalog, /getUserHome, etc.
 app.use('/', homeCategoryRoutes);
 
@@ -164,7 +167,6 @@ app.get('/getUser/:id', getUserDataHome);
 
 // Game launch – POST /game/launch/:id with body { game_uid } or { game_id }
 app.post('/game/launch/:id', (req, res, next) => launchGame(req, res, next));
-app.post('/api/gameCallback', (req, res, next) => gameCallback(req, res, next));
 
 // So that GET /user/signin/ in browser shows backend is updated (login must use POST)
 app.get('/user/signin', (req, res) => res.json({ message: 'Use POST with phone and password to login' }));
