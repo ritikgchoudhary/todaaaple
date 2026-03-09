@@ -1,45 +1,54 @@
 <template>
   <div class="full-history-page">
-    <header class="header">
-      <div class="header-left" @click="router.back()">
-        <span class="back-icon">‹</span>
-      </div>
-      <div class="header-title">{{ gameMin }} Minutes Bid History</div>
-      <div class="header-right"></div>
-    </header>
-
-    <div class="content">
-      <div v-for="item in myHistory" :key="item.date" class="history-item shadow-sm">
-        <div class="history-top d-flex justify-content-between align-items-center mb-2">
-          <span class="period text-muted">Period: {{ item.period }}</span>
-          <span :class="['status-badge', item.status?.toLowerCase()]">{{ item.status }}</span>
+    <div class="mobile-container">
+      <header class="header">
+        <div class="header-left" @click="router.back()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </div>
-        <div class="history-grid">
-          <div class="info-box">
-            <div class="label">Select</div>
-            <div :class="['value', item.select?.toLowerCase()]">{{ item.select }}</div>
+        <div class="header-title">{{ gameMin }} Minutes Bid History</div>
+        <div class="header-right"></div>
+      </header>
+
+      <div class="content">
+        <div v-for="item in myHistory" :key="item.date" class="history-item">
+          <div class="history-top">
+            <span class="period">Period: {{ item.period }}</span>
+            <span :class="['status-badge', item.status?.toLowerCase()]">{{ item.status }}</span>
           </div>
-          <div class="info-box">
-            <div class="label">Amount</div>
-            <div class="value">₹{{ item.amount }}</div>
-          </div>
-          <div class="info-box">
-            <div class="label">Result</div>
-            <div class="value">{{ item.result }}</div>
-          </div>
-          <div class="info-box">
-            <div class="label">Profit</div>
-            <div :class="['value', item.winning > 0 ? 'win' : 'lose']">
-              {{ item.winning > 0 ? '+' : '' }}₹{{ item.winning }}
+          
+          <div class="history-grid">
+            <div class="info-box">
+              <div class="label">Select</div>
+              <div :class="['value', item.select?.toLowerCase()]">{{ item.select }}</div>
+            </div>
+            <div class="info-box">
+              <div class="label">Amount</div>
+              <div class="value amount-text">₹{{ item.amount }}</div>
+            </div>
+            <div class="info-box">
+              <div class="label">Result</div>
+              <div class="value">{{ item.result }}</div>
+            </div>
+            <div class="info-box">
+              <div class="label">Profit</div>
+              <div :class="['value-profit', item.winning > 0 ? 'win' : 'lose']">
+                {{ item.winning > 0 ? '+' : '' }}₹{{ item.winning.toFixed(2) }}
+              </div>
             </div>
           </div>
+          
+          <div class="history-bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>{{ formatDate(item.date) }}</span>
+          </div>
         </div>
-        <div class="history-bottom mt-2 pt-2 border-top text-muted small">
-          {{ formatDate(item.date) }}
+        
+        <div v-if="myHistory.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <p>No betting history found.</p>
         </div>
-      </div>
-      <div v-if="myHistory.length === 0" class="empty-state text-center p-5">
-        <p class="text-muted">No betting history found.</p>
       </div>
     </div>
   </div>
@@ -62,7 +71,10 @@ const fetchData = async () => {
   if (!auth.user?.id) return
   try {
     const res = await wingoApi.getFullHistory(gameId.value, auth.user.id)
-    if (res.data) myHistory.value = res.data
+    if (res.data) {
+      // Sort by date descending
+      myHistory.value = res.data.sort((a, b) => new Date(b.date) - new Date(a.date))
+    }
   } catch (err) {
     console.error(err)
   }
@@ -71,7 +83,12 @@ const fetchData = async () => {
 const formatDate = (ts) => {
   if (!ts) return ''
   const d = new Date(ts)
-  return d.toLocaleString()
+  return d.toLocaleString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 onMounted(fetchData)
@@ -79,82 +96,158 @@ onMounted(fetchData)
 
 <style scoped>
 .full-history-page {
-  background: #f7f9fc;
+  background: #f1f5f9;
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  font-family: 'Inter', -apple-system, sans-serif;
 }
+
+.mobile-container {
+  width: 100%;
+  max-width: min(430px, 100vw);
+  background: #fff;
+  min-height: 100vh;
+  position: relative;
+}
+
 .header {
-  height: 50px;
+  height: 60px;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 15px;
+  padding: 0 16px;
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f1f5f9;
 }
-.back-icon {
-  font-size: 30px;
-  color: #666;
+
+.header-left {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
   cursor: pointer;
+  transition: all 0.2s;
 }
+.header-left:active { transform: scale(0.9); }
+
 .header-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
 }
+.header-right { width: 40px; }
+
 .content {
-  padding: 15px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
+
 .history-item {
   background: #fff;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 15px;
-  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
 }
-.history-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+
+.history-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
-.info-box .label {
-  font-size: 11px;
-  color: #718096;
-  text-transform: uppercase;
-  margin-bottom: 2px;
+
+.period {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
 }
-.info-box .value {
-  font-size: 14px;
-  font-weight: 500;
-  color: #2d3748;
-}
-.value.win { color: #48bb78; }
-.value.lose { color: #e53e3e; }
-.value.success { color: #48bb78; }
-.value.fail { color: #e53e3e; }
 
 .status-badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 100px;
-  font-weight: 600;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
-.status-badge.success { background: #e6fffa; color: #319795; }
-.status-badge.fail { background: #fff5f5; color: #c53030; }
+.status-badge.success { background: #f0fdf4; color: #16a34a; }
+.status-badge.fail { background: #fef2f2; color: #dc2626; }
 
-.shadow-sm {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px dashed #f1f5f9;
+  border-bottom: 1px dashed #f1f5f9;
 }
-.border-top { border-top: 1px solid #edf2f7 !important; }
-.d-flex { display: flex; }
-.justify-content-between { justify-content: space-between; }
-.align-items-center { align-items: center; }
-.mb-2 { margin-bottom: 8px; }
-.mt-2 { margin-top: 8px; }
-.pt-2 { padding-top: 8px; }
-.text-muted { color: #718096; }
-.small { font-size: 11px; }
+
+.info-box .label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.info-box .value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.amount-text { color: #0f172a !important; }
+
+.value-profit {
+  font-size: 1rem;
+  font-weight: 800;
+}
+.value-profit.win { color: #10b981; }
+.value-profit.lose { color: #ef4444; }
+
+.value.green, .value.big { color: #10b981; }
+.value.red, .value.small { color: #ef4444; }
+.value.violet { color: #8b5cf6; }
+
+.history-bottom {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background: #f8fafc;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  color: #64748b;
+  font-size: 1rem;
+}
 </style>
