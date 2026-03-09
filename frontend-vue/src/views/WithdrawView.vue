@@ -375,7 +375,7 @@ onMounted(fetchData)
 
 .mobile-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 430px;
   background-color: #fff;
   min-height: 100vh;
   padding-bottom: 100px;
