@@ -39,7 +39,7 @@ const router = useRouter()
 
 <style scoped>
 .about-page { min-height: 100vh; background-color: #F1F5F9; display: flex; justify-content: center; font-family: system-ui, -apple-system, sans-serif; }
-.mobileContainer { width: 100%; max-width: 500px; min-height: 100vh; background-color: #fff; position: relative; }
+.mobileContainer { width: 100%; max-width: min(430px, 100vw); min-height: 100vh; background-color: #fff; position: relative; }
 
 .header { background-color: #05c0b8; padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
 .backIcon { cursor: pointer; color: white; }

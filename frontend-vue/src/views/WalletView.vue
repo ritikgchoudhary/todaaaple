@@ -72,13 +72,7 @@ onMounted(() => {
   justify-content: center;
   font-family: system-ui, -apple-system, sans-serif;
 }
-.mobileContainer {
-  width: 100%;
-  max-width: 500px;
-  min-height: 100vh;
-  background-color: #fff;
-  position: relative;
-}
+.mobileContainer { width: 100%; max-width: min(430px, 100vw); min-height: 100vh; background-color: #fff; position: relative; }
 
 .header {
   background-color: #05c0b8;
