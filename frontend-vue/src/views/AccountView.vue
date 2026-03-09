@@ -39,7 +39,7 @@
 
       <!-- Menu List -->
       <div class="menuWrapper">
-        <router-link v-for="item in menuItems" :key="item.path" :to="item.path" class="menuItem">
+        <router-link v-for="item in filteredMenuItems" :key="item.path" :to="item.path" class="menuItem">
           <div class="menuItemLeft">
             <div class="iconBox" :style="{ backgroundColor: item.bg, color: item.color }">
               <span v-html="item.svg"></span>
@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as walletApi from '../api/wallet'
@@ -88,6 +88,19 @@ const handleLogout = () => {
   auth.logout()
   router.push('/login')
 }
+
+const isAdmin = computed(() => {
+  return auth.user?.phone === 9988776655
+})
+
+const filteredMenuItems = computed(() => {
+  return menuItems.filter(item => {
+    if (item.label === 'API Docs' || item.label === 'Manage Games') {
+      return isAdmin.value
+    }
+    return true
+  })
+})
 
 // SVG Icons
 const icons = {
