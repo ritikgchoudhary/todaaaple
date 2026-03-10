@@ -195,11 +195,11 @@ const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual'])
 const dialog = reactive({ open: false, body: '' })
 
 const GATEWAY_LABELS = {
-  auto: "UPI-QR",
-  manual: "PayPay-QR",
-  lgpay: "Fast-QR",
-  watchpay: "WatchPay-QR",
-  rupeerush: "Express-QR",
+  auto: "UPI Gateway",
+  manual: "QR Pay",
+  lgpay: "LG Pay",
+  watchpay: "Watch Pay",
+  rupeerush: "Rupee Rush",
 }
 
 function getLimits(gateway) {
