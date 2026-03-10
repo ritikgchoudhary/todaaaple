@@ -10,18 +10,12 @@ export const getAdminTransactions = (api) => API.get(`/admin-api/transactions/${
 // Site Settings
 export const getSiteSettings = (api) => API.get(`/admin/site-settings/${api}`)
 export const updateSiteSettings = (api, data) => API.post(`/updateSiteSettings/${api}`, data)
-export const uploadLogo = (api, formData) => API.post(`/admin/site-settings/logo/upload/${api}`, formData, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-})
-export const uploadApk = (api, formData) => API.post(`/admin/site-settings/apk/upload/${api}`, formData, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-})
+export const uploadLogo = (api, formData) => API.post(`/admin/site-settings/logo/upload/${api}`, formData)
+export const uploadApk = (api, formData) => API.post(`/admin/site-settings/apk/upload/${api}`, formData)
 
 // Carousel
 export const getCarousel = (api) => API.get(`/admin/carousel/${api}`)
-export const uploadCarousel = (api, formData) => API.post(`/admin/carousel/upload/${api}`, formData, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-})
+export const uploadCarousel = (api, formData) => API.post(`/admin/carousel/upload/${api}`, formData)
 export const updateCarouselOrder = (api, images) => API.post(`/admin/carousel/order/${api}`, { images })
 export const deleteCarousel = (api, url) => API.post(`/admin/carousel/delete/${api}`, { url })
 
