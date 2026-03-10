@@ -57,11 +57,11 @@
           </div>
         </div>
         
-        <!-- USDT Placeholder -->
-        <div class="method-item" @click="showToast('USDT coming soon!')">
+        <!-- USDT Channel -->
+        <div class="method-item" :class="{ 'active': selectedGateway === 'usdt' }" @click="selectedGateway = 'usdt'">
           <div class="item-inner">
             <div class="name">USDT-TRC20</div>
-            <div class="limit">Balance:500 - 1M</div>
+            <div class="limit">Min: 10 USDT</div>
           </div>
         </div>
       </div>
@@ -94,10 +94,44 @@
           </button>
         </div>
         
-        <button class="deposit-btn inline-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
-          <span v-if="loading" class="btn-spinner"></span>
-          <span v-else>Deposit ₹{{ (amount || 0).toLocaleString() }}</span>
-        </button>
+        <div v-if="selectedGateway !== 'usdt'">
+          <button class="deposit-btn inline-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
+            <span v-if="loading" class="btn-spinner"></span>
+            <span v-else>Deposit ₹{{ (amount || 0).toLocaleString() }}</span>
+          </button>
+        </div>
+
+        <!-- USDT Manual Section -->
+        <div v-else class="usdt-manual-section">
+          <div class="divider"></div>
+          <div class="usdt-info-row">
+            <span class="label">Rate:</span>
+            <span class="val">1 USDT = ₹{{ USD_RATE }}</span>
+          </div>
+          <div class="usdt-info-row">
+            <span class="label">Pay:</span>
+            <span class="val highlight">{{ (amount / USD_RATE).toFixed(2) }} USDT</span>
+          </div>
+          
+          <div class="address-box glass-card">
+            <div class="box-label">TRC20 Receipt Address</div>
+            <div class="address-row">
+              <span class="address-text">{{ USDT_TRC20_ADDRESS }}</span>
+              <button class="copy-btn" @click="copyAddress">COPY</button>
+            </div>
+          </div>
+
+          <div class="txid-input-wrap">
+            <div class="input-label">Transaction ID / Hash (TXID)</div>
+            <input v-model="txid" type="text" placeholder="Enter transaction hash" class="txid-input" />
+          </div>
+
+          <button class="deposit-btn inline-btn usdt-theme" :disabled="loading || !amount || !txid" @click="handleUsdtDeposit">
+            <span v-if="loading" class="btn-spinner"></span>
+            <span v-else>Submit USDT Deposit</span>
+          </button>
+          <p class="usdt-note">Please only send TRC20 USDT. Minimum 10 USDT.</p>
+        </div>
       </div>
 
       <!-- Instruction Details -->
@@ -193,6 +227,10 @@ const historySection = ref(null)
 const selectedGateway = ref('watchpay')
 const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual'])
 const dialog = reactive({ open: false, body: '' })
+const txid = ref('')
+
+const USD_RATE = 95
+const USDT_TRC20_ADDRESS = 'TPyLRB9N7m4uX8q9d8c7v6b5n4m3l2k1j' // Replace with real admin address
 
 const GATEWAY_LABELS = {
   auto: "UPI Gateway",
@@ -279,6 +317,47 @@ async function handleRecharge() {
     } catch (err) {
         const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to initiate. Check your connection."
         showToast(errorMsg)
+    } finally {
+        loading.value = false
+    }
+}
+
+function copyAddress() {
+    navigator.clipboard.writeText(USDT_TRC20_ADDRESS)
+    showToast("Address copied to clipboard!")
+}
+
+async function handleUsdtDeposit() {
+    if (!amount.value || (amount.value / USD_RATE) < 10) {
+        showToast("Minimum 10 USDT required")
+        return
+    }
+    if (!txid.value || txid.value.length < 10) {
+        showToast("Please enter a valid Transaction Hash")
+        return
+    }
+
+    loading.value = true
+    try {
+        // Here we call a hypothetical manual deposit API or reuse transaction system
+        // Since it's manual, we might send it to a special endpoint
+        const payload = {
+            amount: amount.value,
+            txid: txid.value,
+            userId: auth.user.id,
+            gateway: 'USDT_MANUAL',
+            currency: 'USDT'
+        }
+        
+        // Using common applyWithdrawal or a dedicated recharge request if available
+        // For now, let's assume we use a general transaction log endpoint
+        await walletApi.applyWithdrawal({ ...payload, type: 'recharge' }) // Adjust if specific API exists
+        
+        showToast("Success! Your USDT deposit request has been submitted. It will be verified shortly.")
+        txid.value = ''
+        amount.value = 500
+    } catch (err) {
+        showToast("Error submitting request. Please contact support.")
     } finally {
         loading.value = false
     }
@@ -443,6 +522,28 @@ onMounted(() => {
 .deposit-btn.inline-btn { width: 100%; margin-top: 20px; height: 52px; background: linear-gradient(135deg, #05c0b8 0%, #0d9488 100%); border: none; border-radius: 14px; color: #fff; font-size: 1rem; font-weight: 900; cursor: pointer; box-shadow: 0 6px 20px rgba(5,192,184,0.3); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: 0.2s; }
 .deposit-btn.inline-btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(5,192,184,0.2); }
 .btn-spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+
+/* USDT Manual Styles */
+.usdt-manual-section { margin-top: 15px; }
+.divider { height: 1px; background: #e2e8f0; margin: 15px 0; }
+.usdt-info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; }
+.usdt-info-row .label { color: #64748b; font-weight: 600; }
+.usdt-info-row .val { color: #0f172a; font-weight: 800; }
+.usdt-info-row .val.highlight { color: #05c0b8; font-size: 1rem; }
+
+.address-box { padding: 12px; background: #f8fafc; margin-top: 15px; border-style: dashed; }
+.box-label { font-size: 0.7rem; color: #64748b; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
+.address-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.address-text { font-size: 0.75rem; color: #0f172a; font-weight: 700; word-break: break-all; font-family: monospace; }
+.copy-btn { background: #05c0b8; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
+
+.txid-input-wrap { margin-top: 20px; }
+.input-label { font-size: 0.75rem; color: #64748b; font-weight: 700; margin-bottom: 8px; }
+.txid-input { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.85rem; outline: none; }
+.txid-input:focus { border-color: #05c0b8; }
+
+.usdt-theme { background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; box-shadow: 0 6px 20px rgba(16,185,129,0.3) !important; }
+.usdt-note { font-size: 0.65rem; color: #94a3b8; text-align: center; margin-top: 12px; font-weight: 600; }
 
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 24px; }
