@@ -38,7 +38,8 @@ export const getSiteSettingsAdmin = async (req, res) => {
 
 export const uploadLogo = async (req, res) => {
   try {
-    const url = req.file?.filename ? `/uploads/logo/${req.file.filename}` : '';
+    const file = req.file || (req.files && req.files[0]);
+    const url = file?.filename ? `/uploads/logo/${file.filename}` : '';
     if (url) await extra.updateOne({ id: 1 }, { $set: { siteLogoUrl: url } }, { upsert: true });
     const doc = await getDoc();
     res.status(200).json({ siteLogoUrl: doc.siteLogoUrl || '' });
