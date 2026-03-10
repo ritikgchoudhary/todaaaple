@@ -1,7 +1,5 @@
 import API from './client'
 
-const ADMIN_KEY = 'RUSH_ADMIN_SECRET_2024' // User defined password for Master Admin frontend
-
 export const getAdminStats = (api) => API.get(`/admin-api/stats/${api}`)
 export const getAllUsers = (api) => API.get(`/admin-api/users/${api}`)
 export const updateUser = (api, data) => API.post(`/admin-api/updateUser/${api}`, data)
@@ -10,13 +8,22 @@ export const updateWithdrawal = (api, data) => API.post(`/admin-api/updateWithdr
 export const getAdminTransactions = (api) => API.get(`/admin-api/transactions/${api}`)
 
 // Site Settings
-export const getSiteSettings = () => API.get('/siteSettings')
+export const getSiteSettings = (api) => API.get(`/admin/site-settings/${api}`)
 export const updateSiteSettings = (api, data) => API.post(`/updateSiteSettings/${api}`, data)
+export const uploadLogo = (api, formData) => API.post(`/admin/site-settings/logo/upload/${api}`, formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+})
+export const uploadApk = (api, formData) => API.post(`/admin/site-settings/apk/upload/${api}`, formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+})
 
 // Carousel
-export const getCarousel = () => API.get('/getCarousel')
-export const uploadCarousel = (api, formData) => API.post(`/uploadCarousel/${api}`, formData)
-export const deleteCarousel = (api, id) => API.delete(`/deleteCarousel/${id}/${api}`)
+export const getCarousel = (api) => API.get(`/admin/carousel/${api}`)
+export const uploadCarousel = (api, formData) => API.post(`/admin/carousel/upload/${api}`, formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+})
+export const updateCarouselOrder = (api, images) => API.post(`/admin/carousel/order/${api}`, { images })
+export const deleteCarousel = (api, url) => API.post(`/admin/carousel/delete/${api}`, { url })
 
 // Commission
 export const getCommissionConfigs = (api) => API.get(`/admin-api/commission/configs/${api}`)

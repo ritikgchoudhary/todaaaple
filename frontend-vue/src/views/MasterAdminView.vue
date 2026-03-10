@@ -165,7 +165,7 @@
                     <td class="amount danger">₹{{ w.amount }}</td>
                     <td>₹{{ w.withdrawalFee || 0 }}</td>
                     <td>
-                      <span :class="['status-badge', w.status.toLowerCase()]">{{ w.status }}</span>
+                      <span :class="['status-badge', w.status?.toLowerCase()]">{{ w.status }}</span>
                     </td>
                     <td>{{ new Date(w.date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) }}</td>
                     <td>
@@ -218,14 +218,58 @@
 
           <!-- SITE SETTINGS -->
           <div v-if="activeTab === 'settings'" class="settings-view">
-             <div class="config-card shadow-premium">
-                <h3>Global Configurations</h3>
-                <p>Advanced site switches and parameter controls coming in the next update.</p>
-                <div class="settings-placeholder-grid">
-                   <div class="p-card">Logo Manager</div>
-                   <div class="p-card">Carousel Sync</div>
-                   <div class="p-card">Gateway Toggle</div>
-                </div>
+             <div class="settings-grid">
+               <!-- Logo & Branding -->
+               <div class="config-card shadow-premium">
+                  <h3>Branding & Logo</h3>
+                  <div class="logo-preview-box">
+                    <img v-if="siteSettings.siteLogoUrl" :src="siteSettings.siteLogoUrl" alt="Site Logo" />
+                    <div v-else class="no-logo">No Logo Uploaded</div>
+                  </div>
+                  <div class="upload-zone">
+                    <input type="file" ref="logoInput" @change="handleLogoUpload" hidden />
+                    <button @click="() => $refs.logoInput.click()" class="action-btn edit" :disabled="uploading">
+                      {{ uploading ? 'Uploading...' : 'Change Logo' }}
+                    </button>
+                  </div>
+               </div>
+
+               <!-- Support Links -->
+               <div class="config-card shadow-premium">
+                  <h3>Support & Channels</h3>
+                  <div class="form-group">
+                    <label>Telegram Group/Channel</label>
+                    <input v-model="siteSettings.telegramLink" placeholder="https://t.me/..." />
+                  </div>
+                  <div class="form-group">
+                    <label>Live Customer Service Link</label>
+                    <input v-model="siteSettings.customerServiceLink" placeholder="https://tawk.to/..." />
+                  </div>
+                   <div class="form-group">
+                    <label>WhatsApp Link (Optional)</label>
+                    <input v-model="siteSettings.whatsappLink" placeholder="https://wa.me/..." />
+                  </div>
+                  <button @click="saveSiteSettings" class="save-btn small" :disabled="saving">
+                    {{ saving ? 'Saving...' : 'Update Links' }}
+                  </button>
+               </div>
+
+               <!-- Carousel Manager -->
+               <div class="config-card shadow-premium full-width">
+                  <h3>Home Page Carousel</h3>
+                  <div class="carousel-list">
+                    <div v-for="(img, idx) in carouselImages" :key="idx" class="carousel-item-admin">
+                      <img :src="img" />
+                      <button @click="removeCarousel(img)" class="remove-c-btn">×</button>
+                    </div>
+                    <div class="carousel-uploader" @click="() => $refs.carouselInput.click()">
+                      <input type="file" ref="carouselInput" @change="handleCarouselUpload" hidden />
+                      <span v-if="!uploadingCarousel">+ Add Image</span>
+                      <span v-else>...</span>
+                    </div>
+                  </div>
+                  <p class="hint">Recommended size: 1200x400 (Aspect Ratio 3:1)</p>
+               </div>
              </div>
           </div>
         </section>
@@ -282,6 +326,9 @@ const stats = ref({})
 const users = ref([])
 const withdrawals = ref([])
 const transactions = ref([])
+const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '' })
+const carouselImages = ref([])
+
 const userSearch = ref('')
 const withdrawalFilter = ref('All')
 
@@ -292,6 +339,8 @@ const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
 const editingUser = ref(null)
 const editForm = ref({ balance: 0, block: false })
 const saving = ref(false)
+const uploading = ref(false)
+const uploadingCarousel = ref(false)
 
 const handleLogin = () => {
   if (adminPassword.value === 'Master@Rush2024') {
@@ -315,6 +364,8 @@ const refreshAll = () => {
   fetchUsers()
   fetchWithdrawals()
   fetchTransactions()
+  fetchSiteSettings()
+  fetchCarousel()
 }
 
 const fetchDashboard = async () => {
@@ -342,6 +393,20 @@ const fetchTransactions = async () => {
   try {
     const res = await adminApi.getAdminTransactions(ADMIN_API_KEY)
     if (res.data.success) transactions.value = res.data.data
+  } catch (err) {}
+}
+
+const fetchSiteSettings = async () => {
+  try {
+    const res = await adminApi.getSiteSettings(ADMIN_API_KEY)
+    siteSettings.value = res.data
+  } catch (err) {}
+}
+
+const fetchCarousel = async () => {
+  try {
+    const res = await adminApi.getCarousel(ADMIN_API_KEY)
+    carouselImages.value = res.data.images
   } catch (err) {}
 }
 
@@ -395,6 +460,55 @@ const updateWithdrawal = async (withdraw, status) => {
   }
 }
 
+const handleLogoUpload = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  uploading.value = true
+  const fd = new FormData()
+  fd.append('logo', file)
+  try {
+    const res = await adminApi.uploadLogo(ADMIN_API_KEY, fd)
+    siteSettings.value.siteLogoUrl = res.data.siteLogoUrl
+    alert('Logo updated successfully')
+  } catch (err) {
+    alert('Upload failed')
+  } finally { uploading.value = false }
+}
+
+const saveSiteSettings = async () => {
+  saving.value = true
+  try {
+    await adminApi.updateSiteSettings(ADMIN_API_KEY, {
+      telegramLink: siteSettings.value.telegramLink,
+      customerServiceLink: siteSettings.value.customerServiceLink,
+      whatsappLink: siteSettings.value.whatsappLink
+    })
+    alert('Settings saved')
+  } catch (err) {} finally { saving.value = false }
+}
+
+const handleCarouselUpload = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  uploadingCarousel.value = true
+  const fd = new FormData()
+  fd.append('image', file)
+  try {
+    const res = await adminApi.uploadCarousel(ADMIN_API_KEY, fd)
+    carouselImages.value = res.data.images
+  } catch (err) {
+    alert('Carousel upload failed')
+  } finally { uploadingCarousel.value = false }
+}
+
+const removeCarousel = async (url) => {
+  if (!confirm('Remove this carousel image?')) return
+  try {
+    const res = await adminApi.deleteCarousel(ADMIN_API_KEY, url)
+    carouselImages.value = res.data.images
+  } catch (err) {}
+}
+
 const formatStatKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
 const formatStatVal = (val, key) => (key.includes('Recharge') || key.includes('Withdrawal')) ? `₹${val.toLocaleString()}` : val
 
@@ -411,6 +525,7 @@ watch(activeTab, (newTab) => {
   if (newTab === 'users') fetchUsers()
   if (newTab === 'withdrawals') fetchWithdrawals()
   if (newTab === 'transactions') fetchTransactions()
+  if (newTab === 'settings') { fetchSiteSettings(); fetchCarousel(); }
 })
 </script>
 
@@ -539,6 +654,36 @@ watch(activeTab, (newTab) => {
 .action-btn.success { background: #22c55e; color: #fff; }
 .action-btn.reject { background: #f43f5e; color: #fff; margin-left: 8px; }
 
+/* Settings System */
+.settings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+.config-card { background: #fff; padding: 40px; border-radius: 30px; border: 1px solid #edf2f7; }
+.config-card h3 { margin-bottom: 25px; font-weight: 800; font-size: 1.3rem; }
+.config-card.full-width { grid-column: 1/-1; }
+
+.logo-preview-box {
+  width: 100%; height: 160px; background: #f8fafc; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 25px; border: 2px dashed #e2e8f0;
+}
+.logo-preview-box img { max-height: 80%; max-width: 80%; object-fit: contain; }
+.upload-zone { text-align: center; }
+
+.save-btn.small { width: auto; padding: 12px 30px; margin-top: 10px; }
+
+.carousel-list { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+.carousel-item-admin { position: relative; width: 220px; height: 100px; border-radius: 15px; overflow: hidden; border: 1px solid #e2e8f0; }
+.carousel-item-admin img { width: 100%; height: 100%; object-fit: cover; }
+.remove-c-btn {
+  position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(244, 63, 94, 0.9); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.carousel-uploader {
+  width: 220px; height: 100px; border: 2px dashed #e2e8f0; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 700; cursor: pointer; transition: 0.2s;
+}
+.carousel-uploader:hover { background: #f8fafc; border-color: #38bdf8; color: #38bdf8; }
+
+.hint { font-size: 0.85rem; color: #94a3b8; }
+
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
 .modal-card { background: #fff; width: 100%; max-width: 480px; padding: 45px; border-radius: 35px; }
@@ -553,12 +698,13 @@ watch(activeTab, (newTab) => {
 .cancel-btn { flex: 1; padding: 16px; border-radius: 16px; border: none; background: #f1f5f9; font-weight: 700; cursor: pointer; }
 .save-btn { flex: 2; padding: 16px; border-radius: 16px; border: none; background: #0f172a; color: #fff; font-weight: 700; cursor: pointer; }
 
-/* Settings Placeholder */
-.settings-placeholder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
-.p-card { background: #f8fafc; padding: 30px; border-radius: 20px; border: 2px dashed #e2e8f0; text-align: center; color: #94a3b8; font-weight: 700; }
-
 .animate-pop { animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
 .shadow-premium { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); }
+
+@media (max-width: 1024px) {
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; width: 100%; }
+  .settings-grid { grid-template-columns: 1fr; }
+}
 </style>
