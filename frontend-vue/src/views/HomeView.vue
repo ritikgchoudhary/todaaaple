@@ -5,7 +5,7 @@
     <!-- Header -->
     <header class="header">
       <router-link to="/" class="logoWrap">
-        <img src="https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png" alt="DELTIN SPORT" class="headerLogo" />
+        <img :src="siteLogoUrl || 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png'" alt="Site Logo" class="headerLogo" />
       </router-link>
       <div class="headerActions">
         <template v-if="!auth.isLoggedIn">
@@ -380,14 +380,31 @@ function onCardFilterClick(id) {
   }
 }
 
-const baseImg = 'https://img.bzvm68.com'
-const sliderImages = [
+const siteLogoUrl = ref('')
+const sliderImages = ref([
   `${baseImg}/ark_common/arkUpload/carousel/40lKKSxzyxDYdLkC0RgwSG3359EIQIRAGQFe2Rco.jpg`,
   `${baseImg}/ark_common/arkUpload/gowin/prod/carousel/2ructZr9iy3oPmoFlRIL2Gj8vvECW5Dl0tDNChoA.jpg`,
   `${baseImg}/ark_common/arkUpload/gowin/prod/carousel/3D4X5nK36dzsKaWgiap2h2ycVLwWwi73IOnYCR6y.jpg`,
   `${baseImg}/ark_common/arkUpload/carousel/1b0hPBGcTmOOdwxU0gBr6yHtruWGkEUaXYjGC4kh.jpg`,
   `${baseImg}/ark_common/arkUpload/carousel/3BENIeUx7AZyURYyV9XqNwXUZ5NBYFHYbcTXpBRe.jpg`,
-]
+])
+
+async function fetchHomeContent() {
+  try {
+    const [carouselRes, settingsRes] = await Promise.all([
+      api.getCarousel(),
+      api.getSiteSettings()
+    ])
+    if (carouselRes.data.images?.length > 0) {
+      sliderImages.value = carouselRes.data.images
+    }
+    if (settingsRes.data.siteLogoUrl) {
+      siteLogoUrl.value = settingsRes.data.siteLogoUrl
+    }
+  } catch (err) {
+    console.error('Home content fetch fail', err)
+  }
+}
 const sliderIndex = ref(0)
 let sliderTimer = null
 let sliderTouchStartX = 0
@@ -397,7 +414,7 @@ function onSliderTouchStart(e) {
 function onSliderTouchEnd(e) {
   const endX = e.changedTouches[0].clientX
   const delta = sliderTouchStartX - endX
-  const total = sliderImages.length
+  const total = sliderImages.value.length
   if (delta > 40) {
     sliderIndex.value = (sliderIndex.value + 1) % total
   } else if (delta < -40) {
@@ -973,6 +990,7 @@ async function fetchBalance() {
 }
 
 onMounted(async () => {
+  fetchHomeContent()
   fetchBalance()
   try {
     const [noticeRes, providersRes, homeGamesRes] = await Promise.all([

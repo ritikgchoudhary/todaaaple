@@ -9,7 +9,7 @@
       </div>
 
       <div style="padding-bottom: 20px;">
-        <a href="https://t.me/earningsource111" class="section" target="_blank" rel="noopener noreferrer">
+        <a :href="telegramLink || 'https://t.me/earningsource111'" class="section" target="_blank" rel="noopener noreferrer">
           <img src="/images/telegram.png" alt="Telegram Channel" class="iconImage" />
           <div class="textContainer">
             <div class="title">Telegram Channel</div>
@@ -18,7 +18,7 @@
           <button class="actionButton">Open</button>
         </a>
 
-        <a href="https://whatsapp.com/channel/0029VaqXwZ1DOQIQesUykz12" class="section" target="_blank" rel="noopener noreferrer">
+        <a :href="whatsappLink || 'https://whatsapp.com/channel/0029VaqXwZ1DOQIQesUykz12'" class="section" target="_blank" rel="noopener noreferrer">
           <img src="/images/whatsapp.png" alt="WhatsApp Channel" class="iconImage" />
           <div class="textContainer">
             <div class="title">WhatsApp Channel</div>
@@ -27,7 +27,7 @@
           <button class="actionButton">Open</button>
         </a>
 
-        <a href="https://wa.me/message/6F6ZZQERITWCK1" class="section" target="_blank" rel="noopener noreferrer">
+        <a :href="customerServiceLink || 'https://wa.me/message/6F6ZZQERITWCK1'" class="section" target="_blank" rel="noopener noreferrer">
           <img src="/images/customer-service.png" alt="Live Support" class="iconImage" />
           <div class="textContainer">
             <div class="title">Live Support</div>
@@ -42,8 +42,22 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { getSiteSettings } from '../api/home'
 
 const router = useRouter()
+const telegramLink = ref('')
+const customerServiceLink = ref('')
+const whatsappLink = ref('')
+
+onMounted(async () => {
+  try {
+    const res = await getSiteSettings()
+    telegramLink.value = res.data.telegramLink
+    customerServiceLink.value = res.data.customerServiceLink
+    whatsappLink.value = res.data.whatsappLink
+  } catch (err) {}
+})
 </script>
 
 <style scoped>
