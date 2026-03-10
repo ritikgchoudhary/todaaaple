@@ -154,7 +154,7 @@ import {
   deleteCarouselImage,
 } from "../controller/carousel.js";
 import { uploadSingle } from "../middleware/uploadCarousel.js";
-import { getSiteSettings, getSiteSettingsAdmin, uploadLogo, uploadApk } from "../controller/siteSettings.js";
+import { getSiteSettings, getSiteSettingsAdmin, uploadLogo, uploadApk, updateSiteSettings } from "../controller/siteSettings.js";
 import { uploadLogoSingle } from "../middleware/uploadLogo.js";
 import { uploadApkSingle } from "../middleware/uploadApk.js";
 import Daily from "../model/daily.js";
@@ -1381,6 +1381,7 @@ router.get("/site-settings", getSiteSettings);
 router.get("/admin/site-settings/:api", getSiteSettingsAdmin);
 router.post("/admin/site-settings/logo/upload/:api", uploadLogoSingle, uploadLogo);
 router.post("/admin/site-settings/apk/upload/:api", uploadApkSingle, uploadApk);
+router.post("/updateSiteSettings/:api", updateSiteSettings);
 
 router.get("/getDailyData/:api", async (req, res) => {
   const api = req.params.api;
