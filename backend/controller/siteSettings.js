@@ -38,7 +38,7 @@ export const getSiteSettingsAdmin = async (req, res) => {
 
 export const uploadLogo = async (req, res) => {
   try {
-    const url = req.file?.path ? `/uploads/${req.file.filename}` : '';
+    const url = req.file?.filename ? `/uploads/logo/${req.file.filename}` : '';
     if (url) await extra.updateOne({ id: 1 }, { $set: { siteLogoUrl: url } }, { upsert: true });
     const doc = await getDoc();
     res.status(200).json({ siteLogoUrl: doc.siteLogoUrl || '' });
@@ -49,7 +49,7 @@ export const uploadLogo = async (req, res) => {
 
 export const uploadApk = async (req, res) => {
   try {
-    const url = req.file?.path ? `/uploads/${req.file.filename}` : '';
+    const url = req.file?.filename ? `/uploads/apk/${req.file.filename}` : '';
     if (url) await extra.updateOne({ id: 1 }, { $set: { apkDownloadUrl: url } }, { upsert: true });
     const doc = await getDoc();
     res.status(200).json({ apkDownloadUrl: doc.apkDownloadUrl || '' });

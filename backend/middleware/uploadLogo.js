@@ -30,4 +30,4 @@ const upload = multer({
   },
 });
 
-export const uploadLogoSingle = upload.single("image");
+export const uploadLogoSingle = upload.single("logo");

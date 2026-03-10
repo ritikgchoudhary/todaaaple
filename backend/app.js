@@ -153,6 +153,7 @@ if (!useViteDev) {
 app.post(['/api/gameCallback', '/api/gameCallback/'], (req, res, next) => gameCallback(req, res, next));
 
 // Mount main API router at root so API routes work: /getProviders, /carousel, /site-settings, /getNotice, /gamesCatalog, /getUserHome, etc.
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/', homeCategoryRoutes);
 
 // Serve /data/slot.json dynamically (no cache) so edits show instantly
