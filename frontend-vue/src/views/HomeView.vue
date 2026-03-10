@@ -968,7 +968,8 @@ function handleLogout() {
 
 onMounted(() => {
   sliderTimer = setInterval(() => {
-    sliderIndex.value = (sliderIndex.value + 1) % sliderImages.length
+    sliderIndex.value = (sliderIndex.value + 1) % sliderImages.value.length
+
   }, 4000)
 })
 
