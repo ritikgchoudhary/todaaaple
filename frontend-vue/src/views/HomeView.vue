@@ -361,6 +361,8 @@ import * as walletApi from '../api/wallet'
 
 const router = useRouter()
 const auth = useAuthStore()
+const baseImg = 'https://img.bzvm68.com'
+
 const userBalance = ref(0)
 const isRefreshing = ref(false)
 const iframeUrl = ref(null)
