@@ -50,7 +50,8 @@ export const uploadLogo = async (req, res) => {
 
 export const uploadApk = async (req, res) => {
   try {
-    const url = req.file?.filename ? `/uploads/apk/${req.file.filename}` : '';
+    const file = req.file || (req.files && req.files[0]);
+    const url = file?.filename ? `/uploads/apk/${file.filename}` : '';
     if (url) await extra.updateOne({ id: 1 }, { $set: { apkDownloadUrl: url } }, { upsert: true });
     const doc = await getDoc();
     res.status(200).json({ apkDownloadUrl: doc.apkDownloadUrl || '' });

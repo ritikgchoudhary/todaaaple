@@ -26,7 +26,8 @@ export const getCarouselAdmin = async (req, res) => {
 
 export const uploadCarouselImage = async (req, res) => {
   try {
-    const url = req.file?.filename ? `/uploads/carousel/${req.file.filename}` : req.body?.url || '';
+    const file = req.file || (req.files && req.files[0]);
+    const url = file?.filename ? `/uploads/carousel/${file.filename}` : req.body?.url || '';
     if (!url) return res.status(400).json({ error: 'No image' });
     await extra.updateOne(
       { id: 1 },

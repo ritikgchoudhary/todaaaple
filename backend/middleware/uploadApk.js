@@ -31,4 +31,4 @@ const upload = multer({
   },
 });
 
-export const uploadApkSingle = upload.single("apk");
+export const uploadApkSingle = upload.any();
