@@ -35,6 +35,9 @@ import InviteView from '../views/InviteView.vue'
 import InvitationRecordView from '../views/InvitationRecordView.vue'
 import InvitationRewardRuleView from '../views/InvitationRewardRuleView.vue'
 import MasterAdminView from '../views/MasterAdminView.vue'
+import ModifyNameView from '../views/security/ModifyNameView.vue'
+import ModifyPasswordView from '../views/security/ModifyPasswordView.vue'
+import ModifyPaymentView from '../views/security/ModifyPaymentView.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -63,9 +66,9 @@ const routes = [
   { path: '/wallet', name: 'Wallet', component: WalletView, meta: { title: 'Wallet', requiresAuth: true, showNav: true } },
   { path: '/bank', name: 'Bank', component: BankView, meta: { title: 'Bank', requiresAuth: true, showNav: false } },
   { path: '/accountSecurity', name: 'AccountSecurity', component: AccountSecurityView, meta: { title: 'Security', requiresAuth: true, showNav: false } },
-  { path: '/accountSecurity/name', name: 'ModifyName', component: PlaceholderView, meta: { requiresAuth: true } },
-  { path: '/accountSecurity/password', name: 'ModifyPassword', component: PlaceholderView, meta: { requiresAuth: true } },
-  { path: '/accountSecurity/payment', name: 'ModifyPayment', component: PlaceholderView, meta: { requiresAuth: true } },
+  { path: '/accountSecurity/name', name: 'ModifyName', component: ModifyNameView, meta: { requiresAuth: true } },
+  { path: '/accountSecurity/password', name: 'ModifyPassword', component: ModifyPasswordView, meta: { requiresAuth: true } },
+  { path: '/accountSecurity/payment', name: 'ModifyPayment', component: ModifyPaymentView, meta: { requiresAuth: true } },
   { path: '/about-us', name: 'AboutUs', component: AboutUsView, meta: { title: 'About Us', showNav: true } },
   { path: '/api-docs', name: 'ApiDocs', component: ApiDocsView, meta: { title: 'API Docs', requiresAuth: true, showNav: false } },
   { path: '/withdrawal', name: 'Withdraw', component: WithdrawView, meta: { title: 'Withdraw', requiresAuth: true, showNav: true } },
