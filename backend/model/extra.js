@@ -59,6 +59,18 @@ const ExtraScheme = mongoose.Schema({
         type: String,
         default: ""
     },
+    telegramLink: {
+        type: String,
+        default: ""
+    },
+    customerServiceLink: {
+        type: String,
+        default: ""
+    },
+    whatsappLink: {
+        type: String,
+        default: ""
+    },
     // Home page category sections – admin: add/delete/reorder games per category
     homeCategorySports: { type: Array, default: [] },
     homeCategoryCasino: { type: Array, default: [] },
