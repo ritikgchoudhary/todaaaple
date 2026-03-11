@@ -1,6 +1,6 @@
 <template>
-  <div class="admin-games-page">
-    <div class="header">
+  <div :class="['admin-games-page', { embedded }]">
+    <div v-if="!embedded" class="header">
       <router-link to="/" class="back-link">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
@@ -10,6 +10,11 @@
       <h1>Manage Game IDs</h1>
       <button class="save-btn" @click="save" :disabled="loading">
         {{ loading ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+    <div v-else class="embedded-header">
+       <button class="save-btn" @click="save" :disabled="loading">
+        {{ loading ? 'Saving Changes' : 'Update Game Data' }}
       </button>
     </div>
 
