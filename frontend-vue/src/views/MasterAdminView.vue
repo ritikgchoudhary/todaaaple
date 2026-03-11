@@ -76,9 +76,17 @@
         <section class="tab-view">
           <!-- DASHBOARD -->
           <div v-if="activeTab === 'dashboard'" class="dashboard-grid">
-            <div class="stat-card" v-for="(val, key) in stats" :key="key">
-              <span class="stat-title">{{ formatStatKey(key) }}</span>
-              <span class="stat-value">{{ formatStatVal(val, key) }}</span>
+            <div class="stat-card shadow-premium" v-for="(val, key) in stats" :key="key">
+              <div class="stat-icon-bg">
+                <svg v-if="key.includes('Users')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <svg v-else-if="key.includes('Recharge')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                <svg v-else-if="key.includes('Withdrawal')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="stat-info">
+                <span class="stat-title">{{ formatStatKey(key) }}</span>
+                <span class="stat-value">{{ formatStatVal(val, key) }}</span>
+              </div>
             </div>
             
             <div class="full-card welcome-card shadow-premium">
@@ -521,8 +529,19 @@ const removeCarousel = async (url) => {
   } catch (err) {}
 }
 
-const formatStatKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
-const formatStatVal = (val, key) => (key.includes('Recharge') || key.includes('Withdrawal')) ? `₹${val.toLocaleString()}` : val
+const formatStatKey = (key) => {
+  const result = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+  if (result === 'Active Users') return 'Online/Active Users'
+  if (result === 'Total Balances') return 'Total User Funds'
+  return result
+}
+const formatStatVal = (val, key) => {
+  if (typeof val !== 'number') return val
+  if (key.toLowerCase().includes('recharge') || key.toLowerCase().includes('withdrawal') || key.toLowerCase().includes('balance')) {
+    return `₹${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  }
+  return val.toLocaleString()
+}
 
 const checkRes = () => isMobile.value = window.innerWidth < 1024
 
@@ -625,11 +644,19 @@ watch(activeTab, (newTab) => {
 /* Stats Widgets */
 .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
 .stat-card {
-  background: #fff; padding: 30px; border-radius: 28px;
-  border: 1px solid #edf2f7; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+  background: #fff; padding: 25px; border-radius: 24px;
+  border: 1px solid #edf2f7; display: flex; align-items: center; gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.stat-title { font-size: 0.9rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 15px; display: block; }
-.stat-value { font-size: 2.2rem; font-weight: 800; color: #0f172a; }
+.stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
+.stat-icon-bg {
+  width: 54px; height: 54px; border-radius: 16px;
+  background: #f1f5f9; color: #0f172a;
+  display: flex; align-items: center; justify-content: center;
+}
+.stat-info { display: flex; flex-direction: column; }
+.stat-title { font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.stat-value { font-size: 1.6rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
 
 .welcome-card { grid-column: 1/-1; background: #fff; padding: 60px; text-align: center; }
 .welcome-icon { font-size: 4rem; margin-bottom: 20px; }

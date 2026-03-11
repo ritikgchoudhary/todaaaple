@@ -15,9 +15,14 @@ export const getAdminStats = async (req, res, next) => {
         }
 
         const totalUsers = await User.countDocuments();
+        const activeUsers = await User.countDocuments({ block: false });
+        
+        // Sum of all user balances
+        const users = await User.find({}, { balance: 1 });
+        let totalBalances = 0;
+        users.forEach(u => totalBalances += (u.balance || 0));
 
-        // Aggregating total recharges from Transaction model or Daily model
-        // Daily model tracks it by date, but let's sum it up
+        // Aggregating total recharges/withdrawals from Daily model
         const dailyData = await Daily.find();
         let totalRecharge = 0;
         let totalWithdrawal = 0;
@@ -27,14 +32,33 @@ export const getAdminStats = async (req, res, next) => {
             totalWithdrawal += d.redeem || 0;
         });
 
+        // Today's data
+        const date = new Date();
+        const localDate = (date / 1000 + 19800) * 1000;
+        const newDatefor = new Date(localDate);
+        const day = newDatefor.getDate();
+        const month = newDatefor.getMonth() + 1;
+        const year = newDatefor.getFullYear();
+        const daySorted = day < 10 ? `0${day}` : `${day}`;
+        const monthSorted = month < 10 ? `0${month}` : `${month}`;
+        const todayKey = `${daySorted}-${monthSorted}-${year}`;
+        
+        const todayDoc = await Daily.findOne({ id: todayKey });
+        const todaysRecharge = todayDoc ? (todayDoc.amount || 0) : 0;
+        const todaysWithdrawal = todayDoc ? (todayDoc.redeem || 0) : 0;
+
         const pendingWithdrawals = await Withdrawal.countDocuments({ status: "Pending" });
 
         res.status(200).json({
             success: true,
             data: {
                 totalUsers,
+                activeUsers,
                 totalRecharge,
                 totalWithdrawal,
+                todaysRecharge,
+                todaysWithdrawal,
+                totalBalances,
                 pendingWithdrawals
             }
         });
