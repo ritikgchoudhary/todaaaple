@@ -70,6 +70,7 @@ app.use(
           'https://www.google-analytics.com',
           'https://*.google-analytics.com',
           'https://www.magnusminds.net',
+          'https://*.icons8.com',
           'https://img.icons8.com',
           'https://imagedelivery.net',
         ],

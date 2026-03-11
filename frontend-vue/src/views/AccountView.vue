@@ -7,7 +7,7 @@
           <div class="userLeft">
             <div class="avatarCircle">
               <img src="https://img.icons8.com/bubbles/100/user.png" alt="Avatar" width="50" height="50" v-if="auth.user?.avatar" :src="auth.user.avatar" />
-              <img src="https://img.icons8.com/bubbles/100/user.png" alt="Avatar" width="50" height="50" v-else />
+              <img src="https://img.icons8.com/bubbles/100/user-male.png" alt="Avatar" width="50" height="50" v-else />
             </div>
             <div class="userDetails">
                <div class="userName">{{ auth.user?.username || auth.user?.phone || 'User' }}</div>
@@ -30,7 +30,7 @@
       <div class="quickActions">
          <router-link to="/deposit" class="qaItem">
             <div class="qaIcon recharge">
-              <img src="https://img.icons8.com/fluency/48/safe-deposit.png" width="30" height="30" />
+              <img src="https://img.icons8.com/color/96/money-box.png" width="30" height="30" />
             </div>
             <span>Recharge</span>
          </router-link>
@@ -109,12 +109,12 @@ const filteredMenuItems = computed(() => {
 
 // Colorful Icons mapping
 const icons = {
-  agent: 'https://img.icons8.com/fluency/48/business-group.png',
+  agent: 'https://img.icons8.com/color/96/conference.png',
   salary: 'https://img.icons8.com/fluency/48/money-bag-euro.png',
   bonus: 'https://img.icons8.com/fluency/48/gift.png',
   invite: 'https://img.icons8.com/fluency/48/add-user-group-man-man.png',
   history: 'https://img.icons8.com/fluency/48/time-machine.png',
-  envelope: 'https://img.icons8.com/fluency/48/envelope.png',
+  envelope: 'https://img.icons8.com/color/96/filled-message.png',
   promotion: 'https://img.icons8.com/fluency/48/commercial.png',
   wallet: 'https://img.icons8.com/fluency/48/wallet.png',
   bank: 'https://img.icons8.com/fluency/48/bank.png',
