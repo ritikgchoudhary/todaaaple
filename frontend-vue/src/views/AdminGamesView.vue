@@ -444,7 +444,7 @@ async function fetchData() {
       // If cardProviders is empty, also add defaults from user request
       if (cardProviders.value.length === 0) {
         cardProviders.value = [
-          { id: 'jili', label: 'JILI', logoShow: 'https://img.bzvm68.com/game/banner/R1BKTF8wX2RlZmF1bHRfM18xNzQ5MTEwNDcz.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BKTF8wX2RlZmF1bHRfNF8xNzQ5MTEwNDcx.png' },
+          { id: 'jili', label: 'JILI', logoShow: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2_active.png', logoHide: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2.png' },
           { id: 'r88', label: 'R88', logoShow: 'https://img.bzvm68.com/game/banner/R1BSOF8wX2RlZmF1bHRfNF8xNjkxMTM4OTk2.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BSOF8wX2RlZmF1bHRfM18xNjkxMTM5MDEz.png' },
           { id: 'km', label: 'KM', logoShow: 'https://img.bzvm68.com/game/banner/R1BLTV8wX2RlZmF1bHRfNF8xNzEzMzI0MDM5.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BLTV8wX2RlZmF1bHRfM18xNzEzMzI0MDM0.png' },
           { id: 'jdb', label: 'JDB', logoShow: 'https://img.bzvm68.com/game/banner/R1BKRF8wX2RlZmF1bHRfNF8xNzQ5NDUyOTM2.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BKRF8wX2RlZmF1bHRfM18xNzQ5NDUyOTM1.png' },

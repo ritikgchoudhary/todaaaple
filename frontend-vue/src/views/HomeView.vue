@@ -170,8 +170,7 @@
               <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <template v-else>
-                <img v-if="slotFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo" />
-                <img v-if="slotFilterActive === f.id && f.logoShow" :src="f.logoShow" alt="" class="gp-publisher-logo" />
+                <img :src="f.logoShow || f.logoHide || f.icon" :alt="f.label" class="gp-publisher-logo" />
               </template>
             </div>
           </div>
@@ -226,8 +225,7 @@
               <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <template v-else>
-                <img v-if="cardFilterActive !== f.id && f.logoHide" :src="f.logoHide" alt="" class="gp-publisher-logo" />
-                <img v-if="cardFilterActive === f.id && f.logoShow" :src="f.logoShow" alt="" class="gp-publisher-logo" />
+                <img :src="f.logoShow || f.logoHide || f.icon" :alt="f.label" class="gp-publisher-logo" />
               </template>
             </div>
           </div>
@@ -506,7 +504,7 @@ const cardFilterItems = computed(() => {
   // Minimal defaults if DB is empty
   if (dynamic.length === 0) {
     dynamic = [
-      { id: 'jili', label: 'JILI', logoShow: 'https://img.bzvm68.com/game/banner/R1BKTF8wX2RlZmF1bHRfM18xNzQ5MTEwNDcz.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BKTF8wX2RlZmF1bHRfNF8xNzQ5MTEwNDcx.png' },
+      { id: 'jili', label: 'JILI', logoShow: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2_active.png', logoHide: 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/2.png' },
       { id: 'r88', label: 'R88', logoShow: 'https://img.bzvm68.com/game/banner/R1BSOF8wX2RlZmF1bHRfNF8xNjkxMTM4OTk2.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BSOF8wX2RlZmF1bHRfM18xNjkxMTM5MDEz.png' },
       { id: 'km', label: 'KM', logoShow: 'https://img.bzvm68.com/game/banner/R1BLTV8wX2RlZmF1bHRfNF8xNzEzMzI0MDM5.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BLTV8wX2RlZmF1bHRfM18xNzEzMzI0MDM0.png' },
       { id: 'jdb', label: 'JDB', logoShow: 'https://img.bzvm68.com/game/banner/R1BKRF8wX2RlZmF1bHRfNF8xNzQ5NDUyOTM2.png', logoHide: 'https://img.bzvm68.com/game/banner/R1BKRF8wX2RlZmF1bHRfM18xNzQ5NDUyOTM1.png' },
@@ -1446,9 +1444,7 @@ onMounted(async () => {
   object-fit: contain;
   transition: all 0.3s ease;
 }
-.gp-publisher-logo.grayscale {
-  opacity: 0.85; /* Slight fade instead of total grayscale/white */
-}
+/* removed grayscale to keep logos colorful */
 .gp-type-item .gp-icon {
   width: 32px;
   height: 32px;
