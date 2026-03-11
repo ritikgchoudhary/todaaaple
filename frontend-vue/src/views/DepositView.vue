@@ -35,102 +35,132 @@
         </div>
       </div>
 
-      <!-- Payment Methods -->
-      <div class="channel-header">
-        <div class="channel-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-        </div>
-        <div class="section-title">Select channel</div>
-      </div>
-      
-      <div class="methods-grid">
-        <div 
-          v-for="gateway in gatewayList" 
-          :key="gateway" 
-          class="method-item" 
-          :class="{ 'active': selectedGateway === gateway.toLowerCase() }"
-          @click="selectedGateway = gateway.toLowerCase()"
+      <!-- Payment Type Tabs -->
+      <div class="payment-tabs">
+        <button 
+          class="tab-btn" 
+          :class="{ 'active': depositMode === 'fiat' }" 
+          @click="depositMode = 'fiat'; selectedGateway = gatewayList[0]"
         >
-          <div class="item-inner">
-            <div class="name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
-            <div class="limit">Balance:{{ getLimits(gateway) }}</div>
+          <div class="tab-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
           </div>
-        </div>
-        
-        <!-- USDT Channel -->
-        <div class="method-item" :class="{ 'active': selectedGateway === 'usdt' }" @click="selectedGateway = 'usdt'">
-          <div class="item-inner">
-            <div class="name">USDT-TRC20</div>
-            <div class="limit">Min: 10 USDT</div>
+          Local Currency (INR)
+        </button>
+        <button 
+          class="tab-btn crypto-tab" 
+          :class="{ 'active': depositMode === 'crypto' }" 
+          @click="depositMode = 'crypto'; selectedGateway = 'usdt'"
+        >
+          <div class="tab-icon">
+             <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040" alt="USDT" width="18" />
           </div>
-        </div>
+          Digital Assets (USDT)
+        </button>
       </div>
 
-      <!-- Amount Section -->
-      <div class="section-title">Deposit Amount</div>
-      <div class="amount-card glass-card">
-        <div class="input-container">
-          <span class="prefix">₹</span>
-          <input 
-            type="number" 
-            v-model.number="amount" 
-            placeholder="Min. 200" 
-            @focus="focused = true" 
-            @blur="focused = false"
-            class="amount-input"
-          />
-          <button v-if="amount" class="clear-btn" @click="amount = null">×</button>
-        </div>
-
-        <div class="chips-container">
-          <button 
-            v-for="val in [200, 500, 2000, 10000, 20000, 50000, 100000]" 
-            :key="val" 
-            class="chip"
-            :class="{ 'active': amount === val }"
-            @click="amount = val"
-          >
-            ₹{{ val >= 1000 ? (val/1000) + 'K' : val }}
-          </button>
+      <!-- FIAT SECTION -->
+      <div v-if="depositMode === 'fiat'">
+        <div class="channel-header">
+          <div class="channel-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+          </div>
+          <div class="section-title">Select channel</div>
         </div>
         
-        <div v-if="selectedGateway !== 'usdt'">
+        <div class="methods-grid">
+          <div 
+            v-for="gateway in gatewayList" 
+            :key="gateway" 
+            class="method-item" 
+            :class="{ 'active': selectedGateway === gateway.toLowerCase() && selectedGateway !== 'usdt' }"
+            @click="selectedGateway = gateway.toLowerCase()"
+          >
+            <div class="item-inner">
+              <div class="name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
+              <div class="limit">{{ getLimits(gateway) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Deposit Amount</div>
+        <div class="amount-card glass-card">
+          <div class="input-container">
+            <span class="prefix">₹</span>
+            <input 
+              type="number" 
+              v-model.number="amount" 
+              placeholder="Min. 200" 
+              @focus="focused = true" 
+              @blur="focused = false"
+              class="amount-input"
+            />
+            <button v-if="amount" class="clear-btn" @click="amount = null">×</button>
+          </div>
+
+          <div class="chips-container">
+            <button 
+              v-for="val in [200, 500, 2000, 10000, 20000, 50000, 100000]" 
+              :key="val" 
+              class="chip"
+              :class="{ 'active': amount === val }"
+              @click="amount = val"
+            >
+              ₹{{ val >= 1000 ? (val/1000) + 'K' : val }}
+            </button>
+          </div>
+          
           <button class="deposit-btn inline-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
             <span v-if="loading" class="btn-spinner"></span>
             <span v-else>Deposit ₹{{ (amount || 0).toLocaleString() }}</span>
           </button>
         </div>
+      </div>
 
-        <!-- USDT Manual Section -->
-        <div v-else class="usdt-manual-section">
-          <div class="divider"></div>
-          <div class="usdt-info-row">
-            <span class="label">Rate:</span>
-            <span class="val">1 USDT = ₹{{ USD_RATE }}</span>
-          </div>
-          <div class="usdt-info-row">
-            <span class="label">Pay:</span>
-            <span class="val highlight">{{ (amount / USD_RATE).toFixed(2) }} USDT</span>
+      <!-- CRYPTO SECTION -->
+      <div v-else class="crypto-container">
+        <div class="amount-card glass-card usdt-active-card">
+          <div class="section-title">USDT Deposit Amount (INR)</div>
+          <div class="input-container">
+            <span class="prefix">₹</span>
+            <input 
+              type="number" 
+              v-model.number="amount" 
+              placeholder="Enter INR amount" 
+              class="amount-input"
+            />
           </div>
           
-          <div class="address-box glass-card">
-            <div class="box-label">TRC20 Receipt Address</div>
-            <div class="address-row">
-              <span class="address-text">{{ USDT_TRC20_ADDRESS }}</span>
-              <button class="copy-btn" @click="copyAddress">COPY</button>
+          <div class="usdt-manual-section">
+            <div class="divider"></div>
+            <div class="usdt-info-row">
+              <span class="label">Exchange Rate:</span>
+              <span class="val">1 USDT = ₹{{ USD_RATE }}</span>
             </div>
-          </div>
+            <div class="usdt-info-row">
+              <span class="label">Amount to Pay:</span>
+              <span class="val highlight">{{ (amount / USD_RATE).toFixed(2) }} USDT</span>
+            </div>
+            
+            <div class="address-box glass-card">
+              <div class="box-label">Pay to USDT-TRC20 Address</div>
+              <div class="address-row">
+                <span class="address-text">{{ USDT_TRC20_ADDRESS }}</span>
+                <button class="copy-btn" @click="copyAddress">COPY</button>
+              </div>
+            </div>
 
-          <div class="txid-input-wrap">
-            <div class="input-label">Transaction ID / Hash (TXID)</div>
-            <input v-model="txid" type="text" placeholder="Enter transaction hash" class="txid-input" />
-          </div>
+            <div class="txid-input-wrap">
+              <div class="input-label">Transaction Hash (TXID)</div>
+              <input v-model="txid" type="text" placeholder="Enter 64-char hash" class="txid-input" />
+            </div>
 
-          <button class="deposit-btn inline-btn usdt-theme" :disabled="loading || !amount || !txid" @click="handleUsdtDeposit">
-            <span v-if="loading" class="btn-spinner"></span>
-            <span v-else>Submit USDT Deposit</span>
-          </button>
-          <p class="usdt-note">Please only send TRC20 USDT. Minimum 10 USDT.</p>
+            <button class="deposit-btn inline-btn usdt-theme" :disabled="loading || !amount || !txid" @click="handleUsdtDeposit">
+              <span v-if="loading" class="btn-spinner"></span>
+              <span v-else>Confirm USDT Payment</span>
+            </button>
+            <p class="usdt-note">Submit hash only AFTER sending funds. Minimum deposit: 10 USDT.</p>
+          </div>
         </div>
       </div>
 
@@ -218,6 +248,7 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const amount = ref(500)
+const depositMode = ref('fiat') 
 const loading = ref(false)
 const fetching = ref(false)
 const userBalance = ref(0)
@@ -412,6 +443,54 @@ onMounted(() => {
   background: #ffffff; 
   min-height: calc(100vh - 56px);
   padding-bottom: 40px;
+}
+
+/* Payment Tabs */
+.payment-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.tab-btn {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: #ffffff;
+  border-color: #05c0b8;
+  color: #05c0b8;
+  box-shadow: 0 4px 12px rgba(5,192,184,0.12);
+}
+.tab-btn.crypto-tab.active {
+  border-color: #10b981;
+  color: #10b981;
+}
+.tab-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+.tab-btn.active .tab-icon {
+  opacity: 1;
+}
+.usdt-active-card {
+  border-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
 }
 
 /* Glass Card */
