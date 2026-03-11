@@ -171,7 +171,7 @@
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <img 
                 v-else-if="f.logoShow || f.logoHide" 
-                :src="slotFilterActive === f.id ? (f.logoShow || f.logoHide) : (f.logoHide || f.logoShow)" 
+                :src="f.logoHide || f.logoShow" 
                 :alt="f.label" 
                 class="gp-publisher-logo" 
               />
@@ -230,7 +230,7 @@
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
               <img 
                 v-else-if="f.logoShow || f.logoHide" 
-                :src="cardFilterActive === f.id ? (f.logoShow || f.logoHide) : (f.logoHide || f.logoShow)" 
+                :src="f.logoHide || f.logoShow" 
                 :alt="f.label" 
                 class="gp-publisher-logo" 
               />
@@ -1451,7 +1451,11 @@ onMounted(async () => {
   height: 34px;
   object-fit: contain;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 0 1px rgba(0,0,0,0.3));
+  filter: drop-shadow(0 0 1px rgba(0,0,0,0.3)) brightness(1);
+  opacity: 1 !important;
+}
+.gp-type-item.active .gp-publisher-logo {
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.2)) contrast(1.1);
 }
 .gp-sub-label {
   font-size: 0.55rem;
