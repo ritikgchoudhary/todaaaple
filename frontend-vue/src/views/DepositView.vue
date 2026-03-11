@@ -230,6 +230,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as walletApi from '../api/wallet'
+import { getSiteSettings } from '../api/home'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -248,7 +249,7 @@ const dialog = reactive({ open: false, body: '' })
 const txid = ref('')
 
 const USD_RATE = 95
-const USDT_TRC20_ADDRESS = 'TPyLRB9N7m4uX8q9d8c7v6b5n4m3l2k1j' // Replace with real admin address
+const USDT_TRC20_ADDRESS = ref('TPyLRB9N7m4uX8q9d8c7v6b5n4m3l2k1j') // Fallback address
 
 const GATEWAY_LABELS = {
   auto: "UPI Gateway",
@@ -275,6 +276,11 @@ async function fetchData() {
             const userData = res.data[0]
             userBalance.value = userData.balance || 0
             rechargeHistory.value = Array.isArray(userData.rechargeHistory) ? [...userData.rechargeHistory].reverse() : []
+        }
+        
+        const settingsRes = await getSiteSettings()
+        if (settingsRes.data && settingsRes.data.usdtAddress) {
+            USDT_TRC20_ADDRESS.value = settingsRes.data.usdtAddress
         }
     } catch (err) {
         console.error('Data fetch failed')

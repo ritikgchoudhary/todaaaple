@@ -15,6 +15,7 @@ export const getSiteSettings = async (req, res) => {
       telegramLink: doc.telegramLink || '',
       customerServiceLink: doc.customerServiceLink || '',
       whatsappLink: doc.whatsappLink || '',
+      usdtAddress: doc.usdtAddress || '',
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -30,6 +31,7 @@ export const getSiteSettingsAdmin = async (req, res) => {
       telegramLink: doc.telegramLink || '',
       customerServiceLink: doc.customerServiceLink || '',
       whatsappLink: doc.whatsappLink || '',
+      usdtAddress: doc.usdtAddress || '',
     });
   } catch (e) {
     res.status(500).json({ error: e.message });

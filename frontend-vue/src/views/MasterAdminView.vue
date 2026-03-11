@@ -254,6 +254,10 @@
                     <label>WhatsApp Link (Optional)</label>
                     <input v-model="siteSettings.whatsappLink" placeholder="https://wa.me/..." />
                   </div>
+                  <div class="form-group">
+                    <label>USDT (TRC20) Deposit Address</label>
+                    <input v-model="siteSettings.usdtAddress" placeholder="Enter TRC20 wallet address..." />
+                  </div>
                   <button @click="saveSiteSettings" class="save-btn small" :disabled="saving">
                     {{ saving ? 'Saving...' : 'Update Links' }}
                   </button>
@@ -333,7 +337,7 @@ const stats = ref({})
 const users = ref([])
 const withdrawals = ref([])
 const transactions = ref([])
-const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '' })
+const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '' })
 const carouselImages = ref([])
 
 const userSearch = ref('')
@@ -488,7 +492,8 @@ const saveSiteSettings = async () => {
     await adminApi.updateSiteSettings(ADMIN_API_KEY, {
       telegramLink: siteSettings.value.telegramLink,
       customerServiceLink: siteSettings.value.customerServiceLink,
-      whatsappLink: siteSettings.value.whatsappLink
+      whatsappLink: siteSettings.value.whatsappLink,
+      usdtAddress: siteSettings.value.usdtAddress
     })
     alert('Settings saved')
   } catch (err) {} finally { saving.value = false }
