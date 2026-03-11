@@ -167,11 +167,15 @@
             @click="onSlotFilterClick(f.id)"
           >
             <div class="gp-item-inner">
-              <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
+              <span v-if="f.label && !(f.logoShow || f.logoHide || f.icon)" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
-              <template v-else>
-                <img :src="f.logoShow || f.logoHide || f.icon" :alt="f.label" class="gp-publisher-logo" />
-              </template>
+              <img 
+                v-else-if="f.logoShow || f.logoHide" 
+                :src="slotFilterActive === f.id ? (f.logoShow || f.logoHide) : (f.logoHide || f.logoShow)" 
+                :alt="f.label" 
+                class="gp-publisher-logo" 
+              />
+              <span v-if="f.logoShow || f.logoHide" class="gp-sub-label">{{ f.label }}</span>
             </div>
           </div>
         </div>
@@ -222,11 +226,15 @@
             @click="onCardFilterClick(f.id)"
           >
             <div class="gp-item-inner">
-              <span v-if="f.label && !f.logoHide" class="gp-label">{{ f.label }}</span>
+              <span v-if="f.label && !(f.logoShow || f.logoHide || f.icon)" class="gp-label">{{ f.label }}</span>
               <img v-if="f.icon" :src="f.icon" :alt="f.label" class="gp-icon" />
-              <template v-else>
-                <img :src="f.logoShow || f.logoHide || f.icon" :alt="f.label" class="gp-publisher-logo" />
-              </template>
+              <img 
+                v-else-if="f.logoShow || f.logoHide" 
+                :src="cardFilterActive === f.id ? (f.logoShow || f.logoHide) : (f.logoHide || f.logoShow)" 
+                :alt="f.label" 
+                class="gp-publisher-logo" 
+              />
+              <span v-if="f.logoShow || f.logoHide" class="gp-sub-label">{{ f.label }}</span>
             </div>
           </div>
         </div>
@@ -1443,12 +1451,24 @@ onMounted(async () => {
   height: 34px;
   object-fit: contain;
   transition: all 0.3s ease;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,0.3));
+}
+.gp-sub-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.active .gp-sub-label {
+  color: #3b82f6;
 }
 /* removed grayscale to keep logos colorful */
 .gp-type-item .gp-icon {
   width: 32px;
   height: 32px;
   object-fit: contain;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,0.3));
 }
 .gp-type-item.active {
   background: #eff6ff;
