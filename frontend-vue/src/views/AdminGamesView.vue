@@ -1,11 +1,11 @@
 <template>
   <div :class="['admin-games-page', { embedded }]">
     <div v-if="!embedded" class="header">
-      <router-link to="/" class="back-link">
+      <router-link to="/masterAdmin" class="back-link">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
-        Back to Home
+        Back to Dashboard
       </router-link>
       <h1>Manage Game IDs</h1>
       <button class="save-btn" @click="save" :disabled="loading">
@@ -162,6 +162,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import * as api from '../api/home'
+
+defineProps({
+  embedded: Boolean
+})
 
 const gameCategories = ref({
   sports: [],
@@ -672,5 +676,16 @@ h1 { font-size: 1.5rem; color: #1e293b; margin: 0; }
   .table-container { margin: 0 -24px; padding: 0 4px; }
   .category-card { padding: 16px; }
   .category-title { font-size: 1.1rem; }
+}
+
+.admin-games-page.embedded {
+  padding: 0;
+  background: transparent;
+  min-height: auto;
+}
+.embedded-header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
