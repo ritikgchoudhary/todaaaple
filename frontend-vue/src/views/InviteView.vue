@@ -34,10 +34,16 @@
           </div>
           <div class="link-box">
             <input type="text" :value="referralLink" readonly ref="linkInput" />
-            <button @click="copyLink" class="copy-btn">
-              <span v-if="!copied">Copy</span>
-              <span v-else class="copied-text">Copied!</span>
-            </button>
+            <div class="action-buttons">
+              <button @click="copyLink" class="copy-btn">
+                <span v-if="!copied">Copy</span>
+                <span v-else class="copied-text">Copied!</span>
+              </button>
+              <button @click="shareLink" class="share-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                <span>Share</span>
+              </button>
+            </div>
           </div>
           <p class="hint">Your unique link to invite friends directly.</p>
         </div>
@@ -114,6 +120,24 @@ const copyLink = () => {
     setTimeout(() => {
       copied.value = false
     }, 2000)
+  }
+}
+
+const shareLink = async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Join RushPay',
+        text: 'Join RushPay and earn unlimited rewards! Use my referral link:',
+        url: referralLink.value
+      })
+    } catch (err) {
+      console.error('Error sharing:', err)
+      copyLink()
+    }
+  } else {
+    // Fallback to copy link if Web Share API is not supported
+    copyLink()
   }
 }
 </script>
@@ -261,11 +285,12 @@ const copyLink = () => {
 
 .link-box {
   display: flex;
+  flex-direction: column;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 4px;
-  gap: 4px;
+  border-radius: 16px;
+  padding: 8px;
+  gap: 12px;
 }
 
 .link-box input {
@@ -278,19 +303,43 @@ const copyLink = () => {
   outline: none;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 .copy-btn {
-  background: #0d9488;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  flex: 1;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-.copy-btn:active { transform: scale(0.95); }
+.share-btn {
+  flex: 1.5;
+  background: #0d9488;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+}
+
+.copy-btn:active, .share-btn:active { transform: scale(0.96); }
 
 .copied-text { font-weight: 700; }
 
