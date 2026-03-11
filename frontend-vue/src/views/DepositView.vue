@@ -514,16 +514,16 @@ onMounted(() => {
 .chips-grid-modern {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-bottom: 40px;
+  gap: 10px;
+  margin-bottom: 30px;
 }
 .modern-chip {
-  height: 60px;
-  border: 1.5px solid #00bfa5;
-  border-radius: 8px;
+  height: 42px;
+  border: 1px solid #00bfa5;
+  border-radius: 6px;
   background: #fff;
   color: #00bfa5;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
 }
