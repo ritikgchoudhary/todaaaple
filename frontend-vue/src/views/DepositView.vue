@@ -1,120 +1,108 @@
 <template>
   <div class="deposit-page">
-    <div class="header">
+    <div class="header themed-header">
       <div class="header-left" @click="router.back()">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </div>
-      <h1 class="header-title">Deposit</h1>
-      <router-link to="/depositHistory" class="header-right">
+      <h1 class="header-title white-text">Deposit Money</h1>
+      <router-link to="/depositHistory" class="header-right white-text">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
       </router-link>
     </div>
 
     <div class="mobile-container">
       <!-- Balance Card -->
-      <div class="glass-card balance-card">
-        <div class="card-glow"></div>
+      <div class="solid-card balance-card">
         <div class="balance-info">
           <div class="label-row">
-            <span class="label">Available Balance</span>
-            <button class="refresh-btn" @click="fetchData" :class="{ 'spinning': fetching }">
+            <div class="balance-label-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="card-wallet-icon"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 11V7l-4 4-4-4v4"/></svg>
+              <span class="label">Available Balance</span>
+            </div>
+            <button class="refresh-btn white-refresh" @click="fetchData" :class="{ 'spinning': fetching }">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             </button>
           </div>
-          <div class="amount-row">
+          <div class="amount-row large-amount">
             <span class="currency">₹</span>
             <span class="amount">{{ (userBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="user-id">ID: {{ auth.user?.id || '----' }}</div>
-          <div class="secure-tag">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>Verified Secure</span>
           </div>
         </div>
       </div>
 
       <!-- Payment Type Tabs -->
-      <div class="payment-tabs">
+      <div class="payment-tabs-modern">
         <button 
-          class="tab-btn" 
+          class="tab-btn-modern fiat-tab" 
           :class="{ 'active': depositMode === 'fiat' }" 
           @click="depositMode = 'fiat'; selectedGateway = gatewayList[0]"
         >
-          <div class="tab-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-          </div>
-          Local Currency (INR)
+          <img src="https://img.bzvm68.com/site_common/H5_7_mobile/recharge/recharge_INR.png" width="20" alt="" v-if="depositMode === 'fiat'" />
+          <img src="https://flagcdn.com/w40/in.png" width="18" style="border-radius: 2px" v-else />
+          INR PAYMENTS
         </button>
         <button 
-          class="tab-btn crypto-tab" 
+          class="tab-btn-modern usdt-tab" 
           :class="{ 'active': depositMode === 'crypto' }" 
           @click="depositMode = 'crypto'; selectedGateway = 'usdt'"
         >
-          <div class="tab-icon">
-             <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040" alt="USDT" width="18" />
-          </div>
-          Digital Assets (USDT)
+          <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040" alt="USDT" width="18" />
+          USDT PAYMENTS
         </button>
       </div>
 
       <!-- FIAT SECTION -->
       <div v-if="depositMode === 'fiat'">
-        <div class="channel-header">
-          <div class="channel-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-          </div>
-          <div class="section-title">Select channel</div>
-        </div>
-        
-        <div class="methods-grid">
-          <div 
-            v-for="gateway in gatewayList" 
-            :key="gateway" 
-            class="method-item" 
-            :class="{ 'active': selectedGateway === gateway.toLowerCase() && selectedGateway !== 'usdt' }"
-            @click="selectedGateway = gateway.toLowerCase()"
-          >
-            <div class="item-inner">
-              <div class="name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
-              <div class="limit">{{ getLimits(gateway) }}</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="section-title">Deposit Amount</div>
-        <div class="amount-card glass-card">
-          <div class="input-container">
-            <span class="prefix">₹</span>
-            <input 
-              type="number" 
-              v-model.number="amount" 
-              placeholder="Min. 200" 
-              @focus="focused = true" 
-              @blur="focused = false"
-              class="amount-input"
-            />
-            <button v-if="amount" class="clear-btn" @click="amount = null">×</button>
+        <div class="simple-amount-section">
+          <div class="input-label-modern">Enter Amount (INR)</div>
+          <div class="amount-input-row">
+             <span class="cur-symbol">₹</span>
+             <input 
+               type="number" 
+               v-model.number="amount" 
+               class="modern-plain-input"
+               placeholder="500"
+             />
           </div>
 
-          <div class="chips-container">
+          <div class="quick-select-label">Quick Select</div>
+          <div class="chips-grid-modern">
             <button 
-              v-for="val in [200, 500, 2000, 10000, 20000, 50000, 100000]" 
+              v-for="val in [200, 500, 1000, 2000, 5000, 8000, 10000, 15000, 20000]" 
               :key="val" 
-              class="chip"
+              class="modern-chip"
               :class="{ 'active': amount === val }"
               @click="amount = val"
             >
-              ₹{{ val >= 1000 ? (val/1000) + 'K' : val }}
+              ₹{{ val }}
             </button>
           </div>
-          
-          <button class="deposit-btn inline-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
-            <span v-if="loading" class="btn-spinner"></span>
-            <span v-else>Deposit ₹{{ (amount || 0).toLocaleString() }}</span>
-          </button>
         </div>
+
+        <div class="channel-header compact-header">
+          <div class="section-title">Select Deposit Channel</div>
+        </div>
+        
+        <div class="methods-list-modern">
+          <div 
+            v-for="gateway in gatewayList" 
+            :key="gateway" 
+            class="method-list-item" 
+            :class="{ 'active': selectedGateway === gateway.toLowerCase() }"
+            @click="selectedGateway = gateway.toLowerCase()"
+          >
+            <div class="m-radio">
+              <div class="m-radio-inner"></div>
+            </div>
+            <div class="m-name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
+            <div class="m-limit">{{ getLimits(gateway) }}</div>
+          </div>
+        </div>
+
+        <button class="modern-deposit-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
+          <span v-if="loading" class="btn-spinner"></span>
+          <span v-else>Deposit Now</span>
+        </button>
       </div>
 
       <!-- CRYPTO SECTION -->
@@ -427,70 +415,193 @@ onMounted(() => {
 /* Header */
 .header {
   position: sticky; top: 0; z-index: 1000;
-  height: 56px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+  height: 56px; background: #fff;
   display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
   border-bottom: 1px solid #e2e8f0;
   max-width: 430px; margin: 0 auto; left: 0; right: 0;
 }
+.themed-header {
+  background: #00bfa5 !important;
+  border-bottom: none;
+}
+.white-text { color: #fff !important; }
 .header-left { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #64748b; cursor: pointer; }
-.header-title { font-size: 1rem; font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.1em; }
+.header-title { font-size: 1.1rem; font-weight: 500; color: #0f172a; margin: 0; }
 .header-right { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: #05c0b8; cursor: pointer; }
 
 .mobile-container { 
   max-width: 430px; 
   margin: 0 auto; 
-  padding: 12px 14px; 
+  padding: 20px 16px; 
   background: #ffffff; 
   min-height: calc(100vh - 56px);
   padding-bottom: 40px;
 }
 
 /* Payment Tabs */
-.payment-tabs {
+.payment-tabs-modern {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: 15px;
+  margin-bottom: 30px;
+  margin-top: 10px;
 }
-.tab-btn {
+.tab-btn-modern {
   flex: 1;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.tab-btn.active {
-  background: #ffffff;
-  border-color: #05c0b8;
-  color: #05c0b8;
-  box-shadow: 0 4px 12px rgba(5,192,184,0.12);
-}
-.tab-btn.crypto-tab.active {
-  border-color: #10b981;
-  color: #10b981;
-}
-.tab-icon {
-  width: 24px;
-  height: 24px;
+  height: 64px;
+  border-radius: 32px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0 10px;
 }
-.tab-btn.active .tab-icon {
-  opacity: 1;
+.tab-btn-modern.fiat-tab.active {
+  background: #00bfa5;
+  border-color: #00bfa5;
+  color: #fff;
 }
+.tab-btn-modern.usdt-tab {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+.tab-btn-modern.usdt-tab.active {
+  background: #f59e0b;
+  color: #fff;
+}
+
+/* New Styles for Amount Section */
+.simple-amount-section {
+  padding: 0 4px;
+}
+.input-label-modern {
+  color: #00bfa5;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 25px;
+}
+.amount-input-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 8px;
+  margin-bottom: 30px;
+}
+.cur-symbol {
+  font-size: 20px;
+  color: #00bfa5;
+  margin-right: 20px;
+}
+.modern-plain-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  font-weight: 500;
+  color: #333;
+}
+.quick-select-label {
+  color: #00bfa5;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+.chips-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.modern-chip {
+  height: 60px;
+  border: 1.5px solid #00bfa5;
+  border-radius: 8px;
+  background: #fff;
+  color: #00bfa5;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.modern-chip.active {
+  background: #00bfa5;
+  color: #fff;
+}
+
+.methods-list-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.method-list-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.method-list-item.active {
+  border-color: #00bfa5;
+  background: #f0fdfa;
+}
+.m-radio {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.method-list-item.active .m-radio {
+  border-color: #00bfa5;
+}
+.m-radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+}
+.method-list-item.active .m-radio-inner {
+  background: #00bfa5;
+}
+.m-name {
+  flex: 1;
+  font-weight: 700;
+  color: #334155;
+}
+.m-limit {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.modern-deposit-btn {
+  width: 100%;
+  height: 54px;
+  background: #00bfa5;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
 .usdt-active-card {
-  border-color: #10b981;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+  border: 1px solid #f59e0b;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
 }
 
 /* Glass Card */
@@ -501,11 +612,22 @@ onMounted(() => {
 
 /* Balance Card */
 .balance-card {
-  padding: 12px 16px; margin-bottom: 20px;
-  background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
-  border-color: #ccfbf1;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  padding: 25px 20px; margin-bottom: 25px;
+  background: #00bfa5;
+  border: none;
+  border-radius: 12px;
 }
+.balance-label-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+.card-wallet-icon { opacity: 0.9; }
+.large-amount { margin-top: 15px; margin-bottom: 0; }
+.large-amount .amount { font-size: 2.2rem; color: #fff; font-weight: 700; }
+.large-amount .currency { color: #fff; font-size: 1.4rem; font-weight: 700; margin-right: 10px; }
+.white-refresh { color: #fff; opacity: 0.8; }
 .card-glow {
   position: absolute; top: -30%; right: -20%; width: 100px; height: 100px;
   background: radial-gradient(circle, rgba(5,192,184, 0.15) 0%, transparent 70%); filter: blur(20px);
