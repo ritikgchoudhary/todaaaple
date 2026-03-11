@@ -22,9 +22,9 @@
       </svg>
       <span class="navLabel">Wingo</span>
     </router-link>
-    <router-link to="/invite" class="navItem" :class="{ active: route.path === '/invite' }">
-      <img :src="route.path === '/invite' ? 'https://img.bzvm68.com/site_common/H5_7_mobile/game_type_icon/search.png' : 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_customService.png'" alt="" class="navIconImg" style="filter: hue-rotate(180deg);" />
-      <span class="navLabel">Invite</span>
+    <router-link to="/help" class="navItem" :class="{ active: route.path === '/help' }">
+      <img :src="route.path === '/help' ? 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_customService_active.png' : 'https://img.bzvm68.com/site_common/H5_7_mobile/footer_icon/footer_customService.png'" alt="" class="navIconImg" />
+      <span class="navLabel">Support</span>
     </router-link>
   </nav>
 </template>
