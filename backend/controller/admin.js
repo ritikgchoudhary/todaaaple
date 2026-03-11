@@ -22,30 +22,39 @@ export const getAdminStats = async (req, res, next) => {
         let totalBalances = 0;
         users.forEach(u => totalBalances += (u.balance || 0));
 
-        // Aggregating total recharges/withdrawals from Daily model
-        const dailyData = await Daily.find();
+        // Dates for Today and Yesterday
+        const date = new Date();
+        const localDate = (date / 1000 + 19800) * 1000;
+        const now = new Date(localDate);
+        
+        const formatId = (d) => {
+            const day = d.getDate();
+            const month = d.getMonth() + 1;
+            const year = d.getFullYear();
+            return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+        };
+
+        const todayKey = formatId(now);
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        const yesterdayKey = formatId(yesterday);
+
+        const todayDoc = await Daily.findOne({ id: todayKey });
+        const yesterdayDoc = await Daily.findOne({ id: yesterdayKey });
+
+        // New Users Today
+        const startOfToday = new Date(now);
+        startOfToday.setHours(0,0,0,0);
+        const newUsersToday = await User.countDocuments({ date: { $gte: startOfToday } });
+
+        // Total aggregates
+        const allDaily = await Daily.find();
         let totalRecharge = 0;
         let totalWithdrawal = 0;
-
-        dailyData.forEach(d => {
+        allDaily.forEach(d => {
             totalRecharge += d.amount || 0;
             totalWithdrawal += d.redeem || 0;
         });
-
-        // Today's data
-        const date = new Date();
-        const localDate = (date / 1000 + 19800) * 1000;
-        const newDatefor = new Date(localDate);
-        const day = newDatefor.getDate();
-        const month = newDatefor.getMonth() + 1;
-        const year = newDatefor.getFullYear();
-        const daySorted = day < 10 ? `0${day}` : `${day}`;
-        const monthSorted = month < 10 ? `0${month}` : `${month}`;
-        const todayKey = `${daySorted}-${monthSorted}-${year}`;
-        
-        const todayDoc = await Daily.findOne({ id: todayKey });
-        const todaysRecharge = todayDoc ? (todayDoc.amount || 0) : 0;
-        const todaysWithdrawal = todayDoc ? (todayDoc.redeem || 0) : 0;
 
         const pendingWithdrawals = await Withdrawal.countDocuments({ status: "Pending" });
 
@@ -54,12 +63,25 @@ export const getAdminStats = async (req, res, next) => {
             data: {
                 totalUsers,
                 activeUsers,
-                totalRecharge,
-                totalWithdrawal,
-                todaysRecharge,
-                todaysWithdrawal,
+                newUsersToday,
                 totalBalances,
-                pendingWithdrawals
+                pendingWithdrawals,
+                today: {
+                    recharge: todayDoc ? (todayDoc.amount || 0) : 0,
+                    withdrawal: todayDoc ? (todayDoc.redeem || 0) : 0,
+                    rechargeCount: todayDoc ? (todayDoc.count || 0) : 0,
+                    withdrawalCount: todayDoc ? (todayDoc.redeemCount || 0) : 0
+                },
+                yesterday: {
+                    recharge: yesterdayDoc ? (yesterdayDoc.amount || 0) : 0,
+                    withdrawal: yesterdayDoc ? (yesterdayDoc.redeem || 0) : 0,
+                    rechargeCount: yesterdayDoc ? (yesterdayDoc.count || 0) : 0,
+                    withdrawalCount: yesterdayDoc ? (yesterdayDoc.redeemCount || 0) : 0
+                },
+                total: {
+                    recharge: totalRecharge,
+                    withdrawal: totalWithdrawal
+                }
             }
         });
     } catch (error) {
@@ -74,14 +96,21 @@ export const getAllUsersAdmin = async (req, res, next) => {
             return next(new ErrorResponse("Permission Denied", 401));
         }
 
+        // Return more comprehensive info for "Advance" view
         const users = await User.find({}, {
             id: 1,
             phone: 1,
             balance: 1,
             date: 1,
             block: 1,
-            username: 1
-        }).sort({ date: -1 }).limit(100);
+            username: 1,
+            bank: 1,
+            address: 1,
+            upi: 1,
+            upLine: 1,
+            firstRecharge: 1,
+            isAgent: 1
+        }).sort({ date: -1 }).limit(200);
 
         res.status(200).json({
             success: true,
