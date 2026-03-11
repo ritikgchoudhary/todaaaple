@@ -45,7 +45,7 @@
           :class="{ 'active': depositMode === 'crypto' }" 
           @click="depositMode = 'crypto'; selectedGateway = 'usdt'"
         >
-          <img src="https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530a7d9047717414b9709943907b223d7247/svg/color/usdt.svg" alt="USDT" width="18" />
+          <img src="https://img.icons8.com/color/48/tether--v2.png" alt="USDT" width="20" />
           USDT PAYMENTS
         </button>
       </div>

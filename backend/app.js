@@ -73,6 +73,7 @@ app.use(
           'https://*.icons8.com',
           'https://img.icons8.com',
           'https://imagedelivery.net',
+          'https://flagcdn.com',
         ],
         // Allow game URLs to load inside iframe (Sports, /play)
         'frame-src': ["'self'", 'https:', 'blob:'],
