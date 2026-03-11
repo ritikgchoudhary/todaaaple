@@ -17,7 +17,7 @@
           <div class="label-row">
             <div class="balance-label-wrap">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="card-wallet-icon"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 11V7l-4 4-4-4v4"/></svg>
-              <span class="label">Available Balance</span>
+              <span class="label white-label">Available Balance</span>
             </div>
             <button class="refresh-btn white-refresh" @click="fetchData" :class="{ 'spinning': fetching }">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -37,8 +37,7 @@
           :class="{ 'active': depositMode === 'fiat' }" 
           @click="depositMode = 'fiat'; selectedGateway = gatewayList[0]"
         >
-          <img src="https://img.bzvm68.com/site_common/H5_7_mobile/recharge/recharge_INR.png" width="20" alt="" v-if="depositMode === 'fiat'" />
-          <img src="https://flagcdn.com/w40/in.png" width="18" style="border-radius: 2px" v-else />
+          <img src="https://flagcdn.com/w40/in.png" width="20" alt="" style="border-radius: 2px" />
           INR PAYMENTS
         </button>
         <button 
@@ -46,7 +45,7 @@
           :class="{ 'active': depositMode === 'crypto' }" 
           @click="depositMode = 'crypto'; selectedGateway = 'usdt'"
         >
-          <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=040" alt="USDT" width="18" />
+          <img src="https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530a7d9047717414b9709943907b223d7247/svg/color/usdt.svg" alt="USDT" width="18" />
           USDT PAYMENTS
         </button>
       </div>
@@ -627,7 +626,8 @@ onMounted(() => {
 .large-amount { margin-top: 15px; margin-bottom: 0; }
 .large-amount .amount { font-size: 2.2rem; color: #fff; font-weight: 700; }
 .large-amount .currency { color: #fff; font-size: 1.4rem; font-weight: 700; margin-right: 10px; }
-.white-refresh { color: #fff; opacity: 0.8; }
+.white-refresh { color: #fff !important; opacity: 1 !important; }
+.white-label { color: #fff !important; opacity: 0.9; }
 .card-glow {
   position: absolute; top: -30%; right: -20%; width: 100px; height: 100px;
   background: radial-gradient(circle, rgba(5,192,184, 0.15) 0%, transparent 70%); filter: blur(20px);
