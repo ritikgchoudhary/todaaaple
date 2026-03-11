@@ -74,25 +74,78 @@
         </header>
 
         <section class="tab-view">
-          <!-- DASHBOARD -->
-          <div v-if="activeTab === 'dashboard'" class="dashboard-grid">
-            <div class="stat-card shadow-premium" v-for="(val, key) in stats" :key="key">
-              <div class="stat-icon-bg">
-                <svg v-if="key.includes('Users')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <svg v-else-if="key.includes('Recharge')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                <svg v-else-if="key.includes('Withdrawal')" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <!-- DASHBOARD ADVANCE -->
+          <div v-if="activeTab === 'dashboard'" class="dashboard-wrapper">
+            <!-- Platform Snapshot -->
+            <div class="stats-section-title">Platform Snapshot</div>
+            <div class="dashboard-grid">
+              <div class="stat-card shadow-premium" v-for="item in snapshotItems" :key="item.key">
+                <div class="stat-icon-bg" :style="{ backgroundColor: item.color + '10', color: item.color }">
+                  <span v-html="item.icon"></span>
+                </div>
+                <div class="stat-info">
+                  <span class="stat-title">{{ item.label }}</span>
+                  <span class="stat-value">{{ formatStatVal(stats[item.key], item.key) }}</span>
+                </div>
               </div>
-              <div class="stat-info">
-                <span class="stat-title">{{ formatStatKey(key) }}</span>
-                <span class="stat-value">{{ formatStatVal(val, key) }}</span>
+            </div>
+
+            <!-- Financial Comparison -->
+            <div class="comparison-grid">
+              <!-- TODAY -->
+              <div class="comparison-card shadow-premium today">
+                <div class="comp-header">TODAY'S ACTIVITY</div>
+                <div class="comp-body">
+                  <div class="comp-item">
+                    <span class="comp-label">Recharge</span>
+                    <span class="comp-val success">₹{{ stats.today?.recharge.toLocaleString() }}</span>
+                    <span class="comp-count">{{ stats.today?.rechargeCount }} orders</span>
+                  </div>
+                  <div class="comp-item">
+                    <span class="comp-label">Withdrawal</span>
+                    <span class="comp-val danger">₹{{ stats.today?.withdrawal.toLocaleString() }}</span>
+                    <span class="comp-count">{{ stats.today?.withdrawalCount }} orders</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- YESTERDAY -->
+              <div class="comparison-card shadow-premium yesterday">
+                <div class="comp-header">YESTERDAY'S PERFORMANCE</div>
+                <div class="comp-body">
+                  <div class="comp-item">
+                    <span class="comp-label">Recharge</span>
+                    <span class="comp-val">₹{{ stats.yesterday?.recharge.toLocaleString() }}</span>
+                    <span class="comp-count">{{ stats.yesterday?.rechargeCount }} orders</span>
+                  </div>
+                  <div class="comp-item">
+                    <span class="comp-label">Withdrawal</span>
+                    <span class="comp-val">₹{{ stats.yesterday?.withdrawal.toLocaleString() }}</span>
+                    <span class="comp-count">{{ stats.yesterday?.withdrawalCount }} orders</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- ALL TIME -->
+              <div class="comparison-card shadow-premium totals">
+                <div class="comp-header">ALL-TIME TOTALS</div>
+                <div class="comp-body">
+                  <div class="comp-item">
+                    <span class="comp-label">Total Deposits</span>
+                    <span class="comp-val">₹{{ stats.total?.recharge.toLocaleString() }}</span>
+                  </div>
+                  <div class="comp-item">
+                    <span class="comp-label">Total Cashout</span>
+                    <span class="comp-val">₹{{ stats.total?.withdrawal.toLocaleString() }}</span>
+                  </div>
+                </div>
               </div>
             </div>
             
             <div class="full-card welcome-card shadow-premium">
               <div class="welcome-icon">⚡</div>
-              <h3>System Overview Active</h3>
-              <p>Welcome back, Master Admin. All systems are operational.</p>
+              <h3>Administrative Dashboard Fully Connected</h3>
+              <p>Real-time data synchronization active. Monitoring {{ stats.activeUsers }} active session(s).</p>
             </div>
           </div>
 
@@ -109,21 +162,44 @@
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>UID</th>
-                    <th>Phone</th>
-                    <th>Name</th>
-                    <th>Balance</th>
+                    <th>User / Info</th>
+                    <th>Financials</th>
+                    <th>KYC & Bank</th>
+                    <th>Connections</th>
                     <th>Status</th>
                     <th>Joined</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="user in filteredUsers" :key="user.id">
-                    <td>#{{ user.id }}</td>
-                    <td class="bold">{{ user.phone }}</td>
-                    <td>{{ user.username || 'Member' }}</td>
-                    <td class="amount">₹{{ user.balance?.toFixed(2) }}</td>
+                    <td>
+                      <div class="user-cell">
+                        <div class="u-meta">
+                          <span class="uid">#{{ user.id }}</span>
+                          <span class="phone">{{ user.phone }}</span>
+                        </div>
+                        <span class="uname">{{ user.username || 'Member' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="fin-cell">
+                        <span class="balance amount success">₹{{ user.balance?.toFixed(2) }}</span>
+                        <span v-if="user.firstRecharge" class="tag f-recharge">Recharged</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="kyc-cell">
+                        <span class="bank-name">{{ user.bank?.[0]?.bankName || 'No Bank' }}</span>
+                        <span class="upi-id">{{ user.upi || 'No UPI' }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="conn-cell">
+                        <span class="upline" v-if="user.upLine?.length">L1: {{ user.upLine[0] }}</span>
+                        <span v-if="user.isAgent" class="tag agent-tag">Agent</span>
+                      </div>
+                    </td>
                     <td>
                       <span :class="['status-badge', user.block ? 'blocked' : 'active']">
                         {{ user.block ? 'Blocked' : 'Active' }}
@@ -298,16 +374,58 @@
       <div class="modal-card animate-pop">
         <h3>Edit User: {{ editingUser.phone }}</h3>
         <p class="modal-hint">Updating UID: #{{ editingUser.id }}</p>
-        <div class="form-group">
-          <label>New Balance (₹)</label>
-          <input v-model.number="editForm.balance" type="number" step="0.01" />
-        </div>
-        <div class="form-group">
-          <label>Restrict Account Access</label>
-          <select v-model="editForm.block">
-            <option :value="false">Grant Full Access</option>
-            <option :value="true">Block Login Access</option>
-          </select>
+        <div class="modal-body scrollable">
+          <div class="form-group">
+            <label>Update User Balance (Current: ₹{{ editingUser.balance?.toFixed(2) }})</label>
+            <input type="number" v-model="editForm.balance" placeholder="Enter new balance..." />
+          </div>
+          
+          <div class="form-group">
+            <label>Account Status</label>
+            <select v-model="editForm.block">
+              <option :value="false">Grant Full Access</option>
+              <option :value="true">Block Login Access</option>
+            </select>
+          </div>
+
+          <div class="user-details-grid">
+            <div class="detail-item">
+              <label>Bank Info</label>
+              <div v-if="editingUser.bank?.length" class="detail-box">
+                <p><strong>Name:</strong> {{ editingUser.bank[0].name }}</p>
+                <p><strong>Bank:</strong> {{ editingUser.bank[0].bankName }}</p>
+                <p><strong>Account:</strong> {{ editingUser.bank[0].bankAccount }}</p>
+                <p><strong>IFSC:</strong> {{ editingUser.bank[0].ifsc }}</p>
+              </div>
+              <div v-else class="detail-box empty">No Bank Added</div>
+            </div>
+
+            <div class="detail-item">
+              <label>KYC Address</label>
+              <div v-if="editingUser.address?.length" class="detail-box">
+                <p>{{ editingUser.address[0].address }}, {{ editingUser.address[0].city }}</p>
+                <p>{{ editingUser.address[0].state }} - {{ editingUser.address[0].zip }}</p>
+              </div>
+              <div v-else class="detail-box empty">No Address Added</div>
+            </div>
+
+            <div class="detail-item">
+              <label>Account Info</label>
+              <div class="detail-box">
+                <p><strong>UPI:</strong> {{ editingUser.upi || '-' }}</p>
+                <p><strong>Agent:</strong> {{ editingUser.isAgent ? 'YES' : 'NO' }}</p>
+                <p><strong>First Recharge:</strong> {{ editingUser.firstRecharge ? 'YES' : 'NO' }}</p>
+              </div>
+            </div>
+
+            <div class="detail-item">
+               <label>Lineage (Uplines)</label>
+               <div class="upline-chips">
+                 <span v-for="(up, i) in editingUser.upLine" :key="i" class="up-chip">L{{ i+1 }}: {{ up }}</span>
+                 <span v-if="!editingUser.upLine?.length">No Uplines</span>
+               </div>
+            </div>
+          </div>
         </div>
         <div class="modal-actions">
           <button @click="editingUser = null" class="cancel-btn">Discard</button>
@@ -341,7 +459,24 @@ const tabs = [
 const activeTab = ref('dashboard')
 const activeTabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?.label)
 
-const stats = ref({})
+const stats = ref({
+  today: { recharge: 0, withdrawal: 0, rechargeCount: 0, withdrawalCount: 0 },
+  yesterday: { recharge: 0, withdrawal: 0, rechargeCount: 0, withdrawalCount: 0 },
+  total: { recharge: 0, withdrawal: 0 },
+  totalUsers: 0,
+  activeUsers: 0,
+  newUsersToday: 0,
+  totalBalances: 0,
+  pendingWithdrawals: 0
+})
+
+const snapshotItems = [
+  { key: 'totalUsers', label: 'Total Users', color: '#3b82f6', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
+  { key: 'activeUsers', label: 'Active Sessions', color: '#10b981', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>' },
+  { key: 'newUsersToday', label: 'New Today', color: '#8b5cf6', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>' },
+  { key: 'totalBalances', label: 'User Balances', color: '#f59e0b', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' },
+];
+
 const users = ref([])
 const withdrawals = ref([])
 const transactions = ref([])
@@ -642,21 +777,47 @@ watch(activeTab, (newTab) => {
 .tab-view { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
 
 /* Stats Widgets */
-.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-.stat-card {
-  background: #fff; padding: 25px; border-radius: 24px;
-  border: 1px solid #edf2f7; display: flex; align-items: center; gap: 20px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
-.stat-icon-bg {
-  width: 54px; height: 54px; border-radius: 16px;
-  background: #f1f5f9; color: #0f172a;
-  display: flex; align-items: center; justify-content: center;
-}
-.stat-info { display: flex; flex-direction: column; }
-.stat-title { font-size: 0.8rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
-.stat-value { font-size: 1.6rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em; }
+.dashboard-wrapper { display: flex; flex-direction: column; gap: 40px; }
+.stats-section-title { font-size: 1.1rem; font-weight: 800; color: #1e293b; margin-bottom: -10px; }
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+
+/* Comparison Grid */
+.comparison-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.comparison-card { background: #fff; border-radius: 28px; border: 1px solid #edf2f7; overflow: hidden; }
+.comp-header { background: #f8fafc; padding: 15px 25px; font-size: 0.75rem; font-weight: 800; color: #94a3b8; border-bottom: 1px solid #f1f5f9; }
+.comp-body { padding: 25px; }
+.comp-item { display: flex; flex-direction: column; margin-bottom: 20px; }
+.comp-item:last-child { margin-bottom: 0; }
+.comp-label { font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 5px; }
+.comp-val { font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+.comp-val.success { color: #10b981; }
+.comp-val.danger { color: #f43f5e; }
+.comp-count { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-top: 2px; }
+
+/* User List Deep */
+.user-cell { display: flex; flex-direction: column; gap: 4px; }
+.uid { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
+.phone { font-weight: 800; color: #0f172a; font-size: 1rem; }
+.uname { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+
+.fin-cell { display: flex; flex-direction: column; gap: 6px; }
+.kyc-cell { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
+.bank-name { font-weight: 700; color: #334155; }
+.upi-id { color: #94a3b8; font-size: 0.8rem; }
+
+.conn-cell { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; }
+.tag { width: fit-content; padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+.f-recharge { background: #e0f2fe; color: #0369a1; }
+.agent-tag { background: #fef3c7; color: #92400e; }
+
+/* Modal Advance */
+.modal-body.scrollable { max-height: 60vh; overflow-y: auto; padding-right: 15px; }
+.user-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 30px; }
+.detail-item label { font-size: 0.75rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 8px; display: block; }
+.detail-box { background: #f8fafc; padding: 15px; border-radius: 14px; font-size: 0.9rem; line-height: 1.5; color: #1e293b; }
+.detail-box.empty { font-style: italic; color: #cbd5e1; text-align: center; }
+.upline-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.up-chip { background: #f1f5f9; padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; color: #475569; }
 
 .welcome-card { grid-column: 1/-1; background: #fff; padding: 60px; text-align: center; }
 .welcome-icon { font-size: 4rem; margin-bottom: 20px; }
