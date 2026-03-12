@@ -497,7 +497,7 @@ const uploading = ref(false)
 const uploadingCarousel = ref(false)
 
 const handleLogin = () => {
-  if (adminPassword.value === 'Master@Rush2024') {
+  if (adminPassword.value === 'Aman@123') {
     isAuthenticated.value = true
     localStorage.setItem('admin_authenticated', 'true')
     error.value = ''
