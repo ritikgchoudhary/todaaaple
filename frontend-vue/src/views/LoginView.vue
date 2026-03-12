@@ -141,9 +141,9 @@
         <div class="fieldBlock">
           <label class="fieldLabel">
             <span class="fieldLabelIcon accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
-            Recommendation Code
+            Recommendation Code (Required)
           </label>
-          <input v-model="formData.referCode" name="referCode" type="text" class="input" placeholder="Optional" />
+          <input v-model="formData.referCode" name="referCode" type="text" class="input" placeholder="Enter Recommendation Code" />
         </div>
         <button type="submit" class="primaryBtn" :disabled="loader">
           <span v-if="loader" class="btnLoader"></span>
@@ -310,6 +310,9 @@ async function handleSubmit(e) {
     } else {
       if (formData.password !== formData.cpassword) {
         throw new Error("Passwords do not match!")
+      }
+      if (!formData.referCode) {
+        throw new Error("Recommendation Code is required!")
       }
       const { data } = await api.signup(formData)
       if (data?.token) {
