@@ -236,7 +236,7 @@
                     <th>ID</th>
                     <th>UID</th>
                     <th>Amount</th>
-                    <th>Fee</th>
+                    <th>Details</th>
                     <th>Status</th>
                     <th>Date</th>
                     <th>Action</th>
@@ -246,8 +246,22 @@
                   <tr v-for="w in filteredWithdrawals" :key="w._id">
                     <td>{{ w.id }}</td>
                     <td>#{{ w.userId }}</td>
-                    <td class="amount danger">₹{{ w.amount }}</td>
-                    <td>₹{{ w.withdrawalFee || 0 }}</td>
+                    <td class="amount danger">
+                      <span v-if="w.usdt">{{ w.usdt }} USDT</span>
+                      <span v-else>₹{{ w.amount }}</span>
+                      <p v-if="w.usdt" class="hint">≈ ₹{{ w.amount }}</p>
+                    </td>
+                    <td>
+                      <div v-if="w.usdt" class="mini-info">
+                        <span class="tag usdt-tag">USDT</span>
+                        <code class="address-copy">{{ w.walletAddress }}</code>
+                      </div>
+                      <div v-else-if="w.method && w.method[0]" class="mini-info">
+                        <strong>{{ w.method[0].bankName }}</strong>
+                        <span class="acc-num">{{ w.method[0].bankAccount }}</span>
+                      </div>
+                      <span v-else>-</span>
+                    </td>
                     <td>
                       <span :class="['status-badge', w.status?.toLowerCase()]">{{ w.status }}</span>
                     </td>
@@ -906,5 +920,36 @@ watch(activeTab, (newTab) => {
 @media (max-width: 1024px) {
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; width: 100%; }
   .settings-grid { grid-template-columns: 1fr; }
+}
+.mini-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+.usdt-tag {
+  background: #f59e0b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  width: fit-content;
+}
+.address-copy {
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 4px;
+  word-break: break-all;
+  font-family: monospace;
+  max-width: 150px;
+}
+.acc-num {
+  color: #64748b;
+}
+.hint {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin: 0;
 }
 </style>
