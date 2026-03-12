@@ -876,7 +876,9 @@ router.post("/sendOTP", [rateLimit()], async (req, res) => {
   const googleUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${token}`;
 
   try {
+    console.log('Sending OTP for Phone:', phone, 'with token:', token);
     const response = await axios.post(googleUrl);
+    console.log('reCAPTCHA response:', response.data);
     if (response.data.success) {
       const code = Math.floor(Math.random() * 1000000).toString().padStart(6, "0");
 
