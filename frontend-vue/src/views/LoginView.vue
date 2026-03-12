@@ -268,12 +268,31 @@ function sendOTP(e) {
   }
   counter.value = 90
   canRun.value = true
+  console.log('Sending OTP triggered for:', phoneStr);
+  
   if (typeof window !== 'undefined' && window.grecaptcha) {
+    console.log('reCAPTCHA found, executing...');
     window.grecaptcha.ready(() => {
       window.grecaptcha.execute(SITE_KEY, { action: 'submit' }).then((token) => {
-        API.post('/sendOTP', { token, phone: phoneStr }).catch(console.error)
+        console.log('reCAPTCHA token obtained');
+        API.post('/sendOTP', { token, phone: phoneStr })
+          .then(() => console.log('OTP request sent to server'))
+          .catch(err => {
+            console.error('Server side OTP error:', err);
+            dialogBody.value = err.response?.data?.error || 'Failed to send OTP'
+            openDialog.value = true
+          })
+      }).catch(err => {
+        console.error('reCAPTCHA execution error:', err);
+        // Fallback: Try without token
+        API.post('/sendOTP', { phone: phoneStr })
       })
     })
+  } else {
+    console.warn('reCAPTCHA not found, trying direct send');
+    API.post('/sendOTP', { phone: phoneStr })
+      .then(() => console.log('OTP request sent directly to server'))
+      .catch(console.error);
   }
 }
 
