@@ -229,7 +229,10 @@ function toggleLang() {
 }
 
 onMounted(() => {
-  if (route.params.id) formData.referCode = route.params.id
+  if (route.params.id) {
+    formData.referCode = route.params.id
+    isLogin.value = false
+  }
   const loggedInUser = localStorage.getItem('user')
   if (loggedInUser) {
     try {
