@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as api from '../api/home'
@@ -55,6 +55,7 @@ const iframeUrl = ref(null)
 const isGameLoading = ref(true)
 const isRefreshing = ref(false)
 const error = ref(null)
+let balanceInterval = null
 
 async function fetchBalance() {
   if (!auth.user?.id) return
@@ -101,6 +102,15 @@ async function launchSports() {
 onMounted(() => {
   fetchBalance()
   launchSports()
+  
+  // Auto-refresh balance every 3 seconds
+  balanceInterval = setInterval(() => {
+    fetchBalance()
+  }, 3000)
+})
+
+onUnmounted(() => {
+  if (balanceInterval) clearInterval(balanceInterval)
 })
 </script>
 

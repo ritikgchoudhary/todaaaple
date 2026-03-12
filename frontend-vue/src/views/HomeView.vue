@@ -975,8 +975,24 @@ onMounted(() => {
   }, 4000)
 })
 
+let gameBalanceInterval = null
+watch(iframeUrl, (newUrl) => {
+  if (newUrl) {
+    if (gameBalanceInterval) clearInterval(gameBalanceInterval)
+    gameBalanceInterval = setInterval(() => {
+      fetchBalance()
+    }, 3000)
+  } else {
+    if (gameBalanceInterval) {
+      clearInterval(gameBalanceInterval)
+      gameBalanceInterval = null
+    }
+  }
+})
+
 onUnmounted(() => {
   if (sliderTimer) clearInterval(sliderTimer)
+  if (gameBalanceInterval) clearInterval(gameBalanceInterval)
 })
 
 async function fetchBalance() {
