@@ -81,7 +81,7 @@ onMounted(async () => {
 })
 
 const copyCode = (id) => {
-  navigator.clipboard.writeText(`https://rushpay.online/getRedEnvelop/${id}`)
+  navigator.clipboard.writeText(`${window.location.origin}/getRedEnvelop/${id}`)
   dialog.value = { open: true, body: 'Copied Successfully' }
 }
 
