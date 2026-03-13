@@ -186,6 +186,59 @@ const fetching = ref(true)
 const message = ref('')
 const messageType = ref('success')
 
+const activeCategory = ref('slot')
+const gameSearch = ref('')
+
+const navCategories = [
+  { id: 'slot', label: 'Slots', icon: '🎰' },
+  { id: 'casino', label: 'Live Casino', icon: '🃏' },
+  { id: 'crash', label: 'Crash Games', icon: '🚀' },
+  { id: 'sports', label: 'Sports', icon: '⚽' },
+  { id: 'lottery', label: 'Lottery', icon: '🎫' },
+  { id: 'cards', label: 'Cards', icon: '♠️' },
+  { id: 'slotProviders', label: 'Slot Providers', icon: '🏢' },
+  { id: 'cardProviders', label: 'Card Providers', icon: '🏗️' }
+]
+
+const activeCategoryLabel = computed(() => {
+  return navCategories.find(c => c.id === activeCategory.value)?.label || 'Games'
+})
+
+const getCategoryCount = (id) => {
+  if (id === 'slotProviders') return slotProviders.value.length
+  if (id === 'cardProviders') return cardProviders.value.length
+  return gameCategories.value[id]?.length || 0
+}
+
+const filteredGames = computed(() => {
+  const games = gameCategories.value[activeCategory.value] || []
+  if (!gameSearch.value) return games
+  const q = gameSearch.value.toLowerCase()
+  return games.filter(g => g.name.toLowerCase().includes(q) || g.id.toLowerCase().includes(q))
+})
+
+const filteredProviders = computed(() => {
+  const providers = activeCategory.value === 'slotProviders' ? slotProviders.value : cardProviders.value
+  if (!gameSearch.value) return providers
+  const q = gameSearch.value.toLowerCase()
+  return providers.filter(p => p.label.toLowerCase().includes(q) || p.id.toLowerCase().includes(q))
+})
+
+function handleAddClick() {
+  if (activeCategory.value === 'slotProviders') addProvider('slot')
+  else if (activeCategory.value === 'cardProviders') addProvider('card')
+  else addGame(activeCategory.value)
+}
+
+function removeProvider(index) {
+  if (activeCategory.value === 'slotProviders') slotProviders.value.splice(index, 1)
+  else cardProviders.value.splice(index, 1)
+}
+
+function handleImgError(e) {
+  e.target.src = 'https://placehold.co/200x200?text=No+Preview'
+}
+
 function formatKey(key) {
   return key.charAt(0).toUpperCase() + key.slice(1)
 }
