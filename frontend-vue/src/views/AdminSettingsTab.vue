@@ -3,60 +3,114 @@
     <div class="settings-grid">
       <!-- Logo & Branding -->
       <div class="config-card shadow-premium">
+        <div class="card-header-icon">🖼️</div>
         <h3>Branding & Logo</h3>
+        <p class="card-desc">Manage your site logo and appearance</p>
+        
         <div class="logo-preview-box">
           <img v-if="siteSettings.siteLogoUrl" :src="siteSettings.siteLogoUrl" alt="Site Logo" />
-          <div v-else class="no-logo">No Logo Uploaded</div>
+          <div v-else class="no-logo">
+             <div class="nl-icon">📷</div>
+             <span>No Logo Uploaded</span>
+          </div>
         </div>
-        <div class="upload-zone">
+        
+        <div class="upload-zone-compact">
           <input type="file" ref="logoInput" @change="handleLogoUpload" hidden />
-          <button @click="() => $refs.logoInput.click()" class="action-btn edit" :disabled="uploading">
+          <button @click="() => $refs.logoInput.click()" class="action-btn edit-btn" :disabled="uploading">
             {{ uploading ? 'Uploading...' : 'Change Logo' }}
+          </button>
+          <button v-if="siteSettings.siteLogoUrl" @click="deleteLogo" class="action-btn delete-btn-outline" :disabled="uploading">
+            Delete
           </button>
         </div>
       </div>
 
       <!-- Support Links -->
       <div class="config-card shadow-premium">
+        <div class="card-header-icon">🔗</div>
         <h3>Support & Channels</h3>
-        <div class="form-group">
-          <label>Telegram Group/Channel</label>
-          <input v-model="siteSettings.telegramLink" placeholder="https://t.me/..." />
+        <p class="card-desc">Configure customer contact links</p>
+        
+        <div class="settings-form">
+          <div class="form-group-modern">
+            <label>Telegram Link</label>
+            <div class="input-with-action">
+              <input v-model="siteSettings.telegramLink" placeholder="https://t.me/..." />
+              <button class="clear-input" @click="siteSettings.telegramLink = ''" title="Clear">×</button>
+            </div>
+          </div>
+          <div class="form-group-modern">
+            <label>Live Support Link</label>
+            <div class="input-with-action">
+              <input v-model="siteSettings.customerServiceLink" placeholder="https://tawk.to/..." />
+              <button class="clear-input" @click="siteSettings.customerServiceLink = ''" title="Clear">×</button>
+            </div>
+          </div>
+          <div class="form-group-modern">
+            <label>WhatsApp Support</label>
+            <div class="input-with-action">
+              <input v-model="siteSettings.whatsappLink" placeholder="https://wa.me/..." />
+              <button class="clear-input" @click="siteSettings.whatsappLink = ''" title="Clear">×</button>
+            </div>
+          </div>
+          <div class="form-group-modern">
+            <label>USDT (TRC20) Wallet</label>
+            <div class="input-with-action">
+              <input v-model="siteSettings.usdtAddress" placeholder="Wallet address..." />
+              <button class="clear-input" @click="siteSettings.usdtAddress = ''" title="Clear">×</button>
+            </div>
+          </div>
+          <button @click="saveSiteSettings" class="update-settings-btn" :disabled="saving">
+            {{ saving ? 'Saving Changes...' : 'Save Site Settings' }}
+          </button>
         </div>
-        <div class="form-group">
-          <label>Live Customer Service Link</label>
-          <input v-model="siteSettings.customerServiceLink" placeholder="https://tawk.to/..." />
-        </div>
-        <div class="form-group">
-          <label>WhatsApp Link (Optional)</label>
-          <input v-model="siteSettings.whatsappLink" placeholder="https://wa.me/..." />
-        </div>
-        <div class="form-group">
-          <label>USDT (TRC20) Deposit Address</label>
-          <input v-model="siteSettings.usdtAddress" placeholder="Enter TRC20 wallet address..." />
-        </div>
-        <button @click="saveSiteSettings" class="save-btn small" :disabled="saving">
-          {{ saving ? 'Saving...' : 'Update Links' }}
-        </button>
       </div>
 
       <!-- Carousel Manager -->
       <div class="config-card shadow-premium full-width">
-        <h3>Home Page Carousel</h3>
-        <div class="carousel-list">
-          <div v-for="(img, idx) in carouselImages" :key="idx" class="carousel-item-admin">
-            <img :src="img" />
-            <button @click="removeCarousel(img)" class="remove-c-btn">×</button>
+        <div class="card-header-icon">🎡</div>
+        <div class="card-title-row">
+           <div class="title-meta">
+             <h3>Home Page Carousel</h3>
+             <p class="card-desc">Manage rotating banners ({{ carouselImages.length }} active)</p>
+           </div>
+           <button class="add-carousel-btn" @click="() => $refs.carouselInput.click()" :disabled="uploadingCarousel">
+             {{ uploadingCarousel ? '...' : '+ Add Image' }}
+           </button>
+        </div>
+        
+        <input type="file" ref="carouselInput" @change="handleCarouselUpload" hidden />
+        
+        <div class="carousel-grid-modern">
+          <div v-for="(img, idx) in carouselImages" :key="idx" class="carousel-item-premium">
+            <div class="c-thumb">
+               <img :src="img" />
+               <div class="c-overlay">
+                  <button @click="removeCarousel(img)" class="c-delete-btn" title="Delete Image">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                  </button>
+               </div>
+            </div>
           </div>
-          <div class="carousel-uploader" @click="() => $refs.carouselInput.click()">
-            <input type="file" ref="carouselInput" @change="handleCarouselUpload" hidden />
-            <span v-if="!uploadingCarousel">+ Add Image</span>
-            <span v-else>...</span>
+          <div v-if="!carouselImages.length" class="empty-carousel">
+             <div class="ec-icon">🎞️</div>
+             <p>No carousel images. Add some to get started.</p>
           </div>
         </div>
-        <p class="hint">Recommended size: 1200x400 (Aspect Ratio 3:1)</p>
+        <p class="carousel-hint">Recommended aspect ratio: 3:1 (e.g. 1200x400px)</p>
       </div>
     </div>
+
+    <!-- Multi-Toast Feedback -->
+    <TransitionGroup name="toast">
+      <div v-if="toastMsg" class="modern-toast-float" :class="toastType" @click="toastMsg = ''">
+        <div class="toast-content">
+          <span class="toast-marker"></span>
+          <p>{{ toastMsg }}</p>
+        </div>
+      </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -70,6 +124,15 @@ const carouselImages = ref([])
 const uploading = ref(false)
 const uploadingCarousel = ref(false)
 const saving = ref(false)
+
+const toastMsg = ref('')
+const toastType = ref('success')
+
+const showToast = (msg, type = 'success') => {
+  toastMsg.value = msg
+  toastType.value = type
+  setTimeout(() => { if (toastMsg.value === msg) toastMsg.value = '' }, 3000)
+}
 
 const fetchSiteSettings = async () => {
   try {
@@ -94,10 +157,21 @@ const handleLogoUpload = async (e) => {
   try {
     const res = await adminApi.uploadLogo(ADMIN_API_KEY, fd)
     siteSettings.value.siteLogoUrl = res.data.siteLogoUrl
-    alert('Logo updated successfully')
+    showToast('Logo updated successfully')
   } catch (err) {
-    alert('Upload failed')
+    showToast('Upload failed', 'error')
   } finally { uploading.value = false }
+}
+
+const deleteLogo = async () => {
+  if (!confirm('Are you sure you want to remove the site logo?')) return
+  try {
+    await adminApi.updateSiteSettings(ADMIN_API_KEY, { siteLogoUrl: '' })
+    siteSettings.value.siteLogoUrl = ''
+    showToast('Logo removed')
+  } catch (err) {
+    showToast('Failed to remove logo', 'error')
+  }
 }
 
 const saveSiteSettings = async () => {
@@ -109,8 +183,10 @@ const saveSiteSettings = async () => {
       whatsappLink: siteSettings.value.whatsappLink,
       usdtAddress: siteSettings.value.usdtAddress
     })
-    alert('Settings saved')
-  } catch (err) {} finally { saving.value = false }
+    showToast('Site settings updated')
+  } catch (err) {
+    showToast('Update failed', 'error')
+  } finally { saving.value = false }
 }
 
 const handleCarouselUpload = async (e) => {
@@ -122,17 +198,21 @@ const handleCarouselUpload = async (e) => {
   try {
     const res = await adminApi.uploadCarousel(ADMIN_API_KEY, fd)
     carouselImages.value = res.data.images
+    showToast('Carousel image added')
   } catch (err) {
-    alert('Carousel upload failed')
+    showToast('Upload failed', 'error')
   } finally { uploadingCarousel.value = false }
 }
 
 const removeCarousel = async (url) => {
-  if (!confirm('Remove this carousel image?')) return
+  if (!confirm('Permanently remove this carousel image?')) return
   try {
     const res = await adminApi.deleteCarousel(ADMIN_API_KEY, url)
     carouselImages.value = res.data.images
-  } catch (err) {}
+    showToast('Image removed')
+  } catch (err) {
+    showToast('Delete failed', 'error')
+  }
 }
 
 onMounted(() => {
@@ -140,3 +220,309 @@ onMounted(() => {
   fetchCarousel()
 })
 </script>
+
+<style scoped>
+.settings-view {
+  padding: 20px;
+  background: #f8fafc;
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.config-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  border: 1px solid #eef2f6;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.config-card:hover {
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08);
+}
+
+.card-header-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.card-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.logo-preview-box {
+  width: 100%;
+  height: 160px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px dashed #e2e8f0;
+}
+
+.logo-preview-box img {
+  max-width: 80%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+.nl-icon {
+  font-size: 2.5rem;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+}
+
+.no-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.upload-zone-compact {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-btn {
+  background: #0284c7;
+  color: #fff;
+}
+
+.edit-btn:hover { background: #0369a1; }
+
+.delete-btn-outline {
+  background: #fff;
+  color: #ef4444;
+  border: 1px solid #fee2e2;
+}
+
+.delete-btn-outline:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+/* Form Styles */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group-modern label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.input-with-action {
+  position: relative;
+  display: flex;
+}
+
+.input-with-action input {
+  width: 100%;
+  padding: 14px 44px 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #eef2f6;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input-with-action input:focus {
+  background: #fff;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.08);
+}
+
+.clear-input {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #cbd5e1;
+  color: #fff;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.clear-input:hover { background: #94a3b8; }
+
+.update-settings-btn {
+  margin-top: 8px;
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.update-settings-btn:hover { background: #1e293b; transform: translateY(-1px); }
+
+/* Carousel grid */
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.add-carousel-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.carousel-grid-modern {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.carousel-item-premium {
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 3/1;
+  background: #f1f5f9;
+  position: relative;
+}
+
+.c-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.c-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.carousel-item-premium:hover .c-overlay {
+  opacity: 1;
+}
+
+.c-delete-btn {
+  background: #fff;
+  color: #ef4444;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.carousel-hint {
+  margin-top: 16px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Toast */
+.modern-toast-float {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: #0f172a;
+  color: #fff;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 9999;
+}
+
+.toast-marker {
+  width: 4px;
+  height: 20px;
+  background: #10b981;
+  border-radius: 2px;
+  margin-right: 12px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.error .toast-marker { background: #ef4444; }
+
+.toast-content p { display: inline-block; margin: 0; font-weight: 700; }
+
+@media (max-width: 640px) {
+  .settings-grid { grid-template-columns: 1fr; }
+}
+</style>
+
