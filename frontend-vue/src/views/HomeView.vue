@@ -385,6 +385,7 @@ function onCardFilterClick(id) {
 }
 
 const siteLogoUrl = ref('')
+const platformMessage = ref({ url: '', show: false })
 const sliderImages = ref([
   `${baseImg}/ark_common/arkUpload/carousel/40lKKSxzyxDYdLkC0RgwSG3359EIQIRAGQFe2Rco.jpg`,
   `${baseImg}/ark_common/arkUpload/gowin/prod/carousel/2ructZr9iy3oPmoFlRIL2Gj8vvECW5Dl0tDNChoA.jpg`,
@@ -405,9 +406,20 @@ async function fetchHomeContent() {
     if (settingsRes.data.siteLogoUrl) {
       siteLogoUrl.value = settingsRes.data.siteLogoUrl
     }
+    if (settingsRes.data.platformMessageEnabled && settingsRes.data.platformMessageUrl) {
+      const hasSeen = sessionStorage.getItem('platform_message_seen')
+      if (!hasSeen) {
+        platformMessage.value = { url: settingsRes.data.platformMessageUrl, show: true }
+        sessionStorage.setItem('platform_message_seen', '1')
+      }
+    }
   } catch (err) {
     console.error('Home content fetch fail', err)
   }
+}
+
+function closePlatformMessage() {
+  platformMessage.value.show = false
 }
 const sliderIndex = ref(0)
 let sliderTimer = null

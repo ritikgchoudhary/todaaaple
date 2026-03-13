@@ -61,6 +61,20 @@
               <button class="clear-input" @click="siteSettings.usdtAddress = ''" title="Clear">×</button>
             </div>
           </div>
+          <div class="form-group-modern" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+            <label style="display: flex; align-items: center; justify-content: space-between;">
+              Platform Notice Image URL
+              <label class="switch-small">
+                <input type="checkbox" v-model="siteSettings.platformMessageEnabled">
+                <span class="slider round"></span>
+              </label>
+            </label>
+            <div class="input-with-action">
+              <input v-model="siteSettings.platformMessageUrl" placeholder="https://...image.jpg" />
+              <button class="clear-input" @click="siteSettings.platformMessageUrl = ''" title="Clear">×</button>
+            </div>
+            <p class="field-hint" style="font-size: 12px; color: #888; margin-top: 5px;">Toggle on to show a popup notice on the home page with the generic image url provided.</p>
+          </div>
           <button @click="saveSiteSettings" class="update-settings-btn" :disabled="saving">
             {{ saving ? 'Saving Changes...' : 'Save Site Settings' }}
           </button>
@@ -119,7 +133,7 @@ import { ref, onMounted } from 'vue'
 import * as adminApi from '../api/admin'
 
 const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
-const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '' })
+const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '', platformMessageUrl: '', platformMessageEnabled: false })
 const carouselImages = ref([])
 const uploading = ref(false)
 const uploadingCarousel = ref(false)
@@ -181,7 +195,9 @@ const saveSiteSettings = async () => {
       telegramLink: siteSettings.value.telegramLink,
       customerServiceLink: siteSettings.value.customerServiceLink,
       whatsappLink: siteSettings.value.whatsappLink,
-      usdtAddress: siteSettings.value.usdtAddress
+      usdtAddress: siteSettings.value.usdtAddress,
+      platformMessageUrl: siteSettings.value.platformMessageUrl,
+      platformMessageEnabled: siteSettings.value.platformMessageEnabled
     })
     showToast('Site settings updated')
   } catch (err) {
