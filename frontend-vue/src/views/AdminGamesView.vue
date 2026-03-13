@@ -584,8 +584,8 @@ onMounted(fetchData)
 
 <style scoped>
 .admin-games-page {
-  padding: 40px 20px 80px;
-  max-width: 1400px;
+  padding: 20px 15px 60px;
+  max-width: 98%;
   margin: 0 auto;
   font-family: 'Outfit', sans-serif;
   background: #f8fafc;
@@ -595,18 +595,18 @@ onMounted(fetchData)
 
 .games-layout {
   display: flex;
-  gap: 32px;
-  margin-top: 24px;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .games-sidebar {
-  width: 280px;
+  width: 200px;
   background: #fff;
-  border-radius: 20px;
-  padding: 24px 16px;
+  border-radius: 12px;
+  padding: 16px 12px;
   height: fit-content;
   position: sticky;
-  top: 24px;
+  top: 16px;
 }
 
 .sidebar-label {
@@ -724,8 +724,8 @@ onMounted(fetchData)
 
 .games-grid-premium {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 12px;
 }
 
 .game-card-premium {
@@ -781,21 +781,22 @@ onMounted(fetchData)
 }
 
 .g-info {
-  padding: 12px;
+  padding: 8px;
 }
 
 .g-name-input {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
   border: none !important;
   padding: 0 !important;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .g-meta-inputs {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
 }
 
 .mini-f-group {
@@ -813,11 +814,11 @@ onMounted(fetchData)
 
 .mini-f-group input, .mini-f-group select {
   width: 100%;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 6px;
+  border-radius: 6px;
   border: 1px solid #f1f5f9;
   background: #f8fafc;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
 }
 
 .f-group label {
