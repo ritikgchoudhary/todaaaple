@@ -724,13 +724,13 @@ onMounted(fetchData)
 
 .games-grid-premium {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 
 .game-card-premium {
   background: #fff;
-  border-radius: 20px;
+  border-radius: 12px;
   overflow: hidden;
   transition: transform 0.2s;
 }
@@ -781,15 +781,15 @@ onMounted(fetchData)
 }
 
 .g-info {
-  padding: 20px;
+  padding: 12px;
 }
 
 .g-name-input {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   border: none !important;
   padding: 0 !important;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .g-meta-inputs {
@@ -859,21 +859,21 @@ onMounted(fetchData)
 }
 
 .providers-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
 }
 
 .provider-card-premium {
   background: #fff;
-  border-radius: 20px;
-  padding: 24px;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .p-card-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .p-index {
@@ -883,7 +883,8 @@ onMounted(fetchData)
 
 .p-body {
   display: flex;
-  gap: 32px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .p-inputs {
@@ -899,16 +900,16 @@ onMounted(fetchData)
 }
 
 .icon-preview {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   background: #f8fafc;
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2px dashed #e2e8f0;
+  border: 1px dashed #e2e8f0;
 }
 
 .icon-preview.active {
