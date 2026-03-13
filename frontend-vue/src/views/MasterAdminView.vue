@@ -37,15 +37,16 @@
         </div>
         
         <nav class="sidebar-nav">
-          <button 
+          <router-link 
             v-for="tab in tabs" 
             :key="tab.id" 
+            :to="{ name: tab.routeName }"
             :class="['nav-item', { active: activeTab === tab.id }]"
-            @click="activeTab = tab.id; showSidebar = false"
+            @click="showSidebar = false"
           >
             <span v-html="tab.icon"></span>
             {{ tab.label }}
-          </button>
+          </router-link>
         </nav>
 
         <div class="sidebar-footer">
@@ -74,311 +75,7 @@
         </header>
 
         <section class="tab-view">
-          <!-- DASHBOARD ADVANCE -->
-          <div v-if="activeTab === 'dashboard'" class="dashboard-wrapper">
-            <!-- Platform Snapshot -->
-            <div class="stats-section-title">Platform Snapshot</div>
-            <div class="dashboard-grid">
-              <div class="stat-card shadow-premium" v-for="item in snapshotItems" :key="item.key">
-                <div class="stat-icon-bg" :style="{ backgroundColor: item.color + '10', color: item.color }">
-                  <span v-html="item.icon"></span>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-title">{{ item.label }}</span>
-                  <span class="stat-value">{{ formatStatVal(stats[item.key], item.key) }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Financial Comparison -->
-            <div class="comparison-grid">
-              <!-- TODAY -->
-              <div class="comparison-card shadow-premium today">
-                <div class="comp-header">TODAY'S ACTIVITY</div>
-                <div class="comp-body">
-                  <div class="comp-item">
-                    <span class="comp-label">Recharge</span>
-                    <span class="comp-val success">₹{{ stats.today?.recharge.toLocaleString() }}</span>
-                    <span class="comp-count">{{ stats.today?.rechargeCount }} orders</span>
-                  </div>
-                  <div class="comp-item">
-                    <span class="comp-label">Withdrawal</span>
-                    <span class="comp-val danger">₹{{ stats.today?.withdrawal.toLocaleString() }}</span>
-                    <span class="comp-count">{{ stats.today?.withdrawalCount }} orders</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- YESTERDAY -->
-              <div class="comparison-card shadow-premium yesterday">
-                <div class="comp-header">YESTERDAY'S PERFORMANCE</div>
-                <div class="comp-body">
-                  <div class="comp-item">
-                    <span class="comp-label">Recharge</span>
-                    <span class="comp-val">₹{{ stats.yesterday?.recharge.toLocaleString() }}</span>
-                    <span class="comp-count">{{ stats.yesterday?.rechargeCount }} orders</span>
-                  </div>
-                  <div class="comp-item">
-                    <span class="comp-label">Withdrawal</span>
-                    <span class="comp-val">₹{{ stats.yesterday?.withdrawal.toLocaleString() }}</span>
-                    <span class="comp-count">{{ stats.yesterday?.withdrawalCount }} orders</span>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- ALL TIME -->
-              <div class="comparison-card shadow-premium totals">
-                <div class="comp-header">ALL-TIME TOTALS</div>
-                <div class="comp-body">
-                  <div class="comp-item">
-                    <span class="comp-label">Total Deposits</span>
-                    <span class="comp-val">₹{{ stats.total?.recharge.toLocaleString() }}</span>
-                  </div>
-                  <div class="comp-item">
-                    <span class="comp-label">Total Cashout</span>
-                    <span class="comp-val">₹{{ stats.total?.withdrawal.toLocaleString() }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="full-card welcome-card shadow-premium">
-              <div class="welcome-icon">⚡</div>
-              <h3>Administrative Dashboard Fully Connected</h3>
-              <p>Real-time data synchronization active. Monitoring {{ stats.activeUsers }} active session(s).</p>
-            </div>
-          </div>
-
-          <!-- USER MANAGEMENT -->
-          <div v-if="activeTab === 'users'" class="admin-view">
-            <div class="action-bar">
-              <div class="search-wrap">
-                <input v-model="userSearch" placeholder="Search by phone or UID..." />
-              </div>
-              <button @click="fetchUsers" class="refresh-btn">Refresh Users</button>
-            </div>
-            
-            <div class="table-container shadow-premium">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>User / Info</th>
-                    <th>Financials</th>
-                    <th>KYC & Bank</th>
-                    <th>Connections</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="user in filteredUsers" :key="user.id">
-                    <td>
-                      <div class="user-cell">
-                        <div class="u-meta">
-                          <span class="uid">#{{ user.id }}</span>
-                          <span class="phone">{{ user.phone }}</span>
-                        </div>
-                        <span class="uname">{{ user.username || 'Member' }}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="fin-cell">
-                        <span class="balance amount success">₹{{ user.balance?.toFixed(2) }}</span>
-                        <span v-if="user.firstRecharge" class="tag f-recharge">Recharged</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="kyc-cell">
-                        <span class="bank-name">{{ user.bank?.[0]?.bankName || 'No Bank' }}</span>
-                        <span class="upi-id">{{ user.upi || 'No UPI' }}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="conn-cell">
-                        <span class="upline" v-if="user.upLine?.length">L1: {{ user.upLine[0] }}</span>
-                        <span v-if="user.isAgent" class="tag agent-tag">Agent</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span :class="['status-badge', user.block ? 'blocked' : 'active']">
-                        {{ user.block ? 'Blocked' : 'Active' }}
-                      </span>
-                    </td>
-                    <td>{{ new Date(user.date).toLocaleDateString() }}</td>
-                    <td>
-                      <button @click="openEditUser(user)" class="action-btn edit">Update</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- WITHDRAWALS -->
-          <div v-if="activeTab === 'withdrawals'" class="admin-view">
-            <div class="action-bar tabs-filter">
-              <div class="filter-group">
-                <button v-for="s in ['All', 'Placed', 'Success', 'Rejected']" :key="s" 
-                  :class="['filter-btn', { active: withdrawalFilter === s }]"
-                  @click="withdrawalFilter = s"
-                >
-                  {{ s }}
-                </button>
-              </div>
-              <button @click="fetchWithdrawals" class="refresh-btn">Refresh</button>
-            </div>
-            
-            <div class="table-container shadow-premium">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>UID</th>
-                    <th>Amount</th>
-                    <th>Details</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="w in filteredWithdrawals" :key="w._id">
-                    <td>{{ w.id }}</td>
-                    <td>#{{ w.userId }}</td>
-                    <td class="amount danger">
-                      <span v-if="w.usdt">{{ w.usdt }} USDT</span>
-                      <span v-else>₹{{ w.amount }}</span>
-                      <p v-if="w.usdt" class="hint">≈ ₹{{ w.amount }}</p>
-                    </td>
-                    <td>
-                      <div v-if="w.usdt" class="mini-info">
-                        <span class="tag usdt-tag">USDT</span>
-                        <code class="address-copy">{{ w.walletAddress }}</code>
-                      </div>
-                      <div v-else-if="w.method && w.method[0]" class="mini-info">
-                        <strong>{{ w.method[0].bankName }}</strong>
-                        <span class="acc-num">{{ w.method[0].bankAccount }}</span>
-                      </div>
-                      <span v-else>-</span>
-                    </td>
-                    <td>
-                      <span :class="['status-badge', w.status?.toLowerCase()]">{{ w.status }}</span>
-                    </td>
-                    <td>{{ new Date(w.date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) }}</td>
-                    <td>
-                      <div v-if="w.status === 'Placed'" class="action-set">
-                        <button @click="updateWithdrawal(w, 'Success')" class="action-btn success">Approve</button>
-                        <button @click="updateWithdrawal(w, 'Rejected')" class="action-btn reject">Reject</button>
-                      </div>
-                      <span v-else class="text-mute">-</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- TRANSACTIONS (Recharges) -->
-          <div v-if="activeTab === 'transactions'" class="admin-view">
-             <div class="action-bar">
-               <h3>Cumulative Transaction Stream</h3>
-               <button @click="fetchTransactions" class="refresh-btn">Fetch Recent</button>
-             </div>
-             
-             <div class="table-container shadow-premium">
-               <table class="admin-table">
-                 <thead>
-                   <tr>
-                     <th>Order ID</th>
-                     <th>UID</th>
-                     <th>Amount</th>
-                     <th>Gateway</th>
-                     <th>Status</th>
-                     <th>Time</th>
-                   </tr>
-                 </thead>
-                 <tbody>
-                   <tr v-for="t in transactions" :key="t._id">
-                     <td>{{ t.id }}</td>
-                     <td>#{{ t.userId }}</td>
-                     <td class="amount success">₹{{ t.amount }}</td>
-                     <td>{{ t.gateway }}</td>
-                     <td>
-                        <span :class="['status-badge', t.status?.toLowerCase()]">{{ t.status || 'Pending' }}</span>
-                     </td>
-                     <td>{{ new Date(t.date || t.createDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) }}</td>
-                   </tr>
-                 </tbody>
-               </table>
-             </div>
-          </div>
-
-          <!-- GAMES MANAGEMENT -->
-          <div v-if="activeTab === 'games'" class="admin-view">
-             <AdminGamesView :embedded="true" />
-          </div>
-
-          <!-- SITE SETTINGS -->
-          <div v-if="activeTab === 'settings'" class="settings-view">
-             <div class="settings-grid">
-               <!-- Logo & Branding -->
-               <div class="config-card shadow-premium">
-                  <h3>Branding & Logo</h3>
-                  <div class="logo-preview-box">
-                    <img v-if="siteSettings.siteLogoUrl" :src="siteSettings.siteLogoUrl" alt="Site Logo" />
-                    <div v-else class="no-logo">No Logo Uploaded</div>
-                  </div>
-                  <div class="upload-zone">
-                    <input type="file" ref="logoInput" @change="handleLogoUpload" hidden />
-                    <button @click="() => $refs.logoInput.click()" class="action-btn edit" :disabled="uploading">
-                      {{ uploading ? 'Uploading...' : 'Change Logo' }}
-                    </button>
-                  </div>
-               </div>
-
-               <!-- Support Links -->
-               <div class="config-card shadow-premium">
-                  <h3>Support & Channels</h3>
-                  <div class="form-group">
-                    <label>Telegram Group/Channel</label>
-                    <input v-model="siteSettings.telegramLink" placeholder="https://t.me/..." />
-                  </div>
-                  <div class="form-group">
-                    <label>Live Customer Service Link</label>
-                    <input v-model="siteSettings.customerServiceLink" placeholder="https://tawk.to/..." />
-                  </div>
-                   <div class="form-group">
-                    <label>WhatsApp Link (Optional)</label>
-                    <input v-model="siteSettings.whatsappLink" placeholder="https://wa.me/..." />
-                  </div>
-                  <div class="form-group">
-                    <label>USDT (TRC20) Deposit Address</label>
-                    <input v-model="siteSettings.usdtAddress" placeholder="Enter TRC20 wallet address..." />
-                  </div>
-                  <button @click="saveSiteSettings" class="save-btn small" :disabled="saving">
-                    {{ saving ? 'Saving...' : 'Update Links' }}
-                  </button>
-               </div>
-
-               <!-- Carousel Manager -->
-               <div class="config-card shadow-premium full-width">
-                  <h3>Home Page Carousel</h3>
-                  <div class="carousel-list">
-                    <div v-for="(img, idx) in carouselImages" :key="idx" class="carousel-item-admin">
-                      <img :src="img" />
-                      <button @click="removeCarousel(img)" class="remove-c-btn">×</button>
-                    </div>
-                    <div class="carousel-uploader" @click="() => $refs.carouselInput.click()">
-                      <input type="file" ref="carouselInput" @change="handleCarouselUpload" hidden />
-                      <span v-if="!uploadingCarousel">+ Add Image</span>
-                      <span v-else>...</span>
-                    </div>
-                  </div>
-                  <p class="hint">Recommended size: 1200x400 (Aspect Ratio 3:1)</p>
-               </div>
-             </div>
-          </div>
+          <router-view />
         </section>
       </main>
     </div>
@@ -454,8 +151,12 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import * as adminApi from '../api/admin'
 import AdminGamesView from './AdminGamesView.vue'
+
+const route = useRoute()
+const router = useRouter()
 
 const isAuthenticated = ref(localStorage.getItem('admin_authenticated') === 'true')
 const adminPassword = ref('')
@@ -463,10 +164,10 @@ const loading = ref(false)
 const error = ref('')
 
 const tabs = [
-  { id: 'games', label: 'Manage Games', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M6 12h4m-2-2v4m5-2h.01M18 10h.01M15 19a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-3z\"/></svg>' },
-  { id: 'settings', label: 'System Preferences', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z\"/></svg>' },
+  { id: 'games', label: 'Manage Games', routeName: 'MasterAdminGames', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M6 12h4m-2-2v4m5-2h.01M18 10h.01M15 19a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-3z\"/></svg>' },
+  { id: 'settings', label: 'System Preferences', routeName: 'MasterAdminSettings', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z\"/></svg>' },
 ]
-const activeTab = ref('games')
+const activeTab = computed(() => route.meta.tab || 'games')
 const activeTabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?.label)
 
 const stats = ref({

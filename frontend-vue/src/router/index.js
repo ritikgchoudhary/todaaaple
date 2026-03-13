@@ -38,6 +38,8 @@ import MasterAdminView from '../views/MasterAdminView.vue'
 import ModifyNameView from '../views/security/ModifyNameView.vue'
 import ModifyPasswordView from '../views/security/ModifyPasswordView.vue'
 import ModifyPaymentView from '../views/security/ModifyPaymentView.vue'
+import AdminGamesTab from '../views/AdminGamesTab.vue'
+import AdminSettingsTab from '../views/AdminSettingsTab.vue'
 
 const routes = [
   { path: '/login', name: 'Login', component: LoginView },
@@ -78,7 +80,16 @@ const routes = [
   { path: '/invite', name: 'Invite', component: InviteView, meta: { title: 'Invite Friends', requiresAuth: true, showNav: false } },
   { path: '/invitationRecord', name: 'InvitationRecord', component: InvitationRecordView, meta: { title: 'Invitation Record', requiresAuth: true, showNav: false } },
   { path: '/invitationRewardRule', name: 'InvitationRewardRule', component: InvitationRewardRuleView, meta: { title: 'Invitation Rules', requiresAuth: true, showNav: false } },
-  { path: '/masteradmin', name: 'MasterAdmin', component: MasterAdminView, meta: { title: 'Master Admin Dashboard', requiresAuth: false, showNav: false } },
+  { 
+    path: '/masteradmin', 
+    component: MasterAdminView, 
+    meta: { title: 'Master Admin Dashboard', requiresAuth: false, showNav: false },
+    children: [
+      { path: '', redirect: { name: 'MasterAdminGames' } },
+      { path: 'games', name: 'MasterAdminGames', component: AdminGamesTab, meta: { tab: 'games' } },
+      { path: 'settings', name: 'MasterAdminSettings', component: AdminSettingsTab, meta: { tab: 'settings' } }
+    ]
+  },
   { path: '/admin/games', name: 'AdminGames', component: () => import('../views/AdminGamesView.vue'), meta: { title: 'Master Admin - Games', requiresAuth: true } },
 ]
 
