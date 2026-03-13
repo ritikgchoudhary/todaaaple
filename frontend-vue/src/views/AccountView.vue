@@ -89,6 +89,7 @@ import * as walletApi from '../api/wallet'
 const router = useRouter()
 const auth = useAuthStore()
 const userBalance = ref(0)
+const apkDownloadUrl = ref('')
 
 async function fetchBalance() {
   if (!auth.user?.id) return
@@ -96,6 +97,10 @@ async function fetchBalance() {
     const res = await walletApi.getUserHome(auth.user.id)
     if (res.data && res.data.length > 0) {
       userBalance.value = res.data[0].balance || 0
+    }
+    const settings = await walletApi.getSiteSettings()
+    if (settings.data && settings.data.apkDownloadUrl) {
+      apkDownloadUrl.value = settings.data.apkDownloadUrl
     }
   } catch (err) {}
 }
