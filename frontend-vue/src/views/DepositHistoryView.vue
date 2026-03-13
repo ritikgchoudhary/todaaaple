@@ -39,8 +39,15 @@
                 <span class="currency">₹</span>
                 <span class="amount">{{ item.amount }}</span>
               </div>
-              <div class="status-badge status-success">
-                Successful
+              <div 
+                class="status-badge"
+                :class="{
+                  'status-success': item.status === 'success' || item.status === 'Success',
+                  'status-pending': item.status === 'created' || item.status === 'pending',
+                  'status-failed': item.status === 'expired' || item.status === 'failed' || item.status === 'Fail'
+                }"
+              >
+                {{ item.status }}
               </div>
             </div>
 
@@ -51,17 +58,17 @@
               </div>
               <div class="detail-row">
                 <span class="label">Payment Mode</span>
-                <span class="value">UPI / Gateway</span>
+                <span class="value">{{ item.gateway || 'UPI' }} / Gateway</span>
               </div>
               <div class="detail-row">
-                <span class="label">Transaction Type</span>
-                <span class="value">Wallet Recharge</span>
+                <span class="label">Transaction ID</span>
+                <span class="value">{{ item.id || item.txnId || '-' }}</span>
               </div>
             </div>
             
             <div class="card-footer">
-              <span class="order-id">Status: Verified</span>
-              <div class="status-tag">Completed</div>
+              <span class="order-id">Order ID: {{ item._id || item.number || '-' }}</span>
+              <div class="status-tag">{{ item.status }}</div>
             </div>
           </div>
         </div>
@@ -86,12 +93,9 @@ const fetchHistory = async () => {
   if (!auth.user?.id) return
   loading.value = true
   try {
-    const res = await walletApi.getUserHome(auth.user.id)
-    if (res.data && res.data.length > 0) {
-      const userData = res.data[0]
-      if (Array.isArray(userData.rechargeHistory)) {
-        history.value = [...userData.rechargeHistory].reverse()
-      }
+    const res = await walletApi.getRecentRecharges(auth.user.id)
+    if (res.data && Array.isArray(res.data)) {
+      history.value = [...res.data]
     }
   } catch (err) {
     console.error('Error fetching history:', err)
@@ -225,6 +229,8 @@ onMounted(() => {
 }
 
 .status-success { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+.status-pending { background: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+.status-failed { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
 
 .card-details {
   display: flex;

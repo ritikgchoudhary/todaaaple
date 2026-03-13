@@ -12,6 +12,7 @@ export const getWithdrawalHistory = (userId) => API.get(`/getWithdrawal/${userId
 
 // Deposit / Gateway Endpoints
 export const getCurrentGateway = () => API.get('/getCurrentGateway')
+export const getRecentRecharges = (userId) => API.get(`/getRecentRecharges/${userId}`)
 export const watchPayCreateOrder = (userId, data) => API.post(`/watchPayCreateOrder/${userId}`, data)
 export const lgPayCreateOrder = (userId, data) => API.post(`/lgPayCreateOrder/${userId}`, data)
 export const rupeeRushCreateOrder = (userId, data) => API.post(`/rupeeRushCreateOrder/${userId}`, data)
