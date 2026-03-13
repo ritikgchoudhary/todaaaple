@@ -55,6 +55,14 @@ const ExtraScheme = mongoose.Schema({
         type: String,
         default: ""
     },
+    platformMessageUrl: {
+        type: String,
+        default: ""
+    },
+    platformMessageEnabled: {
+        type: Boolean,
+        default: false
+    },
     apkDownloadUrl: {
         type: String,
         default: ""

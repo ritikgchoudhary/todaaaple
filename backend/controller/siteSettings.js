@@ -16,6 +16,8 @@ export const getSiteSettings = async (req, res) => {
       customerServiceLink: doc.customerServiceLink || '',
       whatsappLink: doc.whatsappLink || '',
       usdtAddress: doc.usdtAddress || '',
+      platformMessageUrl: doc.platformMessageUrl || '',
+      platformMessageEnabled: doc.platformMessageEnabled || false,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -32,6 +34,8 @@ export const getSiteSettingsAdmin = async (req, res) => {
       customerServiceLink: doc.customerServiceLink || '',
       whatsappLink: doc.whatsappLink || '',
       usdtAddress: doc.usdtAddress || '',
+      platformMessageUrl: doc.platformMessageUrl || '',
+      platformMessageEnabled: doc.platformMessageEnabled || false,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
