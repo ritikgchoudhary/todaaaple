@@ -14,6 +14,7 @@ export default defineConfig({
         name: 'Wynn Online Casino',
         short_name: 'Wynn Casino',
         description: 'Play and win big!',
+        start_url: '/',
         theme_color: '#00bfa5',
         background_color: '#ffffff',
         display: 'standalone',
@@ -21,12 +22,14 @@ export default defineConfig({
           {
             src: 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           },
           {
             src: 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       }
