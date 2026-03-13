@@ -37,12 +37,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
-    token.value = ''
-    user.value = null
-    localStorage.removeItem('user')
-    localStorage.removeItem('auth_token')
+  async function refreshUser() {
+    if (!user.value?.id) return
+    try {
+      const res = await walletApi.getUserHome(user.value.id)
+      if (res.data && res.data.length > 0) {
+        setUser({ result: res.data[0] })
+      }
+    } catch (err) {
+      console.error('Failed to refresh user:', err)
+    }
   }
 
-  return { token, user, isLoggedIn, setUser, logout }
+  return { token, user, isLoggedIn, setUser, logout, refreshUser }
 })
