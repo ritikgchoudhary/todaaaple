@@ -55,7 +55,7 @@
         </router-link>
 
         <!-- Download App -->
-        <a v-if="apkDownloadUrl" :href="apkDownloadUrl" target="_blank" class="menuItem">
+        <a v-if="apkDownloadUrl || ui.installPrompt" @click.prevent="handleDownloadClick" class="menuItem" style="cursor: pointer;">
           <div class="menuItemLeft">
             <div class="iconBox" style="background-color: #E0F2FE;">
                <img src="https://img.icons8.com/color/96/android-os.png" width="24" height="24" alt="Download App" />
@@ -84,12 +84,22 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useUiStore } from '../stores/ui'
 import * as walletApi from '../api/wallet'
 
 const router = useRouter()
 const auth = useAuthStore()
+const ui = useUiStore()
 const userBalance = ref(0)
 const apkDownloadUrl = ref('')
+
+function handleDownloadClick() {
+  if (ui.installPrompt) {
+    ui.triggerInstallPrompt()
+  } else if (apkDownloadUrl.value) {
+    window.open(apkDownloadUrl.value, '_blank')
+  }
+}
 
 async function fetchBalance() {
   if (!auth.user?.id) return

@@ -9,9 +9,17 @@
 import { useRoute } from 'vue-router'
 import { useUiStore } from './stores/ui'
 import BottomNav from './components/BottomNav.vue'
+import { onMounted } from 'vue'
 
 const route = useRoute()
 const ui = useUiStore()
+
+onMounted(() => {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    ui.setInstallPrompt(e)
+  })
+})
 </script>
 
 <style scoped>

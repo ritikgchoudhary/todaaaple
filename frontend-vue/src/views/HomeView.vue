@@ -367,7 +367,7 @@
     </div>
     
     <!-- Floating App Download Button -->
-    <a v-if="apkDownloadUrl" :href="apkDownloadUrl" class="floatingDownloadBtn" target="_blank" title="Download App">
+    <a v-if="apkDownloadUrl || ui.installPrompt" @click.prevent="handleDownloadClick" class="floatingDownloadBtn" title="Download App">
       <div class="downloadRing"></div>
       <img src="https://img.icons8.com/color/96/android-os.png" alt="Download" class="downloadIcon" />
       <span class="downloadText">APP</span>
@@ -383,12 +383,24 @@ import { useAuthStore } from '../stores/auth'
 import * as api from '../api/home'
 import * as walletApi from '../api/wallet'
 
+import { useUiStore } from '../stores/ui'
+
 const router = useRouter()
 const auth = useAuthStore()
+const ui = useUiStore()
 const baseImg = 'https://img.bzvm68.com'
 
 const userBalance = ref(0)
 const isRefreshing = ref(false)
+
+function handleDownloadClick() {
+  if (ui.installPrompt) {
+    ui.triggerInstallPrompt()
+  } else if (apkDownloadUrl.value) {
+    window.open(apkDownloadUrl.value, '_blank')
+  }
+}
+
 const iframeUrl = ref(null)
 const isGameLoading = ref(false)
 const searchInputRef = ref(null)
