@@ -55,7 +55,7 @@
         </router-link>
 
         <!-- Download App -->
-        <a v-if="apkDownloadUrl || ui.installPrompt" @click.prevent="handleDownloadClick" class="menuItem" style="cursor: pointer;">
+        <a @click.prevent="handleDownloadClick" class="menuItem" style="cursor: pointer;">
           <div class="menuItemLeft">
             <div class="iconBox" style="background-color: #E0F2FE;">
                <img src="https://img.icons8.com/color/96/android-os.png" width="24" height="24" alt="Download App" />
@@ -98,6 +98,8 @@ function handleDownloadClick() {
     ui.triggerInstallPrompt()
   } else if (apkDownloadUrl.value) {
     window.open(apkDownloadUrl.value, '_blank')
+  } else {
+    alert("To install the App:\n\n1. Tap your browser's menu (3 dots or share button)\n2. Select 'Add to Home Screen'")
   }
 }
 
