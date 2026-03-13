@@ -463,14 +463,10 @@ const loading = ref(false)
 const error = ref('')
 
 const tabs = [
-  { id: 'dashboard', label: 'Summary', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\"/></svg>' },
-  { id: 'users', label: 'Users', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M17 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M9 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg>' },
-  { id: 'withdrawals', label: 'Withdraw Requests', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2\"/><path d=\"M18 12h4\"/></svg>' },
-  { id: 'transactions', label: 'Transaction Audit', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"21 12 14 12 11 18 8 6 5 12 3 12\"/></svg>' },
   { id: 'games', label: 'Manage Games', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M6 12h4m-2-2v4m5-2h.01M18 10h.01M15 19a3 3 0 0 1-3-3v-4a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-3z\"/></svg>' },
   { id: 'settings', label: 'System Preferences', icon: '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z\"/></svg>' },
 ]
-const activeTab = ref('dashboard')
+const activeTab = ref('games')
 const activeTabLabel = computed(() => tabs.find(t => t.id === activeTab.value)?.label)
 
 const stats = ref({
@@ -528,10 +524,6 @@ const handleLogout = () => {
 }
 
 const refreshAll = () => {
-  fetchDashboard()
-  fetchUsers()
-  fetchWithdrawals()
-  fetchTransactions()
   fetchSiteSettings()
   fetchCarousel()
 }
@@ -701,10 +693,7 @@ onMounted(() => {
 })
 
 watch(activeTab, (newTab) => {
-  if (newTab === 'dashboard') fetchDashboard()
-  if (newTab === 'users') fetchUsers()
-  if (newTab === 'withdrawals') fetchWithdrawals()
-  if (newTab === 'transactions') fetchTransactions()
+  if (newTab === 'games') { /* AdminGamesView handles its own fetching usually or on mount */ }
   if (newTab === 'settings') { fetchSiteSettings(); fetchCarousel(); }
 })
 </script>
