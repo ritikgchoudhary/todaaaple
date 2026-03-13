@@ -350,6 +350,22 @@
       <p>Loading Game...</p>
     </div>
 
+    <!-- Platform Message Popup -->
+    <div v-if="platformMessage.show" class="pm-modal-overlay">
+      <div class="pm-modal">
+        <div class="pm-header">
+          <span>Platform Message</span>
+          <button class="pm-close" @click="closePlatformMessage">&times;</button>
+        </div>
+        <div class="pm-tabs">
+          <div class="pm-tab active">please notice</div>
+        </div>
+        <div class="pm-body">
+          <img :src="platformMessage.url" alt="notice" />
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 </template>
@@ -1888,5 +1904,77 @@ onMounted(async () => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Platform Message Popup Styles */
+.pm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.pm-modal {
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+}
+.pm-header {
+  background: #0ea5e9;
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.pm-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.pm-tabs {
+  display: flex;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+.pm-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+}
+.pm-tab.active {
+  color: #0ea5e9;
+  border-bottom: 2px solid #0ea5e9;
+  margin-bottom: -2px;
+}
+.pm-body {
+  padding: 16px;
+  background: #fffbf0; /* Slight warm background like the reference */
+  text-align: center;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.pm-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
 }
 </style>
