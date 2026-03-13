@@ -53,7 +53,21 @@
       <!-- FIAT SECTION -->
       <div v-if="depositMode === 'fiat'">
         <div class="simple-amount-section">
-          <div class="input-label-modern">Enter Amount (INR)</div>
+          <div class="quick-select-label" style="margin-top: 10px;">Select Deposit Channel</div>
+          <div class="chips-grid-modern gateway-grid">
+            <button 
+              v-for="gateway in gatewayList" 
+              :key="gateway" 
+              class="modern-chip gateway-chip"
+              :class="{ 'active': selectedGateway === gateway.toLowerCase() }"
+              @click="selectedGateway = gateway.toLowerCase()"
+            >
+              <div class="g-name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
+              <div class="g-limit">{{ getLimits(gateway) }}</div>
+            </button>
+          </div>
+
+          <div class="input-label-modern" style="margin-top: 20px;">Enter Amount (INR)</div>
           <div class="amount-input-row">
              <span class="cur-symbol">₹</span>
              <input 
@@ -76,20 +90,6 @@
               ₹{{ val }}
             </button>
           </div>
-        </div>
-
-        <div class="quick-select-label" style="margin-top: 10px;">Select Deposit Channel</div>
-        <div class="chips-grid-modern gateway-grid">
-          <button 
-            v-for="gateway in gatewayList" 
-            :key="gateway" 
-            class="modern-chip gateway-chip"
-            :class="{ 'active': selectedGateway === gateway.toLowerCase() }"
-            @click="selectedGateway = gateway.toLowerCase()"
-          >
-            <div class="g-name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
-            <div class="g-limit">{{ getLimits(gateway) }}</div>
-          </button>
         </div>
 
         <button class="modern-deposit-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
