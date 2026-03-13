@@ -1,163 +1,166 @@
 <template>
   <div :class="['admin-games-page', { embedded }]">
     <div v-if="!embedded" class="header">
-      <router-link to="/masterAdmin" class="back-link">
+      <router-link to="/masteradmin" class="back-link">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
         Back to Dashboard
       </router-link>
-      <h1>Manage Game IDs</h1>
+      <h1>Manage Site Games</h1>
       <button class="save-btn" @click="save" :disabled="loading">
         {{ loading ? 'Saving...' : 'Save Changes' }}
       </button>
     </div>
-    <div v-else class="embedded-header">
-       <button class="save-btn" @click="save" :disabled="loading">
-        {{ loading ? 'Saving Changes' : 'Update Game Data' }}
-      </button>
+
+    <div v-if="fetching" class="loader">
+      <div class="spinner"></div>
+      <p>Synchronizing Game Database...</p>
     </div>
-
-    <div v-if="fetching" class="loader">Loading data...</div>
     
-    <div v-else class="categories-list">
-      <!-- Slot Providers Section -->
-      <div class="category-card providers-section">
-        <div class="card-header">
-           <h2 class="category-title">Slot Sidebar Providers</h2>
-           <div class="header-actions">
-             <button class="add-btn" @click="addProvider('slot')">+ Add Provider</button>
-           </div>
-        </div>
-        <div class="table-container">
-          <table class="games-table">
-            <thead>
-              <tr>
-                <th width="50">#</th>
-                <th>Provider Name (Label)</th>
-                <th>Provider ID (for URL)</th>
-                <th>Normal Icon / logoHide</th>
-                <th>Hover Icon / logoShow</th>
-                <th width="80">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(p, index) in slotProviders" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td><input v-model="p.label" placeholder="e.g. JDB" /></td>
-                <td><input v-model="p.id" placeholder="e.g. jdb" /></td>
-                <td><input v-model="p.logoHide" placeholder="Normal icon URL" /></td>
-                <td><input v-model="p.logoShow" placeholder="Active icon URL" /></td>
-                <td class="actions">
-                  <button class="remove-btn" @click="slotProviders.splice(index, 1)">×</button>
-                </td>
-              </tr>
-              <tr v-if="!slotProviders.length">
-                <td colspan="6" class="empty-row">No providers. Search & HOT are permanent.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div v-else class="games-layout">
+      <!-- Sidebar Categories -->
+      <aside class="games-sidebar shadow-premium">
+        <div class="sidebar-label">CONFIGURATION</div>
+        <button 
+          v-for="cat in navCategories" 
+          :key="cat.id"
+          :class="['sidebar-item', { active: activeCategory === cat.id }]"
+          @click="activeCategory = cat.id"
+        >
+          <span class="cat-icon" v-html="cat.icon"></span>
+          {{ cat.label }}
+          <span class="count-badge" v-if="getCategoryCount(cat.id)">{{ getCategoryCount(cat.id) }}</span>
+        </button>
 
-      <!-- Card Providers Section -->
-      <div class="category-card providers-section">
-        <div class="card-header">
-           <h2 class="category-title">Card Sidebar Providers</h2>
-           <div class="header-actions">
-             <button class="add-btn" @click="addProvider('card')">+ Add Provider</button>
-           </div>
+        <div class="sidebar-footer-actions">
+           <button class="update-all-btn" @click="save" :disabled="loading">
+             {{ loading ? '...' : 'Update All Settings' }}
+           </button>
         </div>
-        <div class="table-container">
-          <table class="games-table">
-            <thead>
-              <tr>
-                <th width="50">#</th>
-                <th>Provider Name (Label)</th>
-                <th>Provider ID (for URL)</th>
-                <th>Normal Icon / logoHide</th>
-                <th>Hover Icon / logoShow</th>
-                <th width="80">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(p, index) in cardProviders" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td><input v-model="p.label" placeholder="e.g. JDB" /></td>
-                <td><input v-model="p.id" placeholder="e.g. jdb" /></td>
-                <td><input v-model="p.logoHide" placeholder="Normal icon URL" /></td>
-                <td><input v-model="p.logoShow" placeholder="Active icon URL" /></td>
-                <td class="actions">
-                  <button class="remove-btn" @click="cardProviders.splice(index, 1)">×</button>
-                </td>
-              </tr>
-              <tr v-if="!cardProviders.length">
-                <td colspan="6" class="empty-row">No providers. Search & HOT are permanent.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      </aside>
 
-      <div v-for="(games, key) in gameCategories" :key="key" class="category-card">
-        <div class="card-header">
-          <h2 class="category-title">{{ formatKey(key) }}</h2>
-          <div class="header-actions">
-            <button class="add-btn" @click="addGame(key)">+ Add Game</button>
+      <!-- Main Content -->
+      <main class="games-main">
+        <div class="content-top-bar">
+          <div class="title-wrap">
+            <h2>{{ activeCategoryLabel }}</h2>
+            <p v-if="activeCategory === 'slotProviders' || activeCategory === 'cardProviders'">Manage sidebar providers and icons</p>
+            <p v-else>Control games visibility and assets</p>
+          </div>
+          <div class="search-and-add">
+            <div class="search-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input v-model="gameSearch" placeholder="Search by name or ID..." />
+            </div>
+            <button class="add-master-btn" @click="handleAddClick">
+              <span>+</span> Add New
+            </button>
           </div>
         </div>
 
-        <div class="table-container">
-          <table class="games-table">
-            <thead>
-              <tr>
-                <th width="50">#</th>
-                <th>Game Name</th>
-                <th>Game ID (uid)</th>
-                <th>Image URL</th>
-                <th v-if="key === 'slot' || key === 'cards'" width="120">Provider</th>
-                <th width="80">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(game, index) in games" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td>
-                  <input v-model="game.name" placeholder="Name" />
-                </td>
-                <td>
-                  <input v-model="game.id" placeholder="ID" />
-                </td>
-                <td>
-                  <input v-model="game.img" placeholder="Image URL" />
-                </td>
-                <td v-if="key === 'slot' || key === 'cards'">
-                  <select v-model="game.provider" class="provider-select">
-                    <option value="">None</option>
-                    <option v-for="p in (key === 'slot' ? slotProviders : cardProviders)" :key="p.id" :value="p.id">
-                      {{ p.label || p.id }}
-                    </option>
-                  </select>
-                </td>
-                <td class="actions">
-                  <button class="remove-btn" @click="removeGame(key, index)">×</button>
-                </td>
-              </tr>
-              <tr v-if="!games.length">
-                <td :colspan="key === 'slot' || key === 'cards' ? 6 : 5" class="empty-row">No games added. Click 'Add Game'.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="scroll-area">
+          <!-- PROVIDERS GRID -->
+          <div v-if="activeCategory === 'slotProviders' || activeCategory === 'cardProviders'" class="providers-grid">
+            <div v-for="(p, index) in filteredProviders" :key="index" class="provider-card-premium shadow-premium">
+              <div class="p-card-header">
+                <span class="p-index">#{{ index + 1 }}</span>
+                <button class="p-delete" @click="removeProvider(index)">×</button>
+              </div>
+              <div class="p-body">
+                <div class="p-inputs">
+                  <div class="f-group">
+                    <label>Label</label>
+                    <input v-model="p.label" placeholder="Display Name" />
+                  </div>
+                  <div class="f-group">
+                    <label>Internal ID</label>
+                    <input v-model="p.id" placeholder="id-slug" />
+                  </div>
+                </div>
+                <div class="p-icons">
+                   <div class="icon-input-wrap">
+                     <label>Normal Logo</label>
+                     <div class="icon-preview">
+                       <img v-if="p.logoHide" :src="p.logoHide" />
+                       <div v-else class="img-placeholder">NA</div>
+                       <input v-model="p.logoHide" placeholder="Icon URL" />
+                     </div>
+                   </div>
+                   <div class="icon-input-wrap">
+                     <label>Active Logo</label>
+                     <div class="icon-preview active">
+                       <img v-if="p.logoShow" :src="p.logoShow" />
+                       <div v-else class="img-placeholder">NA</div>
+                       <input v-model="p.logoShow" placeholder="Icon URL" />
+                     </div>
+                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GAMES GRID -->
+          <div v-else class="games-grid-premium">
+            <div v-for="(game, index) in filteredGames" :key="index" class="game-card-premium shadow-premium">
+              <div class="g-image-preview">
+                <img :src="game.img" @error="handleImgError" />
+                <div class="g-overlay">
+                  <button class="g-delete-btn" @click="removeGame(activeCategory, index)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="g-info">
+                <div class="f-group">
+                  <input v-model="game.name" placeholder="Game Name" class="g-name-input" />
+                </div>
+                <div class="g-meta-inputs">
+                   <div class="mini-f-group">
+                     <label>UID</label>
+                     <input v-model="game.id" placeholder="ID" />
+                   </div>
+                   <div class="mini-f-group" v-if="activeCategory === 'slot' || activeCategory === 'cards'">
+                     <label>Provider</label>
+                     <select v-model="game.provider">
+                       <option value="">Default</option>
+                       <option v-for="p in (activeCategory === 'slot' ? slotProviders : cardProviders)" :key="p.id" :value="p.id">
+                         {{ p.label || p.id }}
+                       </option>
+                     </select>
+                   </div>
+                </div>
+                <div class="f-group">
+                   <label>Image Source</label>
+                   <input v-model="game.img" placeholder="Static URL" class="g-url-input" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="(filteredGames.length === 0 && filteredProviders.length === 0)" class="no-results shadow-premium">
+             <div class="no-res-icon">🔍</div>
+             <h3>No matches found</h3>
+             <p>Try adjusting your search or add a new entry.</p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
 
-    <div v-if="message" :class="['message', messageType]">
-      {{ message }}
-      <button class="close-msg" @click="message = ''">×</button>
-    </div>
+    <!-- Feedback Toasts -->
+    <Transition name="toast">
+      <div v-if="message" :class="['modern-toast', messageType]">
+        <div class="t-icon">
+          <svg v-if="messageType === 'success'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m18 6-12 12m0-12 12 12"/></svg>
+        </div>
+        <div class="t-text">{{ message }}</div>
+        <button class="t-close" @click="message = ''">×</button>
+      </div>
+    </Transition>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue'
