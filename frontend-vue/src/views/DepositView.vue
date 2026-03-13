@@ -78,24 +78,18 @@
           </div>
         </div>
 
-        <div class="channel-header compact-header">
-          <div class="section-title">Select Deposit Channel</div>
-        </div>
-        
-        <div class="methods-list-modern">
-          <div 
+        <div class="quick-select-label" style="margin-top: 10px;">Select Deposit Channel</div>
+        <div class="chips-grid-modern gateway-grid">
+          <button 
             v-for="gateway in gatewayList" 
             :key="gateway" 
-            class="method-list-item" 
+            class="modern-chip gateway-chip"
             :class="{ 'active': selectedGateway === gateway.toLowerCase() }"
             @click="selectedGateway = gateway.toLowerCase()"
           >
-            <div class="m-radio">
-              <div class="m-radio-inner"></div>
-            </div>
-            <div class="m-name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
-            <div class="m-limit">{{ getLimits(gateway) }}</div>
-          </div>
+            <div class="g-name">{{ GATEWAY_LABELS[gateway.toLowerCase()] || gateway }}</div>
+            <div class="g-limit">{{ getLimits(gateway) }}</div>
+          </button>
         </div>
 
         <button class="modern-deposit-btn" :disabled="loading || !amount || amount < 200" @click="handleRecharge">
@@ -537,55 +531,25 @@ onMounted(() => {
   color: #fff;
 }
 
-.methods-list-modern {
+.gateway-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.gateway-chip {
+  height: 60px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-.method-list-item {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  cursor: pointer;
-}
-.method-list-item.active {
-  border-color: #00bfa5;
-  background: #f0fdfa;
-}
-.m-radio {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ccc;
-  border-radius: 50%;
-  margin-right: 12px;
-  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
 }
-.method-list-item.active .m-radio {
-  border-color: #00bfa5;
-}
-.m-radio-inner {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: transparent;
-}
-.method-list-item.active .m-radio-inner {
-  background: #00bfa5;
-}
-.m-name {
-  flex: 1;
+.g-name {
+  font-size: 14px;
   font-weight: 700;
-  color: #334155;
 }
-.m-limit {
+.g-limit {
   font-size: 11px;
-  color: #64748b;
+  opacity: 0.8;
   font-weight: 600;
 }
 
