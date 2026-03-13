@@ -5,7 +5,7 @@ mongoose.connect("mongodb://vga2:BHf9f5bWaQR5DOCV@ac-fyocyor-shard-00-00.ajpp8tr
     console.log("Connected to MongoDB!");
     // Need to define a minimal schema to read User
     const userSchema = new mongoose.Schema({}, { strict: false });
-    const User = mongoose.model("User", userSchema, "users");
+    const User = mongoose.model("User", userSchema, "newUsers"); // FIXED COLLECTION NAME
     
     // Find a user with some recharge history
     const users = await User.find({ "rechargeHistory.0": { $exists: true } }).limit(1).lean();
