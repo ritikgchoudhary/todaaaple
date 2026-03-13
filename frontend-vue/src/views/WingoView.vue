@@ -343,6 +343,7 @@ async function handleConfirmBet() {
       showAlert('Bet placed successfully!')
       drawer.value.show = false
       auth.user.balance -= drawer.value.totalAmount
+      auth.refreshUser()
       fetchData()
     } else {
       showAlert(res.data?.message || 'Failed')
@@ -425,6 +426,7 @@ const getSelectColor = (s) => {
 
 let timerInterval = null
 onMounted(() => {
+  auth.refreshUser()
   updateTimer()
   fetchData()
   timerInterval = setInterval(() => {
