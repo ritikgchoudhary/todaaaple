@@ -60,83 +60,153 @@
         </div>
 
         <div class="scroll-area">
-          <!-- PROVIDERS GRID -->
-          <div v-if="activeCategory === 'slotProviders' || activeCategory === 'cardProviders'" class="providers-grid">
-            <div v-for="(p, index) in filteredProviders" :key="index" class="provider-card-premium shadow-premium">
-              <div class="p-card-header">
-                <span class="p-index">#{{ index + 1 }}</span>
-                <button class="p-delete" @click="removeProvider(index)">×</button>
-              </div>
-              <div class="p-body">
-                <div class="p-inputs">
-                  <div class="f-group">
-                    <label>Label</label>
-                    <input v-model="p.label" placeholder="Display Name" />
+          <!-- SLOT PROVIDERS GRID -->
+          <draggable 
+            v-if="activeCategory === 'slotProviders'" 
+            v-model="slotProviders"
+            item-key="id"
+            class="providers-grid"
+            :handle="gameSearch ? '.no-drag' : '.drag-handle'"
+            :disabled="!!gameSearch"
+          >
+            <template #item="{ element: p, index }">
+              <div class="provider-card-premium shadow-premium">
+                <div class="p-card-header">
+                  <div class="drag-handle">⠿</div>
+                  <span class="p-index">#{{ index + 1 }}</span>
+                  <button class="p-delete" @click="removeProvider(index)">×</button>
+                </div>
+                <div class="p-body">
+                  <div class="p-inputs">
+                    <div class="f-group">
+                      <label>Label</label>
+                      <input v-model="p.label" placeholder="Display Name" />
+                    </div>
+                    <div class="f-group">
+                      <label>Internal ID</label>
+                      <input v-model="p.id" placeholder="id-slug" />
+                    </div>
                   </div>
-                  <div class="f-group">
-                    <label>Internal ID</label>
-                    <input v-model="p.id" placeholder="id-slug" />
+                  <div class="p-icons">
+                     <div class="icon-input-wrap">
+                       <label>Normal Logo</label>
+                       <div class="icon-preview">
+                         <img v-if="p.logoHide" :src="p.logoHide" />
+                         <div v-else class="img-placeholder">NA</div>
+                         <input v-model="p.logoHide" placeholder="Icon URL" />
+                       </div>
+                     </div>
+                     <div class="icon-input-wrap">
+                       <label>Active Logo</label>
+                       <div class="icon-preview active">
+                         <img v-if="p.logoShow" :src="p.logoShow" />
+                         <div v-else class="img-placeholder">NA</div>
+                         <input v-model="p.logoShow" placeholder="Icon URL" />
+                       </div>
+                     </div>
                   </div>
                 </div>
-                <div class="p-icons">
-                   <div class="icon-input-wrap">
-                     <label>Normal Logo</label>
-                     <div class="icon-preview">
-                       <img v-if="p.logoHide" :src="p.logoHide" />
-                       <div v-else class="img-placeholder">NA</div>
-                       <input v-model="p.logoHide" placeholder="Icon URL" />
+              </div>
+            </template>
+          </draggable>
+
+          <!-- CARD PROVIDERS GRID -->
+          <draggable 
+            v-if="activeCategory === 'cardProviders'" 
+            v-model="cardProviders"
+            item-key="id"
+            class="providers-grid"
+            :handle="gameSearch ? '.no-drag' : '.drag-handle'"
+            :disabled="!!gameSearch"
+          >
+            <template #item="{ element: p, index }">
+              <div class="provider-card-premium shadow-premium">
+                <div class="p-card-header">
+                  <div class="drag-handle">⠿</div>
+                  <span class="p-index">#{{ index + 1 }}</span>
+                  <button class="p-delete" @click="removeProvider(index)">×</button>
+                </div>
+                <div class="p-body">
+                  <div class="p-inputs">
+                    <div class="f-group">
+                      <label>Label</label>
+                      <input v-model="p.label" placeholder="Display Name" />
+                    </div>
+                    <div class="f-group">
+                      <label>Internal ID</label>
+                      <input v-model="p.id" placeholder="id-slug" />
+                    </div>
+                  </div>
+                  <div class="p-icons">
+                     <div class="icon-input-wrap">
+                       <label>Normal Logo</label>
+                       <div class="icon-preview">
+                         <img v-if="p.logoHide" :src="p.logoHide" />
+                         <div v-else class="img-placeholder">NA</div>
+                         <input v-model="p.logoHide" placeholder="Icon URL" />
+                       </div>
                      </div>
-                   </div>
-                   <div class="icon-input-wrap">
-                     <label>Active Logo</label>
-                     <div class="icon-preview active">
-                       <img v-if="p.logoShow" :src="p.logoShow" />
-                       <div v-else class="img-placeholder">NA</div>
-                       <input v-model="p.logoShow" placeholder="Icon URL" />
+                     <div class="icon-input-wrap">
+                       <label>Active Logo</label>
+                       <div class="icon-preview active">
+                         <img v-if="p.logoShow" :src="p.logoShow" />
+                         <div v-else class="img-placeholder">NA</div>
+                         <input v-model="p.logoShow" placeholder="Icon URL" />
+                       </div>
                      </div>
-                   </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </template>
+          </draggable>
 
           <!-- GAMES GRID -->
-          <div v-else class="games-grid-premium">
-            <div v-for="(game, index) in filteredGames" :key="index" class="game-card-premium shadow-premium">
-              <div class="g-image-preview">
-                <img :src="game.img" @error="handleImgError" />
-                <div class="g-overlay">
-                  <button class="g-delete-btn" @click="removeGame(activeCategory, index)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                  </button>
+          <draggable 
+            v-else 
+            v-model="gameCategories[activeCategory]"
+            item-key="id"
+            class="games-grid-premium"
+            :handle="gameSearch ? '.no-drag' : '.drag-handle'"
+            :disabled="!!gameSearch"
+          >
+            <template #item="{ element: game, index }">
+              <div class="game-card-premium shadow-premium">
+                <div class="g-image-preview">
+                  <div class="drag-handle small-handle">⠿</div>
+                  <img :src="game.img" @error="handleImgError" />
+                  <div class="g-overlay">
+                    <button class="g-delete-btn" @click="removeGame(activeCategory, index)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="g-info">
+                  <div class="f-group">
+                    <input v-model="game.name" placeholder="Game Name" class="g-name-input" />
+                  </div>
+                  <div class="g-meta-inputs">
+                     <div class="mini-f-group">
+                       <label>UID</label>
+                       <input v-model="game.id" placeholder="ID" />
+                     </div>
+                     <div class="mini-f-group" v-if="activeCategory === 'slot' || activeCategory === 'cards'">
+                       <label>Provider</label>
+                       <select v-model="game.provider">
+                         <option value="">Default</option>
+                         <option v-for="p in (activeCategory === 'slot' ? slotProviders : cardProviders)" :key="p.id" :value="p.id">
+                           {{ p.label || p.id }}
+                         </option>
+                       </select>
+                     </div>
+                  </div>
+                  <div class="f-group">
+                     <label>Image Source</label>
+                     <input v-model="game.img" placeholder="Static URL" class="g-url-input" />
+                  </div>
                 </div>
               </div>
-              <div class="g-info">
-                <div class="f-group">
-                  <input v-model="game.name" placeholder="Game Name" class="g-name-input" />
-                </div>
-                <div class="g-meta-inputs">
-                   <div class="mini-f-group">
-                     <label>UID</label>
-                     <input v-model="game.id" placeholder="ID" />
-                   </div>
-                   <div class="mini-f-group" v-if="activeCategory === 'slot' || activeCategory === 'cards'">
-                     <label>Provider</label>
-                     <select v-model="game.provider">
-                       <option value="">Default</option>
-                       <option v-for="p in (activeCategory === 'slot' ? slotProviders : cardProviders)" :key="p.id" :value="p.id">
-                         {{ p.label || p.id }}
-                       </option>
-                     </select>
-                   </div>
-                </div>
-                <div class="f-group">
-                   <label>Image Source</label>
-                   <input v-model="game.img" placeholder="Static URL" class="g-url-input" />
-                </div>
-              </div>
-            </div>
-          </div>
+            </template>
+          </draggable>
 
           <div v-if="(filteredGames.length === 0 && filteredProviders.length === 0)" class="no-results shadow-premium">
              <div class="no-res-icon">🔍</div>
@@ -164,6 +234,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import draggable from 'vuedraggable'
 import * as api from '../api/home'
 
 defineProps({
@@ -968,4 +1039,37 @@ onMounted(fetchData)
   margin-bottom: 16px;
 }
 
+.drag-handle {
+  cursor: grab;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.drag-handle:hover {
+  color: #0284c7;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.small-handle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  background: rgba(255,255,255,0.8);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.9rem;
+}
+
+.draggable-mirror {
+  opacity: 0.5;
+  background: #e0f2fe !important;
+  border-radius: 12px;
+}
 </style>
