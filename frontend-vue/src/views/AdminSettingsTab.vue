@@ -61,6 +61,13 @@
               <button class="clear-input" @click="siteSettings.usdtAddress = ''" title="Clear">×</button>
             </div>
           </div>
+          <div class="form-group-modern">
+            <label>App Download Link (APK URL)</label>
+            <div class="input-with-action">
+              <input v-model="siteSettings.apkDownloadUrl" placeholder="https://example.com/app.apk" />
+              <button class="clear-input" @click="siteSettings.apkDownloadUrl = ''" title="Clear">×</button>
+            </div>
+          </div>
           <div class="form-group-modern" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
             <label style="display: flex; align-items: center; justify-content: space-between;">
               Platform Notice Image URL
@@ -133,7 +140,7 @@ import { ref, onMounted } from 'vue'
 import * as adminApi from '../api/admin'
 
 const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
-const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '', platformMessageUrl: '', platformMessageEnabled: false })
+const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '', platformMessageUrl: '', platformMessageEnabled: false, apkDownloadUrl: '' })
 const carouselImages = ref([])
 const uploading = ref(false)
 const uploadingCarousel = ref(false)
@@ -197,7 +204,8 @@ const saveSiteSettings = async () => {
       whatsappLink: siteSettings.value.whatsappLink,
       usdtAddress: siteSettings.value.usdtAddress,
       platformMessageUrl: siteSettings.value.platformMessageUrl,
-      platformMessageEnabled: siteSettings.value.platformMessageEnabled
+      platformMessageEnabled: siteSettings.value.platformMessageEnabled,
+      apkDownloadUrl: siteSettings.value.apkDownloadUrl
     })
     showToast('Site settings updated')
   } catch (err) {
