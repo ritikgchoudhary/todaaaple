@@ -54,6 +54,17 @@
           <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </router-link>
 
+        <!-- Download App -->
+        <a v-if="apkDownloadUrl" :href="apkDownloadUrl" target="_blank" class="menuItem">
+          <div class="menuItemLeft">
+            <div class="iconBox" style="background-color: #E0F2FE;">
+               <img src="https://img.icons8.com/color/96/android-os.png" width="24" height="24" alt="Download App" />
+            </div>
+            <span class="itemLabel" style="color: #0284c7; font-weight: 800;">Download App</span>
+          </div>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </a>
+
         <!-- Logout -->
         <button @click="handleLogout" class="menuItem logoutItem">
           <div class="menuItemLeft">

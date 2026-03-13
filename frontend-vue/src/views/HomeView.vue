@@ -365,7 +365,13 @@
         </div>
       </div>
     </div>
-
+    
+    <!-- Floating App Download Button -->
+    <a v-if="apkDownloadUrl" :href="apkDownloadUrl" class="floatingDownloadBtn" target="_blank" title="Download App">
+      <div class="downloadRing"></div>
+      <img src="https://img.icons8.com/color/96/android-os.png" alt="Download" class="downloadIcon" />
+      <span class="downloadText">APP</span>
+    </a>
   </div>
 </div>
 </template>
@@ -401,6 +407,7 @@ function onCardFilterClick(id) {
 }
 
 const siteLogoUrl = ref('')
+const apkDownloadUrl = ref('')
 const platformMessage = ref({ url: '', show: false })
 const sliderImages = ref([
   `${baseImg}/ark_common/arkUpload/carousel/40lKKSxzyxDYdLkC0RgwSG3359EIQIRAGQFe2Rco.jpg`,
@@ -421,6 +428,9 @@ async function fetchHomeContent() {
     }
     if (settingsRes.data.siteLogoUrl) {
       siteLogoUrl.value = settingsRes.data.siteLogoUrl
+    }
+    if (settingsRes.data.apkDownloadUrl) {
+      apkDownloadUrl.value = settingsRes.data.apkDownloadUrl
     }
     if (settingsRes.data.platformMessageEnabled && settingsRes.data.platformMessageUrl) {
       const hasSeen = sessionStorage.getItem('platform_message_seen')
@@ -1976,5 +1986,52 @@ onMounted(async () => {
   max-width: 100%;
   height: auto;
   border-radius: 6px;
+}
+
+/* Floating App Download Button */
+.floatingDownloadBtn {
+  position: fixed;
+  bottom: 80px;
+  right: 15px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+  z-index: 1000;
+  transition: transform 0.2s;
+}
+.floatingDownloadBtn:active {
+  transform: scale(0.95);
+}
+.downloadRing {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #0ea5e9;
+  animation: pulse-ring 2s infinite;
+  box-sizing: border-box;
+}
+.downloadIcon {
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+}
+.downloadText {
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 800;
+  margin-top: 1px;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 </style>
