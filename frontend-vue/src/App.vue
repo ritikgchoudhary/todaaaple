@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <AppDownloadBanner />
+    <AppDownloadBanner v-if="route.path === '/'" />
     <router-view />
     <BottomNav v-show="route.meta.showNav && ui.isBottomNavVisible" />
   </div>
