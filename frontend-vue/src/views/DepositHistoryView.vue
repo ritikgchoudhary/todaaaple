@@ -141,7 +141,6 @@ const statusTabs = [
   { label: 'All', value: 'all' },
   { label: 'Success', value: 'Success' },
   { label: 'Pending', value: 'Pending' },
-  { label: 'Failed', value: 'Failed' },
 ]
 
 function isInDateRange(itemDate, range) {

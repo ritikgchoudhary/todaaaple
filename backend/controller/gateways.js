@@ -3778,7 +3778,7 @@ export const createQRTrans = async (req, res) => {
 
 export const getRecentRecharge = async (req, res) => {
   const userId = req.params.id;
-  const getRecharge = await Trans.find({ userId }).sort({ createDate: -1 }).limit(10);
+  const getRecharge = await Trans.find({ userId }).sort({ createDate: -1, date: -1 }).limit(50);
   return res.status(200).send(getRecharge);
 }
 export const getShuffleUPI = async (req, res) => {
@@ -8702,6 +8702,7 @@ export const watchPayCreateOrder = async (req, res) => {
       await Trans.create({
         id: mchOrderNo,
         number: newIncrement,
+        createDate: Date.now(),
         date: Date.now(),
         userId: parseInt(userId),
         amount: parseFloat(amount),
