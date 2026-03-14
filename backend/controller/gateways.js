@@ -3778,7 +3778,8 @@ export const createQRTrans = async (req, res) => {
 
 export const getRecentRecharge = async (req, res) => {
   const userId = req.params.id;
-  const getRecharge = await Trans.find({ userId }).sort({ createDate: -1, date: -1 }).limit(50);
+  // Sort by date so all gateways (WatchPay, RupeeRush, etc.) show in history even without createDate
+  const getRecharge = await Trans.find({ userId }).sort({ date: -1 }).limit(50);
   return res.status(200).send(getRecharge);
 }
 export const getShuffleUPI = async (req, res) => {
