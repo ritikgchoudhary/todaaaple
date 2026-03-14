@@ -213,22 +213,22 @@
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Last 5 Transactions -->
-    <div class="last-five-section">
-      <h3 class="last-five-title">Last 5 Transactions</h3>
-      <div v-if="!lastFiveTransactions.length" class="last-five-empty">No transactions yet.</div>
-      <ul v-else class="last-five-list">
-        <li v-for="(tx, idx) in lastFiveTransactions" :key="idx" class="last-five-item">
-          <span class="last-five-date">{{ formatTxDate(tx.date) }}</span>
-          <span class="last-five-amount">
-            <template v-if="tx.usdt != null && tx.usdt !== ''">{{ tx.usdt }} USDT</template>
-            <template v-else>₹{{ tx.amount }}</template>
-          </span>
-          <span class="last-five-status" :class="{ success: tx.status === 'Success' }">{{ tx.status }}</span>
-        </li>
-      </ul>
+      <!-- Last 5 Transactions (inside mobile-container so it stays below form) -->
+      <div class="last-five-section">
+        <h3 class="last-five-title">Last 5 Transactions</h3>
+        <div v-if="!lastFiveTransactions.length" class="last-five-empty">No transactions yet.</div>
+        <ul v-else class="last-five-list">
+          <li v-for="(tx, idx) in lastFiveTransactions" :key="idx" class="last-five-item">
+            <span class="last-five-date">{{ formatTxDate(tx.date) }}</span>
+            <span class="last-five-amount">
+              <template v-if="tx.usdt != null && tx.usdt !== ''">{{ tx.usdt }} USDT</template>
+              <template v-else>₹{{ tx.amount }}</template>
+            </span>
+            <span class="last-five-status" :class="{ success: tx.status === 'Success' }">{{ tx.status }}</span>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <!-- TRC Dialog -->
