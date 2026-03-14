@@ -27,6 +27,17 @@
               {{ opt.label }}
             </button>
           </div>
+          <!-- Calendar (From - To) when Calendar is selected -->
+          <div v-if="dateFilter === 'calendar'" class="calendar-row">
+            <div class="calendar-field">
+              <label class="calendar-label">From</label>
+              <input type="date" v-model="calendarFrom" class="calendar-input" />
+            </div>
+            <div class="calendar-field">
+              <label class="calendar-label">To</label>
+              <input type="date" v-model="calendarTo" class="calendar-input" />
+            </div>
+          </div>
         </div>
 
         <!-- Status Filter Tabs -->
@@ -123,8 +134,11 @@ const dateOptions = [
   { label: 'All', value: 'all' },
   { label: 'Today', value: 'today' },
   { label: 'Last 7 days', value: '7d' },
-  { label: 'Last 30 days', value: '30d' }
+  { label: 'Calendar', value: 'calendar' }
 ]
+
+const calendarFrom = ref('')
+const calendarTo = ref('')
 
 const tabs = [
   { label: 'All', value: 'all' },
@@ -150,11 +164,17 @@ function isInDateRange(itemDate, range) {
     start.setHours(0, 0, 0, 0)
     return d.getTime() >= start.getTime()
   }
-  if (range === '30d') {
-    const start = new Date(now)
-    start.setDate(start.getDate() - 30)
-    start.setHours(0, 0, 0, 0)
-    return d.getTime() >= start.getTime()
+  if (range === 'calendar') {
+    if (!calendarFrom.value && !calendarTo.value) return true
+    const from = calendarFrom.value ? new Date(calendarFrom.value) : null
+    const to = calendarTo.value ? new Date(calendarTo.value) : null
+    if (from && d.getTime() < from.getTime()) return false
+    if (to) {
+      const toEnd = new Date(to)
+      toEnd.setHours(23, 59, 59, 999)
+      if (d.getTime() > toEnd.getTime()) return false
+    }
+    return true
   }
   return true
 }
@@ -296,6 +316,38 @@ onMounted(() => {
   background: #0f172a;
   color: #fff;
   border-color: #0f172a;
+}
+
+.calendar-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.calendar-field {
+  flex: 1;
+  min-width: 120px;
+}
+.calendar-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+.calendar-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #fff;
+}
+.calendar-input:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
 }
 
 /* Filter Tabs */
