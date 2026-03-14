@@ -14,7 +14,7 @@
           </svg>
         </button>
         <div class="logoWrap">
-          <img src="https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png" alt="DELTIN SPORT" class="headerLogo" />
+          <img :src="siteLogoUrl || 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png'" alt="Site Logo" class="headerLogo" />
         </div>
         <div class="langWrap" style="color: #000;">
           <span class="langFlag" aria-hidden="true">&#127482;&#127480;</span>
@@ -194,6 +194,7 @@ import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import API, { url as URL } from '../api/client'
 import * as api from '../api/auth'
+import { getSiteSettings } from '../api/home'
 import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
@@ -217,6 +218,7 @@ const canRun = ref(false)
 const counter = ref(90)
 const openDialog = ref(false)
 const dialogBody = ref('')
+const siteLogoUrl = ref('')
 
 const SITE_KEY = '6Le-ej8mAAAAAL_Fl83Pp_iZ5ZLKpyQ8KWuTTF83'
 
@@ -228,7 +230,16 @@ function toggleLang() {
   // Language dropdown placeholder
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const settingsRes = await getSiteSettings()
+    if (settingsRes.data?.siteLogoUrl) {
+      siteLogoUrl.value = settingsRes.data.siteLogoUrl
+    }
+  } catch (err) {
+    console.error('Site settings fetch failed', err)
+  }
+
   if (route.params.id) {
     formData.referCode = route.params.id
     isLogin.value = false
