@@ -418,12 +418,21 @@ const Withdrawal = () => {
               </Paper>
             </Link>
 
-            {/* TRC20 Address Dialog */}
+            {/* TRC20 Address Dialog - positioned higher on mobile so it doesn't sit over bottom nav */}
             <Dialog
               open={trcDialog.open}
               onClose={handleTrcDialogClose}
               maxWidth="sm"
               fullWidth
+              PaperProps={{
+                style: {
+                  alignSelf: 'flex-start',
+                  marginTop: 'max(env(safe-area-inset-top), 24px)',
+                  marginBottom: 24,
+                  maxHeight: 'calc(100vh - 80px)',
+                  overflow: 'auto',
+                },
+              }}
             >
               <Container style={{padding: '20px'}}>
                 <Typography variant="h6" style={{marginBottom: '15px'}}>Enter TRC20 Wallet Address</Typography>
@@ -504,12 +513,14 @@ const Withdrawal = () => {
                     onClose={dialogClose}
                     PaperProps={{
                     style: {
-                        // backgroundColor: 'transparent',
                         boxShadow: 'none',
+                        alignSelf: 'flex-start',
+                        marginTop: 'max(env(safe-area-inset-top), 24px)',
+                        marginBottom: 24,
+                        maxHeight: 'calc(100vh - 80px)',
+                        overflow: 'auto',
                     },
                     }}
-                
-                    
                 >
                     <Container style={{
                       // backgroundColor: 'black', opacity: '0.6', height: '50px'
