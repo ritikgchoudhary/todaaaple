@@ -14,13 +14,50 @@
 
       <!-- Main Content -->
       <main class="content">
+        <!-- Date Filter -->
+        <div class="date-filter-wrap">
+          <label class="date-filter-label">Date</label>
+          <div class="date-filter-options">
+            <button 
+              v-for="opt in dateOptions" 
+              :key="opt.value"
+              :class="['date-btn', { active: dateFilter === opt.value }]"
+              @click="dateFilter = opt.value"
+            >
+              {{ opt.label }}
+            </button>
+          </div>
+          <div v-if="dateFilter === 'custom'" class="calendar-row">
+            <div class="calendar-field">
+              <label class="calendar-label">From</label>
+              <input type="date" v-model="calendarFrom" class="calendar-input" />
+            </div>
+            <div class="calendar-field">
+              <label class="calendar-label">To</label>
+              <input type="date" v-model="calendarTo" class="calendar-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Filter Tabs -->
+        <div class="filter-tabs">
+          <button 
+            v-for="tab in statusTabs" 
+            :key="tab.value"
+            :class="['tab-btn', { active: statusTab === tab.value }]"
+            @click="statusTab = tab.value"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
         <!-- History List -->
         <div v-if="loading" class="loader-container">
           <div class="loader"></div>
           <p>Loading records...</p>
         </div>
 
-        <div v-else-if="history.length === 0" class="empty-state">
+        <div v-else-if="filteredHistory.length === 0" class="empty-state">
           <div class="empty-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M7 14h.01"/><path d="M17 14h.01"/><path d="M7 18h.01"/><path d="M12 18h.01"/><path d="M17 18h.01"/><path d="M12 14h.01"/></svg>
           </div>
@@ -30,7 +67,7 @@
 
         <div v-else class="history-list">
           <div 
-            v-for="(item, idx) in history" 
+            v-for="(item, idx) in filteredHistory" 
             :key="idx" 
             class="history-card"
           >
