@@ -231,7 +231,7 @@ const Withdrawal = () => {
     
    
     return (
-        <div>
+        <div className="page-withdrawal">
           <Dialog
           open={isBlocked.open}
           PaperProps={{
@@ -418,23 +418,19 @@ const Withdrawal = () => {
               </Paper>
             </Link>
 
-            {/* TRC20 Address Dialog - fixed at top so it doesn't sit over bottom nav */}
+            {/* TRC20 Address Dialog - at top on mobile, no overlap with bottom nav */}
             <Dialog
               open={trcDialog.open}
               onClose={handleTrcDialogClose}
               maxWidth="sm"
               fullWidth
+              disablePortal
+              className="withdrawal-dialog-top"
               PaperProps={{
                 style: {
-                  position: 'absolute',
-                  top: 'max(env(safe-area-inset-top), 24px)',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
                   margin: 0,
-                  maxHeight: 'calc(100vh - 80px)',
+                  maxHeight: 'calc(100vh - 100px)',
                   overflow: 'auto',
-                  width: 'calc(100% - 32px)',
-                  maxWidth: 448,
                 },
               }}
             >
@@ -515,18 +511,14 @@ const Withdrawal = () => {
               <Dialog
                     open={openDialog.open}
                     onClose={dialogClose}
+                    disablePortal
+                    className="withdrawal-dialog-top"
                     PaperProps={{
                     style: {
                         boxShadow: 'none',
-                        position: 'absolute',
-                        top: 'max(env(safe-area-inset-top), 24px)',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
                         margin: 0,
-                        maxHeight: 'calc(100vh - 80px)',
+                        maxHeight: 'calc(100vh - 100px)',
                         overflow: 'auto',
-                        width: 'calc(100% - 32px)',
-                        maxWidth: 448,
                     },
                     }}
                 >
