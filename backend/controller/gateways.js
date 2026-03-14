@@ -643,21 +643,20 @@ export const createAirpayOrder = async (req, res) => {
 
 export const createCryptoUpayOrder = async (req, res) => {
   const userId = req.params.id;
-  const amount = parseFloat(req.body.amount).toFixed(4);
+  const inrAmount = parseFloat(req.body.amount);
+  const usdRate = parseFloat(process.env.USD_RATE || 95);
+  const amountInUsd = (inrAmount / usdRate).toFixed(4);
   const id = Math.random().toString(16).slice(2);
   const secret = process.env.UPAY_APP_SECRET;
   const app = process.env.UPAY_APP_ID;
   try {
-
     function generateSignature(params, appSecret) {
       const sortedParams = Object.keys(params).sort().map(key => `${key}=${params[key]}`);
       const stringToSign = sortedParams.join('&') + `&appSecret=${appSecret}`;
       const md5Hash = crypto.createHash('md5').update(stringToSign).digest('hex');
       const signature = md5Hash.toUpperCase();
-
       return signature;
     }
-    const amountInUsd = (parseFloat(req.body.amount) / parseFloat(process.env.USD_RATE || 95)).toFixed(4);
     const params = {
       appId: app,
       chainType: '1',
@@ -666,9 +665,7 @@ export const createCryptoUpayOrder = async (req, res) => {
       fiatCurrency: "USD",
       notifyUrl: `${process.env.SERVER_URL}/cryptoUpayCallback`
     };
-    const appSecret = secret;
-
-    const signature = generateSignature(params, appSecret);
+    const signature = generateSignature(params, secret);
 
     const options = {
       method: "POST",
@@ -677,51 +674,35 @@ export const createCryptoUpayOrder = async (req, res) => {
         "Content-Type": "application/json",
       },
       data: {
-        "appId": app,
-        "merchantOrderNo": id,
-        "chainType": "1",
-        "fiatAmount": `${amountInUsd}`,
-        "fiatCurrency": "USD",
-        "notifyUrl": `${process.env.SERVER_URL}/cryptoUpayCallback`,
+        ...params,
         "redirectUrl": `${process.env.CLIENT_URL}/depositHistory`,
         "signature": signature
       },
     };
 
-    axios
-      .request(options)
+    axios.request(options)
       .then(async function (response) {
         if (response.data.code === '1') {
           const lastTrans = await Trans.findOne().sort({ number: -1 });
-          const newIncreament = lastTrans.number + 1;
+          const newIncreament = (lastTrans?.number || 0) + 1;
           await Trans.create({
             id: id,
             number: newIncreament,
             date: Date.now(),
             userId,
             gateway: "Upay",
-            amount: amount * parseInt(process.env.USD_RATE),
+            amount: inrAmount,
             status: "created",
           });
           return res.status(200).send({ url: response.data.data.payUrl })
         } else {
-
           return res.status(400).send(response.data.msg)
         }
-
       }).catch(function (error) {
-
         return res.status(400).send(error)
       });
-
-
-
-
-
-
   } catch (error) {
     return res.status(400).send({ status: false, statusCode: 400, msg: error.message })
-
   }
 }
 export const verifyCryptoSign = async (req, res) => {
@@ -869,7 +850,7 @@ export const verifyCryptoSign = async (req, res) => {
                         amount: bonusAmount,
                         date: Date.now(),
                         status: "Success",
-                        usdt: receivedData.crypto
+                        usdt: callbackData.actualCrypto
                       },
                       walletHistory: {
                         amount: bonusAmount,
@@ -931,7 +912,7 @@ export const verifyCryptoSign = async (req, res) => {
                         amount: bonusAmount,
                         date: Date.now(),
                         status: "Success",
-                        usdt: receivedData.crypto
+                        usdt: callbackData.actualCrypto
                       },
                       walletHistory: {
                         amount: bonusAmount,
