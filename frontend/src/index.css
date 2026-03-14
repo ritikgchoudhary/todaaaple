@@ -139,7 +139,7 @@ canvas {
 }
 
 /* Withdrawal page: dialogs at top so they don't sit over bottom nav */
-.withdrawal-dialog-top.MuiModal-root {
+.withdrawal-dialog-top .MuiDialog-scrollPaper {
   align-items: flex-start !important;
   justify-content: center !important;
   padding-top: max(24px, env(safe-area-inset-top)) !important;
@@ -151,6 +151,7 @@ canvas {
 .withdrawal-dialog-top .MuiDialog-paper {
   margin: 0 !important;
   flex-shrink: 0 !important;
+  max-height: calc(100vh - 100px) !important;
 }
 
 /* Global fade-in for content appearance */
