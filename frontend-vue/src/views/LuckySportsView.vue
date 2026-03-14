@@ -23,6 +23,12 @@
 
       <!-- Game Iframe Container -->
       <div class="iframe-wrap" v-if="iframeUrl">
+        <div class="iframe-overlay-header">
+          <router-link to="/" class="iframe-back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back
+          </router-link>
+        </div>
         <iframe :src="iframeUrl" frameborder="0" allowfullscreen></iframe>
       </div>
 
@@ -197,6 +203,32 @@ onUnmounted(() => {
   position: relative;
   overflow: hidden;
 }
+.iframe-overlay-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 12px;
+  z-index: 2;
+}
+.iframe-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  backdrop-filter: blur(6px);
+}
 .iframe-wrap iframe {
   width: 100%;
   height: 100%;
@@ -204,6 +236,7 @@ onUnmounted(() => {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 1;
 }
 
 /* Loading/Error */

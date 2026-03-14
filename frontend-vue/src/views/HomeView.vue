@@ -1817,27 +1817,33 @@ onMounted(async () => {
 }
 
 .iframe-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 48px;
-  background: #fff;
+  background: transparent;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 8px;
-  border-bottom: 1px solid #f1f5f9;
+  justify-content: flex-start;
+  padding: 8px 12px;
+  z-index: 2;
+  border: none;
 }
 
 .iframe-close-btn {
-  background: #f1f5f9;
+  background: rgba(0, 0, 0, 0.35);
   border: none;
-  color: #1a1a1a;
+  color: #fff;
   font-size: 0.95rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 4px;
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
+  backdrop-filter: blur(6px);
 }
 
 .headerBalance {
@@ -1882,6 +1888,8 @@ onMounted(async () => {
   width: 100%;
   border: none;
   background: #fff;
+  z-index: 1;
+  position: relative;
 }
 
 .game-loader-overlay {
