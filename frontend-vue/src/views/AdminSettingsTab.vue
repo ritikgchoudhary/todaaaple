@@ -67,6 +67,12 @@
               <input v-model="siteSettings.apkDownloadUrl" placeholder="https://example.com/app.apk" />
               <button class="clear-input" @click="siteSettings.apkDownloadUrl = ''" title="Clear">×</button>
             </div>
+            <div class="apk-upload-action" style="margin-top: 10px;">
+              <input type="file" ref="apkInput" @change="handleApkUpload" hidden accept=".apk" />
+              <button @click="() => $refs.apkInput.click()" class="action-btn edit-btn" style="padding: 8px 16px; font-size: 13px; width: fit-content; flex: none;" :disabled="uploadingApk">
+                {{ uploadingApk ? 'Uploading APK...' : '📤 Upload APK File' }}
+              </button>
+            </div>
           </div>
           <div class="form-group-modern" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
             <label style="display: flex; align-items: center; justify-content: space-between;">
@@ -143,6 +149,7 @@ const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
 const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '', platformMessageUrl: '', platformMessageEnabled: false, apkDownloadUrl: '' })
 const carouselImages = ref([])
 const uploading = ref(false)
+const uploadingApk = ref(false)
 const uploadingCarousel = ref(false)
 const saving = ref(false)
 
@@ -182,6 +189,21 @@ const handleLogoUpload = async (e) => {
   } catch (err) {
     showToast('Upload failed', 'error')
   } finally { uploading.value = false }
+}
+
+const handleApkUpload = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  uploadingApk.value = true
+  const fd = new FormData()
+  fd.append('apk', file)
+  try {
+    const res = await adminApi.uploadApk(ADMIN_API_KEY, fd)
+    siteSettings.value.apkDownloadUrl = res.data.apkDownloadUrl
+    showToast('APK uploaded successfully')
+  } catch (err) {
+    showToast('APK upload failed', 'error')
+  } finally { uploadingApk.value = false }
 }
 
 const deleteLogo = async () => {
