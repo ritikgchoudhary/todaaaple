@@ -713,6 +713,7 @@ router.get("/getFullRecord", getFullRecordData); // secured
 router.get("/getTimer", getTimer); // secured
 router.get("/getWithdrawal/:id/", checkAuth, getWithdrawal); //secured
 router.get("/getPlayHistory/:id", checkAuth, getPlayHistory);
+router.get("/api/getPlayHistory/:id", checkAuth, getPlayHistory);
 router.get("/getAllWithdrawal/:api", getAllWithdrawal); // secured
 router.get("/getAllWithdrawalUSDT/:api", getAllWithdrawalUSDT); // secured
 router.get("/admin-api/stats/:api", getAdminStats);
