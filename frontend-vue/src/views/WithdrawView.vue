@@ -406,11 +406,13 @@ onMounted(fetchData)
 <style scoped>
 .withdrawal-page {
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: #f1f5f9;
   display: flex;
   justify-content: center;
   font-family: 'Outfit', 'Roboto', sans-serif;
   color: #0f172a;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .mobile-container {
@@ -418,6 +420,7 @@ onMounted(fetchData)
   max-width: 430px;
   background-color: #fff;
   min-height: 100vh;
+  min-height: 100dvh;
   padding-bottom: 60px;
   position: relative;
   box-shadow: 0 0 30px rgba(15, 23, 42, 0.1);
@@ -456,13 +459,16 @@ onMounted(fetchData)
   position: sticky; 
   top: 0; 
   z-index: 1000;
-  height: 56px; 
+  min-height: 56px; 
+  padding-top: env(safe-area-inset-top, 0);
   background: rgba(255, 255, 255, 0.95); 
   backdrop-filter: blur(20px);
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  padding: 0 16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 0;
   border-bottom: 1px solid #f1f5f9;
 }
 .header-left { 

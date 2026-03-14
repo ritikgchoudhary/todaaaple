@@ -145,10 +145,12 @@ const shareLink = async () => {
 <style scoped>
 .invite-page {
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: #f8fafc;
   display: flex;
   justify-content: center;
   font-family: 'Inter', sans-serif;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .mobile-container {
@@ -156,6 +158,7 @@ const shareLink = async () => {
   max-width: min(430px, 100vw);
   background-color: #fff;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
@@ -167,10 +170,12 @@ const shareLink = async () => {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #f1f5f9;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .header-content {
-  height: 60px;
+  height: 56px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -230,11 +230,13 @@ onMounted(() => {
 <style scoped>
 .withdrawal-history-page {
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: #f1f5f9;
   display: flex;
   justify-content: center;
   font-family: 'Inter', -apple-system, sans-serif;
   color: #1e293b;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .mobile-container {
@@ -242,6 +244,7 @@ onMounted(() => {
   max-width: min(430px, 100vw);
   background-color: #fff;
   min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
@@ -252,10 +255,12 @@ onMounted(() => {
   z-index: 100;
   background: #fff;
   border-bottom: 1px solid #f1f5f9;
+  padding-top: env(safe-area-inset-top, 0);
 }
 
 .header-content {
-  height: 60px;
+  height: 56px;
+  min-height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
