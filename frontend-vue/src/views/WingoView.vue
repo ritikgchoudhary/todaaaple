@@ -125,7 +125,6 @@
       <section class="records-container">
         <div class="section-header">
           <span style="color: #333">{{ gameType }} Minutes Record</span>
-          <span class="more-link" @click="router.push('/wingo-record/' + gameId)">more ›</span>
         </div>
         <div class="record-table-wrapper">
           <table class="record-table">
@@ -138,7 +137,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="row in records" :key="row.id">
+              <tr v-for="row in records.slice(0, 5)" :key="row.id">
                 <td>{{ row.id }}</td>
                 <td>{{ row.price }}</td>
                 <td :class="row.number >= 5 ? 'text-green' : 'text-red'">
@@ -152,6 +151,9 @@
               </tr>
             </tbody>
           </table>
+          <div class="more-footer" @click="router.push('/wingo-record/' + gameId)">
+            View More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
         </div>
       </section>
 
@@ -159,11 +161,10 @@
       <section class="records-container bid-history-container">
         <div class="section-header">
           <span style="color: #333">{{ gameType }} Minutes Bid History</span>
-          <span class="more-link" @click="router.push('/wingo-history/' + gameId)">more ›</span>
         </div>
         <div class="bid-list">
           <div v-if="!myHistory || myHistory.length === 0" class="no-records">No Records</div>
-          <div v-for="(bid, idx) in myHistory" :key="idx" class="bid-card">
+          <div v-for="(bid, idx) in myHistory.slice(0, 5)" :key="idx" class="bid-card">
             <div class="bid-card-top">
               <div>
                 <div class="bid-amt">₹{{ bid.amount }}</div>
@@ -181,6 +182,9 @@
                 <span class="lbl">Winning:</span> <span class="val" :class="{ success: bid.winning > 0, red: bid.winning === 0 }">{{ bid.winning }}</span>
               </div>
             </div>
+          </div>
+          <div v-if="myHistory.length > 5" class="more-footer" @click="router.push('/wingo-history/' + gameId)">
+            View More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
         </div>
       </section>
@@ -524,7 +528,8 @@ watch(() => route.params.id, () => { updateTimer(); fetchData() })
 
 .records-container { padding: 16px; border-top: 10px solid #f5f5f5; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
-.more-link { color: grey; font-size: 13px; font-weight: 400; cursor: pointer; }
+.more-footer { padding: 12px; text-align: center; color: #0d9488; font-size: 14px; font-weight: 600; cursor: pointer; border-top: 1px solid #f1f1f1; display: flex; align-items: center; justify-content: center; gap: 4px; transition: background 0.2s; }
+.more-footer:active { background: #f9f9f9; }
 
 .record-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; }
 .record-table th { color: #64748B; padding-bottom: 12px; border-bottom: 2px solid #E2E8F0; font-weight: 600; font-size: 12px; }
