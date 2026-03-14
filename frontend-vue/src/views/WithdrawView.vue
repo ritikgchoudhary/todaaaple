@@ -241,7 +241,7 @@
 
     <!-- Toast Modal -->
     <div v-if="dialog.open" class="modal-overlay" @click="dialog.open = false" style="background: transparent;">
-      <div class="modal-content toast-card" @click.stop style="background: rgba(0,0,0,0.8); color: white; border-radius: 4px; padding: 15px; margin-top: auto; margin-bottom: 20px;">
+      <div class="modal-content toast-card" @click.stop style="background: rgba(0,0,0,0.8); color: white; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
         <p class="toast-body" style="color: white; margin: 0; font-size: 14px;">{{ dialog.body }}</p>
       </div>
     </div>
