@@ -35,7 +35,7 @@
             </div>
             <div class="card-row sub-row">
               <span class="date">{{ formatDate(item.date) }}</span>
-              <span v-if="item.note" class="note">{{ item.note }}</span>
+              <span v-if="item.note" class="note">{{ formatNote(item.note) }}</span>
             </div>
           </div>
         </div>
@@ -59,8 +59,9 @@ function formatAmount(val) {
 }
 
 function formatDate(dateVal) {
-  if (!dateVal) return '—'
+  if (dateVal == null || dateVal === '') return '—'
   const d = new Date(dateVal)
+  if (isNaN(d.getTime())) return '—'
   return d.toLocaleString('en-IN', {
     day: '2-digit',
     month: 'short',
@@ -70,16 +71,28 @@ function formatDate(dateVal) {
   })
 }
 
+function formatNote(note) {
+  if (!note || typeof note !== 'string') return ''
+  if (note.startsWith('Game Bet:')) return 'Bet: ' + note.replace(/^Game Bet:\s*/i, '').trim()
+  if (note.startsWith('Game Win:')) return 'Win: ' + note.replace(/^Game Win:\s*/i, '').trim()
+  return note
+}
+
 async function fetchHistory() {
   if (!auth.user?.id) return
   loading.value = true
   try {
     const res = await walletApi.getPlayHistory(auth.user.id)
-    if (res.data && Array.isArray(res.data)) {
-      list.value = res.data
-    }
+    const raw = res?.data
+    const arr = Array.isArray(raw) ? raw : (raw?.data && Array.isArray(raw.data) ? raw.data : [])
+    list.value = arr.map((item) => ({
+      ...item,
+      amount: item.amount != null ? Number(item.amount) : 0,
+      date: item.date != null ? item.date : 0,
+    }))
   } catch (err) {
     console.error('Error fetching game history:', err)
+    list.value = []
   } finally {
     loading.value = false
   }

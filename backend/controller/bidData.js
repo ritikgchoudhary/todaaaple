@@ -1735,7 +1735,26 @@ export const getPlayHistory = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid user id" });
     }
     const doc = await PlayHistory.findOne({ userId }).lean();
-    const list = (doc && Array.isArray(doc.history)) ? doc.history : [];
+    const list = (doc && Array.isArray(doc.history)) ? [...doc.history] : [];
+
+    // Include game-related wallet history (slots/casino from gameCallback)
+    const user = await User.findOne({ id: userId }, { walletHistory: 1 }).lean();
+    if (user && Array.isArray(user.walletHistory)) {
+      const gameWalletEntries = user.walletHistory.filter(
+        (e) => e && e.note && (String(e.note).includes("Game Bet") || String(e.note).includes("Game Win"))
+      );
+      for (const e of gameWalletEntries) {
+        list.push({
+          game: "Casino",
+          amount: e.amount,
+          credit: !!e.credit,
+          date: e.date,
+          note: e.note || "",
+          id: e._id || e.date,
+        });
+      }
+    }
+
     list.sort((a, b) => (b.date || 0) - (a.date || 0));
     res.json(list);
   } catch (err) {
