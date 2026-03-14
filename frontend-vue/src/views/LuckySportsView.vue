@@ -152,6 +152,9 @@ onUnmounted(() => {
   z-index: 100;
   flex-shrink: 0;
 }
+.logoWrap {
+  margin-left: 12px;
+}
 .headerLogo {
   height: 50px;
   width: auto;

@@ -1122,11 +1122,10 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   text-decoration: none;
+  margin-left: 12px;
 }
 .headerLogo {
   height: 40px;
-  width: auto;
-  min-width: 160px;
   object-fit: contain;
 }
 .headerActions { display: flex; align-items: center; gap: 8px; }
