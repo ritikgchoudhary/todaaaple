@@ -16,9 +16,14 @@
         <div class="logoWrap">
           <img :src="siteLogoUrl || 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png'" alt="Site Logo" class="headerLogo" />
         </div>
-        <div class="langWrap" style="color: #000;">
-          <span class="langFlag" aria-hidden="true">&#127482;&#127480;</span>
-          <span class="langText">EN</span>
+        <div class="langWrap">
+          <div class="langInner">
+            <span class="langFlag">🇮🇳</span>
+            <span class="langText">EN</span>
+            <svg class="chevronDown" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
         </div>
       </header>
     </div>
@@ -438,12 +443,34 @@ async function handleSubmit(e) {
 .langWrap {
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 500;
 }
-.langFlag { font-size: 1rem; }
+.langInner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.langInner:hover {
+  background: #e2e8f0;
+}
+.langFlag { 
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.langText {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #334155;
+}
+.chevronDown {
+  color: #64748b;
+  margin-left: 2px;
+}
 
 .tabsWrap {
   width: 100%;
