@@ -118,16 +118,7 @@ async function fetchHistory() {
   }
   loading.value = true
   try {
-    let res
-    try {
-      res = await walletApi.getPlayHistory(uid)
-    } catch (firstErr) {
-      if (firstErr.response?.status === 404 || !firstErr.response) {
-        res = await walletApi.getPlayHistoryLegacy(uid)
-      } else {
-        throw firstErr
-      }
-    }
+    const res = await walletApi.getPlayHistory(uid)
     const raw = res?.data
     if (typeof raw === 'string' && raw.length > 0 && raw.trim().startsWith('<')) {
       errorMsg.value = 'Server returned invalid response. Try again.'
