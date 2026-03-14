@@ -14,6 +14,21 @@
 
       <!-- Main Content -->
       <main class="content">
+        <!-- Date Filter -->
+        <div class="date-filter-wrap">
+          <label class="date-filter-label">Date</label>
+          <div class="date-filter-options">
+            <button 
+              v-for="opt in dateOptions" 
+              :key="opt.value"
+              :class="['date-btn', { active: dateFilter === opt.value }]"
+              @click="dateFilter = opt.value"
+            >
+              {{ opt.label }}
+            </button>
+          </div>
+        </div>
+
         <!-- Status Filter Tabs -->
         <div class="filter-tabs">
           <button 
@@ -98,6 +113,14 @@ const auth = useAuthStore()
 const loading = ref(true)
 const history = ref([])
 const activeTab = ref('all')
+const dateFilter = ref('all')
+
+const dateOptions = [
+  { label: 'All', value: 'all' },
+  { label: 'Today', value: 'today' },
+  { label: 'Last 7 days', value: '7d' },
+  { label: 'Last 30 days', value: '30d' }
+]
 
 const tabs = [
   { label: 'All', value: 'all' },
@@ -105,6 +128,32 @@ const tabs = [
   { label: 'Success', value: 'Success' },
   { label: 'Rejected', value: 'Rejected' }
 ]
+
+function isInDateRange(itemDate, range) {
+  if (range === 'all') return true
+  const d = new Date(itemDate)
+  d.setHours(0, 0, 0, 0)
+  const now = new Date()
+  now.setHours(23, 59, 59, 999)
+  if (range === 'today') {
+    const today = new Date(now)
+    today.setHours(0, 0, 0, 0)
+    return d.getTime() >= today.getTime()
+  }
+  if (range === '7d') {
+    const start = new Date(now)
+    start.setDate(start.getDate() - 7)
+    start.setHours(0, 0, 0, 0)
+    return d.getTime() >= start.getTime()
+  }
+  if (range === '30d') {
+    const start = new Date(now)
+    start.setDate(start.getDate() - 30)
+    start.setHours(0, 0, 0, 0)
+    return d.getTime() >= start.getTime()
+  }
+  return true
+}
 
 const fetchHistory = async () => {
   if (!auth.user?.id) return
@@ -123,8 +172,10 @@ const fetchHistory = async () => {
 }
 
 const filteredHistory = computed(() => {
-  if (activeTab.value === 'all') return history.value
-  return history.value.filter(item => item.status === activeTab.value)
+  let list = history.value
+  list = list.filter(item => isInDateRange(item.date, dateFilter.value))
+  if (activeTab.value === 'all') return list
+  return list.filter(item => item.status === activeTab.value)
 })
 
 const getStatusClass = (status) => {
@@ -206,6 +257,40 @@ onMounted(() => {
 }
 
 .header-placeholder { width: 40px; }
+
+/* Date Filter */
+.date-filter-wrap {
+  padding: 12px 16px 0;
+}
+.date-filter-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+.date-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.date-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.date-btn.active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
 
 /* Filter Tabs */
 .filter-tabs {
