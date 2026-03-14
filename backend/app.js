@@ -90,6 +90,9 @@ app.get('/health', (req, res) => res.json({ ok: true }));
 app.get('/getPlayHistory/:id', checkAuth, (req, res, next) => getPlayHistory(req, res, next));
 app.get('/api/getPlayHistory/:id', checkAuth, (req, res, next) => getPlayHistory(req, res, next));
 
+// User home (with optional playHistory) – ensure JSON response before static
+app.get('/getUserHome/:id', checkAuth, (req, res, next) => getUserDataHome(req, res, next));
+
 // Vue build path – root / and SPA routes serve this (before API router)
 const buildDir = path.resolve(__dirname, '..', 'frontend-vue', 'dist');
 const indexPath = path.join(buildDir, 'index.html');

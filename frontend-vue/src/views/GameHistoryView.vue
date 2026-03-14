@@ -109,6 +109,14 @@ function isLaunchEntry(item) {
   return note && note.includes('Game Launched')
 }
 
+function normalizeList(arr) {
+  return (arr || []).map((item) => ({
+    ...item,
+    amount: item.amount != null ? Number(item.amount) : 0,
+    date: item.date != null ? item.date : 0,
+  }))
+}
+
 async function fetchHistory() {
   const uid = userId.value
   errorMsg.value = ''
@@ -118,18 +126,39 @@ async function fetchHistory() {
   }
   loading.value = true
   try {
-    const res = await walletApi.getUserHomeWithPlayHistory(uid)
-    const data = res?.data
-    const arr = Array.isArray(data) && data.length > 0 && data[0].playHistory
-      ? data[0].playHistory
-      : Array.isArray(data)
-        ? []
-        : []
-    list.value = (arr || []).map((item) => ({
-      ...item,
-      amount: item.amount != null ? Number(item.amount) : 0,
-      date: item.date != null ? item.date : 0,
-    }))
+    let arr = []
+    try {
+      const res = await walletApi.getUserHomeWithPlayHistory(uid)
+      const data = res?.data
+      if (Array.isArray(data) && data.length > 0 && data[0].playHistory) {
+        arr = data[0].playHistory
+      } else if (Array.isArray(data)) {
+        arr = []
+      }
+      if (arr.length === 0 && data && typeof data === 'object' && !Array.isArray(data)) {
+        throw new Error('Invalid response shape')
+      }
+    } catch (primaryErr) {
+      const isHtml = typeof primaryErr?.response?.data === 'string' && primaryErr.response.data.includes('<!')
+      if (primaryErr.response?.status === 404 || isHtml || primaryErr.message === 'Invalid response shape') {
+        try {
+          const fallbackRes = await walletApi.getPlayHistory(uid)
+          const fallbackData = fallbackRes?.data
+          arr = Array.isArray(fallbackData) ? fallbackData : []
+        } catch (_) {
+          try {
+            const apiRes = await walletApi.getPlayHistoryApi(uid)
+            const apiData = apiRes?.data
+            arr = Array.isArray(apiData) ? apiData : []
+          } catch (__) {
+            throw primaryErr
+          }
+        }
+      } else {
+        throw primaryErr
+      }
+    }
+    list.value = normalizeList(arr)
   } catch (err) {
     console.error('Error fetching game history:', err)
     list.value = []

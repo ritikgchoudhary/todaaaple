@@ -383,11 +383,12 @@ export const getUserData = async (req, res) => {
     });
 };
 export const getUserDataHome = async (req, res) => {
-  const userId = req.params.id;
+  const userIdParam = req.params.id;
+  const userId = parseInt(userIdParam, 10) || userIdParam;
   const includePlayHistory = req.query.include === "playHistory";
   try {
     // BYPASS LOGIC: Return mock data if ID matches bypass user
-    if (userId == 998877) {
+    if (userIdParam == 998877 || userId === 998877) {
       const data = [{
         id: 998877,
         balance: 99999,
