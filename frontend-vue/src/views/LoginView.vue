@@ -86,10 +86,10 @@
           <span class="footerIcon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
           <span>Forgot password</span>
         </router-link>
-        <a href="#" class="footerLink" @click.prevent>
+        <router-link to="/help" class="footerLink">
           <span class="footerIcon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
           <span>Customer Service</span>
-        </a>
+        </router-link>
       </div>
     </div>
 
@@ -161,10 +161,10 @@
           <span class="footerIcon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></span>
           <span>Forgot password</span>
         </router-link>
-        <a href="#" class="footerLink" @click.prevent>
+        <router-link to="/help" class="footerLink">
           <span class="footerIcon accent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
           <span>Customer Service</span>
-        </a>
+        </router-link>
       </div>
     </div>
 
@@ -254,8 +254,11 @@ onMounted(async () => {
     try {
       const foundUser = JSON.parse(loggedInUser)
       API.get(`/getUser/${foundUser.result.id}`)
-        .then(() => router.push('/'))
-        .catch(() => router.push('/login'))
+        .then(() => router.push(route.query.redirect || '/'))
+        .catch(() => {
+          localStorage.removeItem('user')
+          router.push('/login')
+        })
     } catch (_) {}
   }
   if (!document.getElementById('recaptcha-key')) {
