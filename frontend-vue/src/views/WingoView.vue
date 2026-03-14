@@ -427,11 +427,39 @@ async function fetchData() {
     }
     
     if (myRes.data) {
-      myHistory.value = Array.isArray(myRes.data) ? myRes.data : []
+      const list = Array.isArray(myRes.data) ? myRes.data : []
+      myHistory.value = list
+      // Show win popup when latest bid has winning > 0 (and we haven't shown for this win yet)
+      const latest = list[0]
+      const winAmount = latest && (typeof latest.winning === 'number' ? latest.winning : parseFloat(latest.winning))
+      if (latest && winAmount > 0) {
+        const key = `${latest.period}-${latest.date}-${winAmount}`
+        if (lastShownWinKey.value !== key) {
+          lastShownWinKey.value = key
+          winningDialog.value = {
+            show: true,
+            period: latest.period ?? '',
+            color: getResultColorLabel(latest.select),
+            amount: (typeof winAmount === 'number' ? winAmount : parseFloat(winAmount) || 0).toFixed(2)
+          }
+        }
+      }
     }
   } catch (err) {
     console.error("Fetch data failed:", err)
   }
+}
+
+function getResultColorLabel(select) {
+  if (!select) return '—'
+  const s = String(select)
+  if (s.includes('Green')) return 'Green'
+  if (s.includes('Red')) return 'Red'
+  if (s.includes('Violet')) return 'Violet'
+  if (s.includes('Big')) return 'Big'
+  if (s.includes('Small')) return 'Small'
+  if (/Select\s*\d+/.test(s)) return s.replace(/Select\s*/i, '') // e.g. "Select 5" -> "5"
+  return s
 }
 
 const parseColors = (c) => c ? c.split(' ') : []
