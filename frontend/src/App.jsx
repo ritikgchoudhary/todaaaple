@@ -118,7 +118,27 @@ const App = () => {
       MuiButton: { root: { borderRadius: 6 } },
       MuiCard: { root: { borderRadius: 6 } },
       MuiChip: { root: { borderRadius: 6 } },
-      MuiDialog: { paper: { borderRadius: 6 } },
+      MuiDialog: {
+        paper: { borderRadius: 6 },
+        scrollPaper: {
+          '@media (max-width: 600px)': {
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            paddingTop: 'max(24px, env(safe-area-inset-top))',
+            paddingBottom: 80,
+            paddingLeft: 16,
+            paddingRight: 16,
+            overflowY: 'auto',
+          },
+        },
+        paperScrollPaper: {
+          '@media (max-width: 600px)': {
+            margin: 0,
+            flexShrink: 0,
+            maxHeight: 'calc(100vh - 100px)',
+          },
+        },
+      },
       MuiBottomNavigation: { root: { borderRadius: 0 } },
       MuiBottomNavigationAction: {
         root: {
