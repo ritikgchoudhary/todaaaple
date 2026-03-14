@@ -22,6 +22,8 @@ import { getHomeCategoryGames, postHomeCategoryGames } from './controller/homeCa
 import { getSlots, postSlots, addSlotGame, updateSlotGame, deleteSlotGame } from './controller/slots.js';
 import { signin, signup, getUserDataHome } from './controller/user.js';
 import { launchGame, gameCallback } from './controller/game.js';
+import checkAuth from './middleware/secure.js';
+import { getPlayHistory } from './controller/bidData.js';
 
 const app = express();
 const PORT = process.env.PORT || 4001;
@@ -172,6 +174,9 @@ app.get('/getUser/:id', getUserDataHome);
 
 // Game launch – POST /game/launch/:id with body { game_uid } or { game_id }
 app.post('/game/launch/:id', (req, res, next) => launchGame(req, res, next));
+
+// Game history – GET /getPlayHistory/:id (auth required)
+app.get('/getPlayHistory/:id', checkAuth, (req, res, next) => getPlayHistory(req, res, next));
 
 // So that GET /user/signin/ in browser shows backend is updated (login must use POST)
 app.get('/user/signin', (req, res) => res.json({ message: 'Use POST with phone and password to login' }));

@@ -2,6 +2,7 @@ import crypto from "crypto";
 import axios from "axios";
 import User from "../model/userSchema.js";
 import Game from "../model/Game.js";
+import PlayHistory from "../model/playHistory.js";
 import ErrorResponse from "../utils/error.js";
 import Dotenv from "dotenv";
 Dotenv.config({ path: "./config.env" });
@@ -84,6 +85,27 @@ export const launchGame = async (req, res, next) => {
         */
 
         if (response.data.code === 0) {
+            try {
+                await PlayHistory.updateOne(
+                    { userId: user.id },
+                    {
+                        $setOnInsert: { userId: user.id },
+                        $push: {
+                            history: {
+                                game: "Casino",
+                                amount: 0,
+                                credit: false,
+                                date: Date.now(),
+                                note: `Game Launched: ${finalGameUid}`,
+                                id: `launch-${Date.now()}`,
+                            },
+                        },
+                    },
+                    { upsert: true }
+                );
+            } catch (logErr) {
+                console.error("PlayHistory log error:", logErr.message);
+            }
             res.status(200).json({
                 success: true,
                 url: response.data.data.url

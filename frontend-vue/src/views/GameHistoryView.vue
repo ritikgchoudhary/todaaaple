@@ -29,7 +29,8 @@
           <div v-for="(item, idx) in list" :key="item.id || idx" class="history-card">
             <div class="card-row main-row">
               <span class="game-name">{{ item.game || 'Game' }}</span>
-              <span :class="['amount', item.credit ? 'credit' : 'debit']">
+              <span v-if="isLaunchEntry(item)" class="amount neutral">Opened</span>
+              <span v-else :class="['amount', item.credit ? 'credit' : 'debit']">
                 {{ item.credit ? '+' : '-' }}₹{{ formatAmount(item.amount) }}
               </span>
             </div>
@@ -75,7 +76,13 @@ function formatNote(note) {
   if (!note || typeof note !== 'string') return ''
   if (note.startsWith('Game Bet:')) return 'Bet: ' + note.replace(/^Game Bet:\s*/i, '').trim()
   if (note.startsWith('Game Win:')) return 'Win: ' + note.replace(/^Game Win:\s*/i, '').trim()
+  if (note.startsWith('Game Launched:')) return 'Launched: ' + note.replace(/^Game Launched:\s*/i, '').trim()
   return note
+}
+
+function isLaunchEntry(item) {
+  const note = item.note && String(item.note)
+  return note && note.includes('Game Launched')
 }
 
 async function fetchHistory() {
@@ -243,6 +250,7 @@ onMounted(() => {
 
 .amount.credit { color: #059669; }
 .amount.debit { color: #dc2626; }
+.amount.neutral { color: #64748b; font-weight: 600; }
 
 .sub-row {
   font-size: 0.8rem;
