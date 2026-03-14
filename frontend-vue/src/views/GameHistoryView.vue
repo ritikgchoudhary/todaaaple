@@ -120,13 +120,19 @@ async function fetchHistory() {
   try {
     const res = await walletApi.getPlayHistory(uid)
     const raw = res?.data
-    if (typeof raw === 'string' && raw.length > 0 && raw.trim().startsWith('<')) {
-      errorMsg.value = 'Server returned invalid response. Try again.'
-      list.value = []
-      return
+    if (typeof raw === 'string') {
+      if (raw.trim().startsWith('<')) {
+        errorMsg.value = 'Server returned invalid response. Try again.'
+        list.value = []
+        return
+      }
+      if (raw === 'No data' || raw.trim() === '') {
+        list.value = []
+        return
+      }
     }
     const arr = Array.isArray(raw) ? raw : (raw?.data && Array.isArray(raw.data) ? raw.data : [])
-    list.value = arr.map((item) => ({
+    list.value = (arr || []).map((item) => ({
       ...item,
       amount: item.amount != null ? Number(item.amount) : 0,
       date: item.date != null ? item.date : 0,
