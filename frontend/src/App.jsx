@@ -125,12 +125,10 @@ const App = () => {
         paper: { borderRadius: 6 },
         scrollPaper: {
           '@media (max-width: 600px)': {
-            alignItems: 'flex-start',
+            alignItems: 'center',
             justifyContent: 'center',
-            paddingTop: 'max(24px, env(safe-area-inset-top))',
+            padding: 16,
             paddingBottom: 80,
-            paddingLeft: 16,
-            paddingRight: 16,
             overflowY: 'auto',
           },
         },

@@ -144,11 +144,9 @@ canvas {
 }
 @media (max-width: 600px) {
   .MuiDialog-scrollPaper {
-    align-items: flex-start !important;
+    align-items: center !important;
     justify-content: center !important;
-    padding-top: max(24px, env(safe-area-inset-top)) !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding: 16px !important;
     padding-bottom: 80px !important;
     overflow-y: auto !important;
   }
@@ -159,13 +157,11 @@ canvas {
   }
 }
 
-/* Withdrawal page: same fix when class is used (backup) */
+/* Withdrawal page: same (centered) */
 .withdrawal-dialog-top .MuiDialog-scrollPaper {
-  align-items: flex-start !important;
+  align-items: center !important;
   justify-content: center !important;
-  padding-top: max(24px, env(safe-area-inset-top)) !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
+  padding: 16px !important;
   padding-bottom: 80px !important;
   overflow-y: auto !important;
 }
