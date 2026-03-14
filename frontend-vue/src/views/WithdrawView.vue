@@ -322,7 +322,12 @@ async function fetchData() {
                 withdrawalHistory.value = [...userData.withdrawal].reverse()
             }
         }
-    } catch (err) {}
+        const histRes = await walletApi.getWithdrawalHistory(auth.user.id)
+        const list = Array.isArray(histRes.data) ? histRes.data : []
+        lastFiveTransactions.value = list.slice(0, 5)
+    } catch (err) {
+        lastFiveTransactions.value = []
+    }
     setTimeout(() => fetching.value = false, 800)
 }
 
@@ -438,6 +443,43 @@ onMounted(fetchData)
   box-shadow: 0 0 30px rgba(15, 23, 42, 0.1);
   overflow-x: hidden;
 }
+
+/* Last 5 Transactions */
+.last-five-section {
+  margin: 16px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+.last-five-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+}
+.last-five-empty {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+.last-five-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.last-five-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.8125rem;
+}
+.last-five-item:last-child { border-bottom: none; }
+.last-five-date { color: #64748b; flex: 1; min-width: 0; }
+.last-five-amount { font-weight: 600; color: #0f172a; margin: 0 8px; }
+.last-five-status { color: #64748b; }
+.last-five-status.success { color: #22c55e; }
 
 /* Header */
 .header {
