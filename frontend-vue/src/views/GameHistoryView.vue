@@ -17,6 +17,16 @@
           <p>Loading...</p>
         </div>
 
+        <div v-else-if="errorMsg" class="error-state">
+          <p class="error-text">{{ errorMsg }}</p>
+          <button class="retry-btn" @click="fetchHistory">Retry</button>
+        </div>
+
+        <div v-else-if="!userId" class="empty-state">
+          <p>Please log in to view game history.</p>
+          <router-link to="/account" class="back-to-account">Back to Account</router-link>
+        </div>
+
         <div v-else-if="list.length === 0" class="empty-state">
           <div class="empty-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
@@ -46,13 +56,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import * as walletApi from '../api/wallet'
 
 const auth = useAuthStore()
 const loading = ref(true)
 const list = ref([])
+const errorMsg = ref('')
+
+const userId = computed(() => {
+  const id = auth.user?.id
+  if (id != null) return id
+  try {
+    const raw = localStorage.getItem('user')
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      return parsed?.result?.id ?? parsed?.id ?? null
+    }
+  } catch (_) {}
+  return null
+})
 
 function formatAmount(val) {
   const n = Number(val)
@@ -86,11 +110,30 @@ function isLaunchEntry(item) {
 }
 
 async function fetchHistory() {
-  if (!auth.user?.id) return
+  const uid = userId.value
+  errorMsg.value = ''
+  if (!uid) {
+    loading.value = false
+    return
+  }
   loading.value = true
   try {
-    const res = await walletApi.getPlayHistory(auth.user.id)
+    let res
+    try {
+      res = await walletApi.getPlayHistory(uid)
+    } catch (firstErr) {
+      if (firstErr.response?.status === 404 || !firstErr.response) {
+        res = await walletApi.getPlayHistoryLegacy(uid)
+      } else {
+        throw firstErr
+      }
+    }
     const raw = res?.data
+    if (typeof raw === 'string' && raw.length > 0 && raw.trim().startsWith('<')) {
+      errorMsg.value = 'Server returned invalid response. Try again.'
+      list.value = []
+      return
+    }
     const arr = Array.isArray(raw) ? raw : (raw?.data && Array.isArray(raw.data) ? raw.data : [])
     list.value = arr.map((item) => ({
       ...item,
@@ -100,6 +143,15 @@ async function fetchHistory() {
   } catch (err) {
     console.error('Error fetching game history:', err)
     list.value = []
+    const status = err.response?.status
+    const msg = err.response?.data?.message || err.response?.data?.msg
+    if (status === 401) {
+      errorMsg.value = 'Please log in again.'
+    } else if (msg) {
+      errorMsg.value = msg
+    } else {
+      errorMsg.value = 'Could not load game history. Check your connection and try again.'
+    }
   } finally {
     loading.value = false
   }
@@ -211,6 +263,33 @@ onMounted(() => {
   margin-top: 8px;
   font-size: 0.875rem;
   opacity: 0.8;
+}
+
+.error-state {
+  text-align: center;
+  padding: 32px 24px;
+}
+.error-text {
+  color: #dc2626;
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+}
+.retry-btn {
+  padding: 10px 20px;
+  background: #0d9488;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.retry-btn:active { opacity: 0.9; }
+.back-to-account {
+  display: inline-block;
+  margin-top: 12px;
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .history-list {
