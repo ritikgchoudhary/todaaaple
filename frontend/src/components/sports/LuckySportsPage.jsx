@@ -108,7 +108,7 @@ export default function LuckySportsPage() {
 
   useEffect(() => {
     axios.get(`${api.url}/site-settings`).then((res) => {
-      if (res.data?.logoUrl) setSiteLogoUrl(res.data.logoUrl);
+      if (res.data?.siteLogoUrl) setSiteLogoUrl(res.data.siteLogoUrl);
     }).catch(() => {});
   }, []);
 
