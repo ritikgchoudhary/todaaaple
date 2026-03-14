@@ -4,7 +4,7 @@
       <!-- Header -->
       <header class="header">
         <router-link to="/" class="logoWrap">
-          <img src="https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png" alt="DELTIN SPORT" class="headerLogo" />
+          <img :src="siteLogoUrl || 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png'" alt="Site" class="headerLogo" />
         </router-link>
         
         <div v-if="auth.isLoggedIn" class="headerBalance">
@@ -50,6 +50,7 @@ import * as walletApi from '../api/wallet'
 
 const router = useRouter()
 const auth = useAuthStore()
+const siteLogoUrl = ref('')
 const userBalance = ref(0)
 const iframeUrl = ref(null)
 const isGameLoading = ref(true)
@@ -100,6 +101,9 @@ async function launchSports() {
 }
 
 onMounted(() => {
+  api.getSiteSettings().then((res) => {
+    if (res.data?.siteLogoUrl) siteLogoUrl.value = res.data.siteLogoUrl
+  }).catch(() => {})
   fetchBalance()
   launchSports()
   
@@ -143,7 +147,8 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 .headerLogo {
-  height: 20px;
+  height: 50px;
+  width: auto;
   object-fit: contain;
 }
 

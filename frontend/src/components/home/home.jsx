@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
   headerLogo: {
     height: "50px",
     width: "auto",
+    minWidth: "160px",
     objectFit: "contain",
   },
   authBtns: {
