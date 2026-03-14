@@ -9,6 +9,7 @@ export const getUserWithdrawal = (userId) => API.get(`/getUserWithdrawal/${userI
 export const applyWithdrawal = (data) => API.post('/applyWithdrawal', data)
 export const applyWithdrawalUSDT = (data) => API.post('/applyWithdrawalUSDT', data)
 export const getWithdrawalHistory = (userId) => API.get(`/getWithdrawal/${userId}`)
+export const getPlayHistory = (userId) => API.get(`/getPlayHistory/${userId}`)
 
 // Deposit / Gateway Endpoints
 export const getCurrentGateway = () => API.get('/getCurrentGateway')

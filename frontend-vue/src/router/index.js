@@ -30,6 +30,7 @@ import ApiDocsView from '../views/ApiDocsView.vue'
 import WithdrawView from '../views/WithdrawView.vue'
 import LuckySportsView from '../views/LuckySportsView.vue'
 import WithdrawalHistoryView from '../views/WithdrawalHistoryView.vue'
+import GameHistoryView from '../views/GameHistoryView.vue'
 import DepositHistoryView from '../views/DepositHistoryView.vue'
 import InviteView from '../views/InviteView.vue'
 import InvitationRecordView from '../views/InvitationRecordView.vue'
@@ -76,6 +77,7 @@ const routes = [
   { path: '/withdrawal', name: 'Withdraw', component: WithdrawView, meta: { title: 'Withdraw', requiresAuth: true, showNav: true } },
   { path: '/lucky-sports', name: 'LuckySports', component: LuckySportsView, meta: { title: 'Sports', requiresAuth: true, showNav: true } },
   { path: '/withdrawalHistory', name: 'WithdrawalHistory', component: WithdrawalHistoryView, meta: { title: 'Withdrawal History', requiresAuth: true, showNav: false } },
+  { path: '/gameHistory', name: 'GameHistory', component: GameHistoryView, meta: { title: 'Game History', requiresAuth: true, showNav: false } },
   { path: '/depositHistory', name: 'DepositHistory', component: DepositHistoryView, meta: { title: 'Deposit History', requiresAuth: true, showNav: false } },
   { path: '/invite', name: 'Invite', component: InviteView, meta: { title: 'Invite Friends', requiresAuth: true, showNav: false } },
   { path: '/invitationRecord', name: 'InvitationRecord', component: InvitationRecordView, meta: { title: 'Invitation Record', requiresAuth: true, showNav: false } },

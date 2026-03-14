@@ -162,6 +162,7 @@ const menuItems = [
   { label: 'My Invitation Bonus', path: '/invitationBonus', img: icons.bonus, bg: '#FEF3C7' },
   { label: 'Invite Friends', path: '/invite', img: icons.invite, bg: '#ECFDF5' },
   { label: 'Withdrawal History', path: '/withdrawalHistory', img: icons.history, bg: '#F1F5F9' },
+  { label: 'Game History', path: '/gameHistory', img: 'https://img.icons8.com/fluency/48/game-controller.png', bg: '#E0F2FE' },
   { label: 'Red Envelope', path: '/redenvelope', img: icons.envelope, bg: '#FEE2E2' },
   { label: 'My Promotion', path: '/mypromotion', img: icons.promotion, bg: '#E0E7FF' },
   { label: 'My Wallet', path: '/wallet', img: icons.wallet, bg: '#DCFCE7' },

@@ -1727,6 +1727,22 @@ export const getWithdrawal = async (req, res, next) => {
   });
   res.send(withdrawal.length > 0 ? withdrawal : "No data");
 };
+
+export const getPlayHistory = async (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+    const doc = await PlayHistory.findOne({ userId }).lean();
+    const list = (doc && Array.isArray(doc.history)) ? doc.history : [];
+    list.sort((a, b) => (b.date || 0) - (a.date || 0));
+    res.json(list);
+  } catch (err) {
+    console.error("getPlayHistory error:", err);
+    res.status(500).json({ message: "Failed to fetch game history" });
+  }
+};
 export const getAllWithdrawal = async (req, res, next) => {
   const api = req.params.api;
   if (!api || api === process.env.AdminAPI) {
