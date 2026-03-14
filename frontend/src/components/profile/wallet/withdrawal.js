@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {Typography,Dialog, Grid, Container, Button,FilledInput,InputLabel,FormControl,CircularProgress,Paper,Tabs,Tab,Box} from '@material-ui/core/';
+import {Typography,Dialog, Grid, Container, Button,FilledInput,InputLabel,FormControl,CircularProgress,Paper,Tabs,Tab,Box,List,ListItem} from '@material-ui/core/';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -38,6 +38,7 @@ const Withdrawal = () => {
   const [tabValue, setTabValue] = useState(0);
   const [trcDialog, setTrcDialog] = useState({open: false, amount: 0});
   const [trcAddress, setTrcAddress] = useState('');
+  const [lastFiveTransactions, setLastFiveTransactions] = useState([]);
 
   // USDT conversion rate (1 USDT = 95 INR)
   const USDT_RATE = 95;
@@ -61,11 +62,16 @@ const Withdrawal = () => {
                         setBlock({...isBlocked, open: true, msg: response.data.user[0].block})
                     }
                 })
-                
-      .catch((error) => {
-        console.log(error);
-        history.push('/login');
-    });
+                .catch((error) => {
+                  console.log(error);
+                  history.push('/login');
+                });
+    axios.get(`${URL}/getWithdrawal/${foundUser.result.id}`, { headers: { Authorization: AuthStr } })
+                .then(response => {
+                    const data = Array.isArray(response.data) ? response.data : [];
+                    setLastFiveTransactions(data.slice(0, 5));
+                })
+                .catch(() => setLastFiveTransactions([]));
      
     }else{
       history.push('/login');
@@ -411,6 +417,38 @@ const Withdrawal = () => {
                   <Typography  align="center" ><Button type="submit"  style={{paddingTop: '12px',color: 'white', textTransform: 'none'}}>Withdraw USDT</Button></Typography>
                 </Paper>
             </TabPanel>
+
+            {/* Last 5 Transactions */}
+            <Paper style={{ margin: '15px 20px', padding: '12px 16px', borderRadius: '8px' }}>
+              <Typography style={{ fontWeight: 'bold', marginBottom: '10px', fontSize: '14px' }}>Last 5 Transactions</Typography>
+              {!lastFiveTransactions || lastFiveTransactions.length === 0 ? (
+                <Typography style={{ color: '#666', fontSize: '13px' }}>No transactions yet.</Typography>
+              ) : (
+                <List disablePadding>
+                  {lastFiveTransactions.map((tx, idx) => (
+                    <ListItem key={idx} style={{ padding: '8px 0', borderBottom: idx < lastFiveTransactions.length - 1 ? '1px solid #eee' : 'none' }}>
+                      <Grid container alignItems="center" justify="space-between" wrap="nowrap">
+                        <Grid item xs={5}>
+                          <Typography style={{ fontSize: '11px', color: '#666' }}>
+                            {new Date(tx.date).toLocaleDateString()} {new Date(tx.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          {tx.usdt != null && tx.usdt !== '' ? (
+                            <Typography style={{ fontWeight: 600, color: '#f39c12', fontSize: '13px' }}>{tx.usdt} USDT</Typography>
+                          ) : (
+                            <Typography style={{ fontWeight: 600, fontSize: '13px' }}>₹{tx.amount}</Typography>
+                          )}
+                        </Grid>
+                        <Grid item xs={3}>
+                          <Typography style={{ fontSize: '12px', color: tx.status === 'Success' ? '#22c55e' : '#64748b' }}>{tx.status}</Typography>
+                        </Grid>
+                      </Grid>
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Paper>
 
             <Link to="/withdrawalHistory"  style={{textDecoration: 'none', color: 'black'}}>
               <Paper style={{backgroundColor: 'grey',margin: '15px',marginBottom: '100px', height: '50px',borderRadius: '8px'}}>
