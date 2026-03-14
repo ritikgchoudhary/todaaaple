@@ -61,7 +61,8 @@ const useStyles = makeStyles((theme) => ({
     whiteSpace: "nowrap",
   },
   headerLogo: {
-    height: "26px",
+    height: "50px",
+    width: "auto",
     objectFit: "contain",
   },
   headerBalance: {
