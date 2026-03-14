@@ -274,6 +274,8 @@ const timerSec = computed(() => Math.floor(timerTotal.value % 60))
 const records = ref([])
 const myHistory = ref([])
 const canOpen = ref(true)
+const isUpdating = ref(false)
+const isWaiting = ref(false)
 
 const winningDialog = ref({ show: false, period: '', color: '', amount: '0.00' })
 const rulesDialog = ref({ show: false })
@@ -366,6 +368,8 @@ function confirmPresale() {
 }
 
 async function updateTimer() {
+  if (isUpdating.value) return
+  isUpdating.value = true
   try {
     const res = await wingoApi.getTimer(gameId.value)
     if (res.data && Array.isArray(res.data) && res.data.length > 0) {
@@ -373,18 +377,34 @@ async function updateTimer() {
       const duration = gameId.value === '1' ? 60 : (gameId.value === '3' ? 180 : 300)
       const now = Date.now()
       
-      // Use lastRec.date if available, otherwise fallback to a safe default
-      const lastEndDate = lastRec.date || now
-      const remaining = (lastEndDate / 1000 + duration) - (now / 1000)
+      const lastRecTime = Number(lastRec.date) || now
+      const nextEnd = lastRecTime + (duration * 1000)
+      let remaining = Math.floor((nextEnd - now) / 1000)
       
-      timerTotal.value = Math.max(0, Math.floor(remaining))
-      currentPeriod.value = lastRec.id ? String(parseInt(lastRec.id) + 1) : '...'
+      if (remaining <= 0) {
+        timerTotal.value = 0
+        isWaiting.value = true
+        // Keep current period same or increment based on logic? 
+        // If we see an OLD period and timer is 0, we stay on that ID+1.
+        currentPeriod.value = lastRec.id ? String(parseInt(lastRec.id) + 1) : '...'
+      } else {
+        timerTotal.value = remaining
+        isWaiting.value = false
+        currentPeriod.value = lastRec.id ? String(parseInt(lastRec.id) + 1) : '...'
+      }
       canOpen.value = timerTotal.value > cutoffSeconds.value
-    } else {
-      currentPeriod.value = 'Loading...'
     }
   } catch (err) {
     console.error("Timer update failed:", err)
+  } finally {
+    isUpdating.value = false
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible') {
+    updateTimer()
+    fetchData()
   }
 }
 
@@ -425,23 +445,37 @@ const getSelectColor = (s) => {
 }
 
 let timerInterval = null
+let syncInterval = null
+
 onMounted(() => {
   auth.refreshUser()
   updateTimer()
   fetchData()
+  
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  
   timerInterval = setInterval(() => {
     if (timerTotal.value > 0) {
       timerTotal.value--
       canOpen.value = timerTotal.value > cutoffSeconds.value
+      isWaiting.value = false
     } else {
+      isWaiting.value = true
       updateTimer()
       fetchData()
     }
   }, 1000)
+
+  // Periodic resync every 10 seconds to correct drift
+  syncInterval = setInterval(() => {
+    updateTimer()
+  }, 10000)
 })
 
 onUnmounted(() => { 
   if (timerInterval) clearInterval(timerInterval)
+  if (syncInterval) clearInterval(syncInterval)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
   ui.showBottomNav() // Ensure nav is restored if user navigates away
 })
 watch(() => route.params.id, () => { updateTimer(); fetchData() })
