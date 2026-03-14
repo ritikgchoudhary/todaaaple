@@ -106,6 +106,9 @@ const App = () => {
       h5: { fontSize: '0.9375rem' },
       h6: { fontSize: '0.875rem' },
     },
+    zIndex: {
+      modal: 10001,
+    },
     overrides: {
       MuiCssBaseline: {
         '@global': {

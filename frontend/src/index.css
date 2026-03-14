@@ -138,7 +138,10 @@ canvas {
   border-radius: 100% !important;
 }
 
-/* Dialogs at top on mobile so they don't sit over bottom nav (all pages including Notice popup) */
+/* Dialogs above bottom nav (z-index) and at top on mobile */
+.MuiModal-root {
+  z-index: 10001 !important;
+}
 @media (max-width: 600px) {
   .MuiDialog-scrollPaper {
     align-items: flex-start !important;
