@@ -214,20 +214,12 @@
         </div>
       </div>
 
-      <!-- Last 5 Transactions (inside mobile-container so it stays below form) -->
-      <div class="last-five-section">
-        <h3 class="last-five-title">Last 5 Transactions</h3>
-        <div v-if="!lastFiveTransactions.length" class="last-five-empty">No transactions yet.</div>
-        <ul v-else class="last-five-list">
-          <li v-for="(tx, idx) in lastFiveTransactions" :key="idx" class="last-five-item">
-            <span class="last-five-date">{{ formatTxDate(tx.date) }}</span>
-            <span class="last-five-amount">
-              <template v-if="tx.usdt != null && tx.usdt !== ''">{{ tx.usdt }} USDT</template>
-              <template v-else>₹{{ tx.amount }}</template>
-            </span>
-            <span class="last-five-status" :class="{ success: tx.status === 'Success' }">{{ tx.status }}</span>
-          </li>
-        </ul>
+      <!-- History button: go to withdrawal history -->
+      <div class="history-btn-wrap">
+        <router-link to="/withdrawalHistory" class="history-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          History
+        </router-link>
       </div>
     </div>
 
@@ -322,23 +314,11 @@ async function fetchData() {
                 withdrawalHistory.value = [...userData.withdrawal].reverse()
             }
         }
-        const histRes = await walletApi.getWithdrawalHistory(auth.user.id)
-        const list = Array.isArray(histRes.data) ? histRes.data : []
-        lastFiveTransactions.value = list.slice(0, 5)
-    } catch (err) {
-        lastFiveTransactions.value = []
-    }
+    } catch (err) {}
     setTimeout(() => fetching.value = false, 800)
 }
 
 const withdrawalHistory = ref([])
-const lastFiveTransactions = ref([])
-
-function formatTxDate(d) {
-  if (!d) return '—'
-  const dt = new Date(d)
-  return dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
 
 function processWithdraw() {
     if (activeTab.value === 'usdt') {
@@ -444,42 +424,31 @@ onMounted(fetchData)
   overflow-x: hidden;
 }
 
-/* Last 5 Transactions */
-.last-five-section {
+/* History button */
+.history-btn-wrap {
   margin: 16px;
-  padding: 14px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
 }
-.last-five-title {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 12px 0;
-}
-.last-five-empty {
-  font-size: 0.8125rem;
-  color: #64748b;
-}
-.last-five-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.last-five-item {
+.history-btn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #e2e8f0;
-  font-size: 0.8125rem;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
-.last-five-item:last-child { border-bottom: none; }
-.last-five-date { color: #64748b; flex: 1; min-width: 0; }
-.last-five-amount { font-weight: 600; color: #0f172a; margin: 0 8px; }
-.last-five-status { color: #64748b; }
-.last-five-status.success { color: #22c55e; }
+.history-btn:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
 
 /* Header */
 .header {
