@@ -4,7 +4,6 @@
       <button type="button" class="banner-close" aria-label="Close" @click="close">×</button>
       <div class="banner-brand">
         <img :src="siteLogoUrl || '/favicon.svg'" alt="" class="banner-logo" />
-        <span class="banner-title">{{ appName }} APP</span>
       </div>
       <button type="button" class="banner-download-btn" @click="onDownload">Download</button>
     </div>
@@ -17,7 +16,6 @@ import { useUiStore } from '../stores/ui'
 import * as walletApi from '../api/wallet'
 
 const BANNER_CLOSED_KEY = 'app_download_banner_closed'
-const appName = 'wynnonline'
 
 const ui = useUiStore()
 const visible = ref(false)
@@ -99,20 +97,10 @@ onMounted(async () => {
 }
 
 .banner-logo {
-  height: 36px;
+  height: 24px;
   width: auto;
-  max-width: 80px;
+  max-width: 52px;
   object-fit: contain;
-}
-
-.banner-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #000;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .banner-download-btn {
