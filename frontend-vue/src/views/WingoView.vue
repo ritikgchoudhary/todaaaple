@@ -485,8 +485,8 @@ watch(() => route.params.id, () => { updateTimer(); fetchData() })
 .btn-small { background: orange; }
 .disabled { background: #dbdbdb !important; cursor: not-allowed; box-shadow: none !important; }
 
-.number-grid-container { padding: 8px 12px; display: flex; justify-content: space-evenly; flex-wrap: wrap; gap: 10px; }
-.num-circle { width: 44px; height: 44px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12); }
+.number-grid-container { padding: 8px 12px; display: grid; grid-template-columns: repeat(5, 1fr); justify-items: center; gap: 10px; }
+.num-circle { width: 50px; height: 50px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12); }
 
 .records-container { padding: 16px; border-top: 10px solid #f5f5f5; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 700; }
