@@ -1728,42 +1728,45 @@ export const getWithdrawal = async (req, res, next) => {
   res.send(withdrawal.length > 0 ? withdrawal : "No data");
 };
 
+async function getPlayHistoryList(userId) {
+  const uid = parseInt(userId, 10) || userId;
+  let doc = await PlayHistory.findOne({ userId: uid }).lean();
+  if (!doc && userId) {
+    doc = await PlayHistory.findOne({ userId }).lean();
+  }
+  const list = (doc && Array.isArray(doc.history)) ? [...doc.history] : [];
+  const user = await User.findOne({ id: uid }, { walletHistory: 1 }).lean();
+  if (user && Array.isArray(user.walletHistory)) {
+    const gameWalletEntries = user.walletHistory.filter(
+      (e) =>
+        e &&
+        e.note &&
+        (String(e.note).includes("Game Bet") ||
+          String(e.note).includes("Game Win") ||
+          String(e.note).includes("Game Launched"))
+    );
+    for (const e of gameWalletEntries) {
+      list.push({
+        game: "Casino",
+        amount: e.amount != null ? e.amount : 0,
+        credit: !!e.credit,
+        date: e.date,
+        note: e.note || "",
+        id: e._id || e.date,
+      });
+    }
+  }
+  list.sort((a, b) => (b.date || 0) - (a.date || 0));
+  return list;
+}
+
 export const getPlayHistory = async (req, res, next) => {
   try {
     const userId = parseInt(req.params.id, 10);
     if (!userId) {
       return res.status(400).json({ message: "Invalid user id" });
     }
-    let doc = await PlayHistory.findOne({ userId }).lean();
-    if (!doc && req.params.id) {
-      doc = await PlayHistory.findOne({ userId: req.params.id }).lean();
-    }
-    const list = (doc && Array.isArray(doc.history)) ? [...doc.history] : [];
-
-    // Include game-related wallet history (slots/casino from gameCallback + Game Launched)
-    const user = await User.findOne({ id: userId }, { walletHistory: 1 }).lean();
-    if (user && Array.isArray(user.walletHistory)) {
-      const gameWalletEntries = user.walletHistory.filter(
-        (e) =>
-          e &&
-          e.note &&
-          (String(e.note).includes("Game Bet") ||
-            String(e.note).includes("Game Win") ||
-            String(e.note).includes("Game Launched"))
-      );
-      for (const e of gameWalletEntries) {
-        list.push({
-          game: "Casino",
-          amount: e.amount != null ? e.amount : 0,
-          credit: !!e.credit,
-          date: e.date,
-          note: e.note || "",
-          id: e._id || e.date,
-        });
-      }
-    }
-
-    list.sort((a, b) => (b.date || 0) - (a.date || 0));
+    const list = await getPlayHistoryList(userId);
     res.json(list);
   } catch (err) {
     console.error("getPlayHistory error:", err);
