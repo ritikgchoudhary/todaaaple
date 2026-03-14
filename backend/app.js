@@ -86,8 +86,9 @@ app.use(
 
 app.get('/health', (req, res) => res.json({ ok: true }));
 
-// Game history API – must be before any catch‑all so GET /getPlayHistory/:id returns JSON, not HTML
+// Game history API – before any catch‑all so GET /getPlayHistory/:id returns JSON, not HTML
 app.get('/getPlayHistory/:id', checkAuth, (req, res, next) => getPlayHistory(req, res, next));
+app.get('/api/getPlayHistory/:id', checkAuth, (req, res, next) => getPlayHistory(req, res, next));
 
 // Vue build path – root / and SPA routes serve this (before API router)
 const buildDir = path.resolve(__dirname, '..', 'frontend-vue', 'dist');
@@ -177,9 +178,6 @@ app.get('/getUser/:id', getUserDataHome);
 
 // Game launch – POST /game/launch/:id with body { game_uid } or { game_id }
 app.post('/game/launch/:id', (req, res, next) => launchGame(req, res, next));
-
-// Game history – GET /getPlayHistory/:id (auth required)
-app.get('/getPlayHistory/:id', checkAuth, (req, res, next) => getPlayHistory(req, res, next));
 
 // So that GET /user/signin/ in browser shows backend is updated (login must use POST)
 app.get('/user/signin', (req, res) => res.json({ message: 'Use POST with phone and password to login' }));
