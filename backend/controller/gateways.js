@@ -7940,8 +7940,10 @@ export const chineaseRushPay = async (req, res) => { }
 // Rupee Rush Payment Gateway Integration
 export const rupeeRushCreateOrder = async (req, res) => {
   try {
-    const { amount, customer_name, customer_email, customer_mobile } = req.body;
-    const userId = req.params.id; // Get userId from URL params due to checkAuth middleware
+    const userId = req.params.id;
+    const customer_mobile = req.body.customer_mobile || req.user?.phone;
+    const customer_name = req.body.customer_name || req.user?.username || 'User';
+    const amount = req.body.amount;
 
     // Validate required fields
     if (!amount || !userId || !customer_mobile) {
@@ -8554,8 +8556,11 @@ export const rupeeRushCallback = async (req, res) => {
 // WatchPay Create Order
 export const watchPayCreateOrder = async (req, res) => {
   try {
-    const { amount, customer_name, customer_email, customer_mobile } = req.body;
     const userId = req.params.id;
+    const customer_mobile = req.body.customer_mobile || req.user?.phone;
+    const customer_name = req.body.customer_name || req.user?.username || 'User';
+    const customer_email = req.body.customer_email || req.user?.email || 'user@example.com';
+    const amount = req.body.amount;
 
     // Validate required fields
     if (!amount || !userId || !customer_mobile) {
@@ -9102,8 +9107,11 @@ export const watchPayCallback = async (req, res) => {
 // lgPay Create Order
 export const lgPayCreateOrder = async (req, res) => {
   try {
-    const { amount, customer_name, customer_email, customer_mobile } = req.body;
     const userId = req.params.id;
+    const customer_mobile = req.body.customer_mobile || req.user?.phone;
+    const customer_name = req.body.customer_name || req.user?.username || 'User';
+    const customer_email = req.body.customer_email || req.user?.email || 'user@example.com';
+    const amount = req.body.amount;
 
     // Validate required fields
     if (!amount || !userId || !customer_mobile) {

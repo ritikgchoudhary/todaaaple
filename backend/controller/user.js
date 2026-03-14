@@ -395,7 +395,7 @@ export const getUserDataHome = async (req, res) => {
         rechargeHistory: []
       }]);
     }
-    const result = await User.find({ id: userId }, { id: 1, balance: 1, token: 1, firstRecharge: 1, block: 1, rechargeHistory: 1 });
+    const result = await User.find({ id: userId }, { id: 1, balance: 1, phone: 1, username: 1, token: 1, firstRecharge: 1, block: 1, rechargeHistory: 1 });
     res.status(200).send(result && result.length > 0 ? result : []);
   } catch (err) {
     console.error("getUserDataHome Error:", err.message);
