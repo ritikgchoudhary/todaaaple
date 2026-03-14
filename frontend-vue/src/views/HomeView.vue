@@ -394,10 +394,10 @@ const userBalance = ref(0)
 const isRefreshing = ref(false)
 
 function handleDownloadClick() {
-  if (ui.installPrompt) {
-    ui.triggerInstallPrompt()
-  } else if (apkDownloadUrl.value) {
+  if (apkDownloadUrl.value) {
     window.open(apkDownloadUrl.value, '_blank')
+  } else if (ui.installPrompt) {
+    ui.triggerInstallPrompt()
   } else {
     alert("To install the App:\n\n1. Tap your browser's menu (3 dots or share button)\n2. Select 'Add to Home Screen'")
   }
