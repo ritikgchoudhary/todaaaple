@@ -59,7 +59,7 @@
               <span class="countryCode">+91</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
-            <input v-model="formData.phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" class="input inputPhone" placeholder="8698232243" maxlength="15" />
+            <input v-model="formData.phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" class="input inputPhone" placeholder="Enter phone" maxlength="15" />
           </div>
         </div>
         <div class="fieldBlock">
@@ -106,7 +106,7 @@
               <span class="countryCode">+91</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
-            <input v-model="formData.phone" name="phone" type="tel" inputmode="numeric" class="input inputPhone" placeholder="8698232243" maxlength="15" />
+            <input v-model="formData.phone" name="phone" type="tel" inputmode="numeric" class="input inputPhone" placeholder="Enter phone" maxlength="15" />
           </div>
         </div>
         <div class="fieldBlock">
