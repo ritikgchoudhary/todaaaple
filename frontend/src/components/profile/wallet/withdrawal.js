@@ -418,7 +418,7 @@ const Withdrawal = () => {
               </Paper>
             </Link>
 
-            {/* TRC20 Address Dialog - positioned higher on mobile so it doesn't sit over bottom nav */}
+            {/* TRC20 Address Dialog - fixed at top so it doesn't sit over bottom nav */}
             <Dialog
               open={trcDialog.open}
               onClose={handleTrcDialogClose}
@@ -426,11 +426,15 @@ const Withdrawal = () => {
               fullWidth
               PaperProps={{
                 style: {
-                  alignSelf: 'flex-start',
-                  marginTop: 'max(env(safe-area-inset-top), 24px)',
-                  marginBottom: 24,
+                  position: 'absolute',
+                  top: 'max(env(safe-area-inset-top), 24px)',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  margin: 0,
                   maxHeight: 'calc(100vh - 80px)',
                   overflow: 'auto',
+                  width: 'calc(100% - 32px)',
+                  maxWidth: 448,
                 },
               }}
             >
@@ -514,11 +518,15 @@ const Withdrawal = () => {
                     PaperProps={{
                     style: {
                         boxShadow: 'none',
-                        alignSelf: 'flex-start',
-                        marginTop: 'max(env(safe-area-inset-top), 24px)',
-                        marginBottom: 24,
+                        position: 'absolute',
+                        top: 'max(env(safe-area-inset-top), 24px)',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        margin: 0,
                         maxHeight: 'calc(100vh - 80px)',
                         overflow: 'auto',
+                        width: 'calc(100% - 32px)',
+                        maxWidth: 448,
                     },
                     }}
                 >
