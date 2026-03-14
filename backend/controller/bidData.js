@@ -1728,7 +1728,7 @@ export const getWithdrawal = async (req, res, next) => {
   res.send(withdrawal.length > 0 ? withdrawal : "No data");
 };
 
-async function getPlayHistoryList(userId) {
+export async function getPlayHistoryList(userId) {
   const uid = parseInt(userId, 10) || userId;
   let doc = await PlayHistory.findOne({ userId: uid }).lean();
   if (!doc && userId) {

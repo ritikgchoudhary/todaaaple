@@ -18,6 +18,7 @@ import offerBonus from "../model/offerBonus.js";
 import extra from "../model/extra.js";
 import querystring from "querystring"
 import { creditCommission } from "./commission.js";
+import { getPlayHistoryList } from "./bidData.js";
 
 export const signin = async (req, res, next) => {
   const phone = req.body.phone;
@@ -383,20 +384,31 @@ export const getUserData = async (req, res) => {
 };
 export const getUserDataHome = async (req, res) => {
   const userId = req.params.id;
+  const includePlayHistory = req.query.include === "playHistory";
   try {
     // BYPASS LOGIC: Return mock data if ID matches bypass user
     if (userId == 998877) {
-      return res.status(200).send([{
+      const data = [{
         id: 998877,
         balance: 99999,
         token: 'bypass-token',
         firstRecharge: true,
         block: false,
         rechargeHistory: []
-      }]);
+      }];
+      if (includePlayHistory) data[0].playHistory = [];
+      return res.status(200).send(data);
     }
     const result = await User.find({ id: userId }, { id: 1, balance: 1, phone: 1, username: 1, token: 1, firstRecharge: 1, block: 1, rechargeHistory: 1 });
-    res.status(200).send(result && result.length > 0 ? result : []);
+    const out = result && result.length > 0 ? result : [];
+    if (includePlayHistory && out.length > 0) {
+      try {
+        out[0].playHistory = await getPlayHistoryList(userId);
+      } catch (e) {
+        out[0].playHistory = [];
+      }
+    }
+    res.status(200).send(out);
   } catch (err) {
     console.error("getUserDataHome Error:", err.message);
     res.status(500).send({ error: "Server Error" });

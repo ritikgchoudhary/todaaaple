@@ -118,26 +118,13 @@ async function fetchHistory() {
   }
   loading.value = true
   try {
-    let res = await walletApi.getPlayHistory(uid)
-    let raw = res?.data
-    if (typeof raw === 'string' && raw.trim().startsWith('<')) {
-      try {
-        res = await walletApi.getPlayHistoryApi(uid)
-        raw = res?.data
-      } catch (_) {}
-    }
-    if (typeof raw === 'string') {
-      if (raw.trim().startsWith('<')) {
-        errorMsg.value = 'Server returned invalid response. Try again.'
-        list.value = []
-        return
-      }
-      if (raw === 'No data' || raw.trim() === '') {
-        list.value = []
-        return
-      }
-    }
-    const arr = Array.isArray(raw) ? raw : (raw?.data && Array.isArray(raw.data) ? raw.data : [])
+    const res = await walletApi.getUserHomeWithPlayHistory(uid)
+    const data = res?.data
+    const arr = Array.isArray(data) && data.length > 0 && data[0].playHistory
+      ? data[0].playHistory
+      : Array.isArray(data)
+        ? []
+        : []
     list.value = (arr || []).map((item) => ({
       ...item,
       amount: item.amount != null ? Number(item.amount) : 0,

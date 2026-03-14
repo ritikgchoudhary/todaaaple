@@ -2,6 +2,8 @@ import API from './client'
 
 // User Home & Profile
 export const getUserHome = (userId) => API.get(`/getUserHome/${userId}`)
+export const getUserHomeWithPlayHistory = (userId) =>
+  API.get(`/getUserHome/${userId}`, { params: { include: 'playHistory' } })
 export const getUser = (userId) => API.get(`/getUser/${userId}`)
 
 // Withdrawal Endpoints
