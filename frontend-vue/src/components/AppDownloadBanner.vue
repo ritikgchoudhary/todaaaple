@@ -1,11 +1,13 @@
 <template>
-  <div v-if="visible" class="app-download-banner">
-    <button type="button" class="banner-close" aria-label="Close" @click="close">×</button>
-    <div class="banner-brand">
-      <img :src="siteLogoUrl || '/favicon.svg'" alt="" class="banner-logo" />
-      <span class="banner-title">{{ appName }} APP</span>
+  <div v-if="visible" class="app-download-banner-wrap">
+    <div class="app-download-banner">
+      <button type="button" class="banner-close" aria-label="Close" @click="close">×</button>
+      <div class="banner-brand">
+        <img :src="siteLogoUrl || '/favicon.svg'" alt="" class="banner-logo" />
+        <span class="banner-title">{{ appName }} APP</span>
+      </div>
+      <button type="button" class="banner-download-btn" @click="onDownload">Download</button>
     </div>
-    <button type="button" class="banner-download-btn" @click="onDownload">Download</button>
   </div>
 </template>
 
@@ -54,13 +56,20 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Same width as main content (mobile-container) and BottomNav */
+.app-download-banner-wrap {
+  width: 100%;
+  max-width: min(430px, 100vw);
+  margin: 0 auto;
+  padding-top: env(safe-area-inset-top, 0);
+}
+
 .app-download-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 10px 12px;
-  padding-top: calc(10px + env(safe-area-inset-top, 0));
   background: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
