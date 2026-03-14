@@ -215,6 +215,22 @@
       </div>
     </div>
 
+    <!-- Last 5 Transactions -->
+    <div class="last-five-section">
+      <h3 class="last-five-title">Last 5 Transactions</h3>
+      <div v-if="!lastFiveTransactions.length" class="last-five-empty">No transactions yet.</div>
+      <ul v-else class="last-five-list">
+        <li v-for="(tx, idx) in lastFiveTransactions" :key="idx" class="last-five-item">
+          <span class="last-five-date">{{ formatTxDate(tx.date) }}</span>
+          <span class="last-five-amount">
+            <template v-if="tx.usdt != null && tx.usdt !== ''">{{ tx.usdt }} USDT</template>
+            <template v-else>₹{{ tx.amount }}</template>
+          </span>
+          <span class="last-five-status" :class="{ success: tx.status === 'Success' }">{{ tx.status }}</span>
+        </li>
+      </ul>
+    </div>
+
     <!-- TRC Dialog -->
     <div v-if="showTrcDialog" class="modal-overlay" @click="showTrcDialog = false">
       <div class="modal-content" @click.stop>
@@ -311,6 +327,13 @@ async function fetchData() {
 }
 
 const withdrawalHistory = ref([])
+const lastFiveTransactions = ref([])
+
+function formatTxDate(d) {
+  if (!d) return '—'
+  const dt = new Date(d)
+  return dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
 
 function processWithdraw() {
     if (activeTab.value === 'usdt') {
