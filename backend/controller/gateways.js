@@ -657,13 +657,14 @@ export const createCryptoUpayOrder = async (req, res) => {
       const signature = md5Hash.toUpperCase();
       return signature;
     }
+    const baseUrl = req.get('origin') || `${req.protocol}://${req.get('host')}`;
     const params = {
       appId: app,
       chainType: '1',
       merchantOrderNo: id,
       fiatAmount: `${amountInUsd}`,
       fiatCurrency: "USD",
-      notifyUrl: `${process.env.SERVER_URL}/cryptoUpayCallback`
+      notifyUrl: `${baseUrl}/cryptoUpayCallback`
     };
     const signature = generateSignature(params, secret);
 
@@ -675,7 +676,7 @@ export const createCryptoUpayOrder = async (req, res) => {
       },
       data: {
         ...params,
-        "redirectUrl": `${process.env.CLIENT_URL}/depositHistory`,
+        "redirectUrl": `${baseUrl}/depositHistory`,
         "signature": signature
       },
     };
