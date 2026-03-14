@@ -98,6 +98,11 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(_to, _from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (_to.hash) return { el: _to.hash, top: 0 }
+    return { top: 0, left: 0 }
+  },
 })
 
 router.beforeEach((to, _from, next) => {
@@ -107,6 +112,12 @@ router.beforeEach((to, _from, next) => {
   } else {
     next()
   }
+})
+
+router.afterEach(() => {
+  window.scrollTo(0, 0)
+  document.documentElement.scrollTop = 0
+  document.body.scrollTop = 0
 })
 
 export default router
