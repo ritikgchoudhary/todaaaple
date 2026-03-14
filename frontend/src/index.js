@@ -13,6 +13,7 @@ import thunk from 'redux-thunk';
 
 const store = createStore(reducers, compose(applyMiddleware(thunk)));
 
+if (typeof document !== 'undefined') document.title = 'wynnonline';
 var loadingEl = document.getElementById('loading-msg');
 if (loadingEl) loadingEl.style.display = 'none';
 
