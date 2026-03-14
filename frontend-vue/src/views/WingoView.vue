@@ -4,13 +4,13 @@
       <!-- Winning Dialog -->
       <div v-if="winningDialog.show" class="modal-overlay">
         <div class="winning-card">
-          <img :src="'/images/winBadge.png'" class="badge-img" />
+          <img src="/images/winBadge.png" alt="Winner" class="badge-img" />
           <div class="winning-content">
             <div class="congrats-text">Congratulations</div>
-            <div class="winning-label">Lottery Result</div>
-            <div class="result-text">{{ winningDialog.color }} {{ winningDialog.period }}</div>
-            <div class="game-info">Win Go {{ gameMin }}Min</div>
-            <div class="winning-amount">Bonus ₹{{ winningDialog.amount }}</div>
+            <div class="game-info">Wingo {{ gameType }} Minute Period - {{ winningDialog.period }}</div>
+            <div class="result-text">Result - {{ winningDialog.color }}</div>
+            <div class="winning-amount">+{{ winningDialog.amount }}</div>
+            <div class="total-winning-label">Total Winning</div>
             <button @click="winningDialog.show = false" class="close-win-btn">Close</button>
           </div>
         </div>
@@ -282,6 +282,7 @@ const isUpdating = ref(false)
 const isWaiting = ref(false)
 
 const winningDialog = ref({ show: false, period: '', color: '', amount: '0.00' })
+const lastShownWinKey = ref(null)
 const rulesDialog = ref({ show: false })
 const presaleDialog = ref({ show: false })
 const alertDialog = ref({ show: false, message: '' })
@@ -554,13 +555,16 @@ watch(() => route.params.id, () => { updateTimer(); fetchData() })
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; }
 .winning-card { width: 300px; background: #fff; border-radius: 0; text-align: center; overflow: hidden; }
 .badge-img { height: 150px; margin-top: 10px; }
-.winning-content { padding: 0 20px 20px; }
-.winning-amount { font-size: 24px; color: #52AE66; margin: 10px 0; font-weight: bold; }
-.congrats-text { font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #000; }
-.game-info { font-size: 10px; font-weight: bold; color: #000; margin-top: 15px; }
-.result-text { font-size: 16px; font-weight: bold; color: #000; }
-.winning-label { font-size: 18px; color: #000; margin-bottom: 10px; }
-.close-win-btn { width: 100%; height: 44px; border: none; background: #52AE66; color: #fff; font-weight: bold; cursor: pointer; }
+.winning-content { padding: 0 20px 24px; }
+.congrats-text { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: #000; }
+.game-info { font-size: 13px; color: #333; margin-bottom: 6px; }
+.result-text { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 12px; }
+.winning-amount { font-size: 28px; color: #16a34a; font-weight: bold; margin: 8px 0 4px; }
+.total-winning-label { font-size: 14px; color: #333; margin-bottom: 16px; }
+.close-win-btn { width: 100%; height: 44px; border: none; background: #0d9488; color: #fff; font-weight: bold; cursor: pointer; border-radius: 8px; }
+.badge-img { width: 100%; max-width: 200px; height: auto; object-fit: contain; margin-top: 16px; display: block; margin-left: auto; margin-right: auto; }
+.winning-card { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+.close-win-btn:active { opacity: 0.9; }
 
 .alert-box { background: #000; opacity: 0.6; color: #fff; padding: 10px 20px; border-radius: 0; font-size: 14px; height: 50px; display: flex; align-items: center; }
 
