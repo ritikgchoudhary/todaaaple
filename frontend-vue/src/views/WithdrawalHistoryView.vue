@@ -84,9 +84,13 @@
                 <span class="label">Account</span>
                 <span class="value">****{{ item.accountNumber.slice(-4) }}</span>
               </div>
-              <div v-if="item.rejectReason && item.status === 'Rejected'" class="reject-box">
+              <div v-if="item.rejectReason && item.status !== 'Success' && item.status !== 'Pending' && item.status !== 'Placed'" class="reject-box">
                 <span class="label">Reason:</span>
                 <span class="reason">{{ item.rejectReason }}</span>
+              </div>
+              <div v-else-if="item.status && item.status !== 'Success' && item.status !== 'Pending' && item.status !== 'Placed'" class="reject-box">
+                <span class="label">Status:</span>
+                <span class="reason">{{ item.status }}</span>
               </div>
             </div>
             
@@ -175,14 +179,16 @@ const filteredHistory = computed(() => {
   let list = history.value
   list = list.filter(item => isInDateRange(item.date, dateFilter.value))
   if (activeTab.value === 'all') return list
+  if (activeTab.value === 'Rejected') {
+    return list.filter(item => !['Success', 'Pending', 'Placed'].includes(item.status))
+  }
   return list.filter(item => item.status === activeTab.value)
 })
 
 const getStatusClass = (status) => {
   if (status === 'Success') return 'status-success'
-  if (status === 'Pending') return 'status-pending'
-  if (status === 'Rejected') return 'status-rejected'
-  return ''
+  if (status === 'Pending' || status === 'Placed') return 'status-pending'
+  return 'status-rejected'
 }
 
 const formatDate = (dateStr) => {
