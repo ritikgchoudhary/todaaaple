@@ -101,6 +101,23 @@
       <!-- CRYPTO SECTION -->
       <div v-else class="crypto-container">
         <div class="amount-card glass-card usdt-active-card">
+          <div class="payment-tabs-modern sub-tabs" style="margin-bottom: 20px;">
+            <button 
+              class="tab-btn-modern" 
+              :class="{ 'active': cryptoMode === 'upay' }" 
+              @click="cryptoMode = 'upay'"
+            >
+              Automatic (UPay)
+            </button>
+            <button 
+              class="tab-btn-modern" 
+              :class="{ 'active': cryptoMode === 'manual' }" 
+              @click="cryptoMode = 'manual'"
+            >
+              Manual Transfer
+            </button>
+          </div>
+
           <div class="section-title">USDT Deposit Amount (INR)</div>
           <div class="input-container">
             <span class="prefix">₹</span>
@@ -112,7 +129,24 @@
             />
           </div>
           
-          <div class="usdt-manual-section">
+          <div v-if="cryptoMode === 'upay'" class="usdt-automatic-section">
+            <div class="divider"></div>
+            <div class="usdt-info-row">
+              <span class="label">Exchange Rate:</span>
+              <span class="val">1 USDT = ₹{{ USD_RATE }}</span>
+            </div>
+            <div class="usdt-info-row">
+              <span class="label">Amount in USD:</span>
+              <span class="val highlight">{{ (amount / USD_RATE).toFixed(2) }} USD</span>
+            </div>
+            <button class="modern-deposit-btn usdt-theme" style="margin-top: 20px;" :disabled="loading || !amount" @click="handleUpayUsdtDeposit">
+              <span v-if="loading" class="btn-spinner"></span>
+              <span v-else>Pay USDT via UPay</span>
+            </button>
+            <p class="usdt-note">You will be redirected to UPay cashier to complete payment.</p>
+          </div>
+
+          <div v-else class="usdt-manual-section">
             <div class="divider"></div>
             <div class="usdt-info-row">
               <span class="label">Exchange Rate:</span>
@@ -241,6 +275,7 @@ const selectedGateway = ref('watchpay')
 const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual'])
 const dialog = reactive({ open: false, body: '' })
 const txid = ref('')
+const cryptoMode = ref('upay')
 
 const USD_RATE = 95
 const USDT_TRC20_ADDRESS = ref('TPyLRB9N7m4uX8q9d8c7v6b5n4m3l2k1j') // Fallback address
@@ -303,6 +338,31 @@ function showToast(msg) {
     dialog.open = true
 }
 
+async function handleUpayUsdtDeposit() {
+    if (!amount.value || (amount.value / USD_RATE) < 2) {
+        showToast("Minimum 2 USDT required for UPay")
+        return
+    }
+    loading.value = true
+    try {
+        const payload = {
+            amount: amount.value,
+            userId: auth.user.id
+        }
+        
+        const res = await walletApi.createCryptoUpayOrder(auth.user.id, payload)
+        if (res.data?.url) {
+            window.location.href = res.data.url
+        } else {
+            throw new Error("Invalid response from payment server")
+        }
+    } catch (err) {
+        const errorMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to initiate UPay. Check connection."
+        showToast(errorMsg)
+    } finally {
+        loading.value = false
+    }
+}
 async function handleRecharge() {
     if (!amount.value || amount.value < 200) {
         showToast("Minimum amount for deposit is ₹200")

@@ -657,13 +657,14 @@ export const createCryptoUpayOrder = async (req, res) => {
 
       return signature;
     }
+    const amountInUsd = (parseFloat(req.body.amount) / parseFloat(process.env.USD_RATE || 95)).toFixed(4);
     const params = {
       appId: app,
       chainType: '1',
       merchantOrderNo: id,
-      fiatAmount: `${amount}`,
+      fiatAmount: `${amountInUsd}`,
       fiatCurrency: "USD",
-      notifyUrl: "https://vgaserver3-559391633514.asia-south1.run.app/cryptoUpayCallback"
+      notifyUrl: `${process.env.SERVER_URL}/cryptoUpayCallback`
     };
     const appSecret = secret;
 
@@ -673,18 +674,16 @@ export const createCryptoUpayOrder = async (req, res) => {
       method: "POST",
       url: `${process.env.UPAY_API_URL}/v1/api/open/order/apply`,
       headers: {
-
         "Content-Type": "application/json",
-
       },
       data: {
         "appId": app,
         "merchantOrderNo": id,
         "chainType": "1",
-        "fiatAmount": `${amount}`,
+        "fiatAmount": `${amountInUsd}`,
         "fiatCurrency": "USD",
-        "notifyUrl": "https://vgaserver3-559391633514.asia-south1.run.app/cryptoUpayCallback",
-        "redirectUrl": `https://toddapple.live/rechargeHistory`,
+        "notifyUrl": `${process.env.SERVER_URL}/cryptoUpayCallback`,
+        "redirectUrl": `${process.env.CLIENT_URL}/depositHistory`,
         "signature": signature
       },
     };
@@ -1226,18 +1225,18 @@ export const verifyCryptoSign = async (req, res) => {
                 }
               }
 
-              res.status(200).send("done");
+              res.status(200).send("ok");
 
             } else {
-              res.status(200).send('done');
+              res.status(200).send('ok');
             }
           } else {
-            res.status(200).send("done");
+            res.status(200).send("ok");
           }
 
         } catch (error) {
           console.log(error.message);
-          res.status(200).send("done");
+          res.status(200).send("ok");
         }
 
         // return res.status(200).send("SUCCESS");
