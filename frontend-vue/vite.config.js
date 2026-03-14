@@ -20,15 +20,15 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png',
+            src: '/favicon.svg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable'
           },
           {
-            src: 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png',
+            src: '/favicon.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable'
           }
         ]

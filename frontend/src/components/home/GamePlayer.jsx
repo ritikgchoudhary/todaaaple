@@ -11,7 +11,7 @@ import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import axios from "axios";
 import * as api from "../../api/auth";
 
-const LOGO_URL = "https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png";
+const LOGO_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -4,7 +4,7 @@
       <!-- Header -->
       <header class="header">
         <router-link to="/" class="logoWrap">
-          <img :src="siteLogoUrl || 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png'" alt="Site" class="headerLogo" />
+          <img :src="siteLogoUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'" alt="Site" class="headerLogo" />
         </router-link>
         
         <div v-if="auth.isLoggedIn" class="headerBalance">

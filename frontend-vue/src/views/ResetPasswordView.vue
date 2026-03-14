@@ -11,7 +11,7 @@
             </svg>
           </button>
           <div class="logoWrap">
-            <img :src="siteLogoUrl || 'https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png'" alt="Site Logo" class="headerLogo" />
+            <img :src="siteLogoUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'" alt="Site Logo" class="headerLogo" />
           </div>
           <div class="langWrap">
             <div class="langInner">

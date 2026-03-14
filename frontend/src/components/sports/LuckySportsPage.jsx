@@ -6,7 +6,7 @@ import * as api from "../../api/auth";
 
 const LUCKY_SPORTS_GAME_ID = 7004;
 
-const LOGO_URL = "https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png";
+const LOGO_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 // Cache launch URL for this tab session; resets on page refresh so API is called again
 const CACHE_KEY = "__sportsLaunchUrl";

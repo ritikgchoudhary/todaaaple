@@ -27,8 +27,8 @@ import Banner3 from "../../images/bonus_banner.png";
 // Fallback provider/game images
 import WingoIcon from "../../images/wingo.png";
 
-// Logo URL matching the "Deltin" brand in the image
-const LOGO_URL = "https://img.bzvm68.com/logo/gowin11/deltin7_logo_black.png";
+// No external brand logo; use transparent pixel until site logo loads
+const LOGO_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -485,7 +485,7 @@ const Home = () => {
   const [isAuth, setIsAuth] = useState(false);
   const [games, setGames] = useState([]);
   const [selectedCat, setSelectedCat] = useState('sports');
-  const [notice, setNotice] = useState("Welcome to Deltin7. Win Big Daily!");
+  const [notice, setNotice] = useState("Welcome! Win Big Daily!");
   const [launching, setLaunching] = useState(false);
   const [providers, setProviders] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState('all');
