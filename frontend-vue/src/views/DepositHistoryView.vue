@@ -115,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as walletApi from '../api/wallet'
@@ -125,6 +125,73 @@ const auth = useAuthStore()
 
 const loading = ref(true)
 const history = ref([])
+const dateFilter = ref('all')
+const calendarFrom = ref('')
+const calendarTo = ref('')
+const statusTab = ref('all')
+
+const dateOptions = [
+  { label: 'All', value: 'all' },
+  { label: 'Today', value: 'today' },
+  { label: 'Last 7 days', value: '7d' },
+  { label: 'Custom', value: 'custom' },
+]
+
+const statusTabs = [
+  { label: 'All', value: 'all' },
+  { label: 'Success', value: 'Success' },
+  { label: 'Pending', value: 'Pending' },
+  { label: 'Failed', value: 'Failed' },
+]
+
+function isInDateRange(itemDate, range) {
+  if (range === 'all') return true
+  if (!itemDate) return false
+  const d = new Date(itemDate)
+  d.setHours(0, 0, 0, 0)
+  const now = new Date()
+  now.setHours(23, 59, 59, 999)
+  if (range === 'today') {
+    const today = new Date(now)
+    today.setHours(0, 0, 0, 0)
+    return d.getTime() >= today.getTime()
+  }
+  if (range === '7d') {
+    const start = new Date(now)
+    start.setDate(start.getDate() - 7)
+    start.setHours(0, 0, 0, 0)
+    return d.getTime() >= start.getTime()
+  }
+  if (range === 'custom') {
+    if (!calendarFrom.value && !calendarTo.value) return true
+    const from = calendarFrom.value ? new Date(calendarFrom.value) : null
+    const to = calendarTo.value ? new Date(calendarTo.value) : null
+    if (from && d.getTime() < from.getTime()) return false
+    if (to) {
+      const toEnd = new Date(to)
+      toEnd.setHours(23, 59, 59, 999)
+      if (d.getTime() > toEnd.getTime()) return false
+    }
+    return true
+  }
+  return true
+}
+
+function normalizeStatus(s) {
+  if (!s) return ''
+  const str = String(s).toLowerCase()
+  if (str === 'success') return 'Success'
+  if (str === 'created' || str === 'pending') return 'Pending'
+  if (str === 'expired' || str === 'failed' || str === 'fail') return 'Failed'
+  return s
+}
+
+const filteredHistory = computed(() => {
+  let list = history.value
+  list = list.filter(item => isInDateRange(item.date, dateFilter.value))
+  if (statusTab.value === 'all') return list
+  return list.filter(item => normalizeStatus(item.status) === statusTab.value)
+})
 
 const fetchHistory = async () => {
   if (!auth.user?.id) return
@@ -215,9 +282,103 @@ onMounted(() => {
 
 .header-placeholder { width: 40px; }
 
+/* Date Filter */
+.date-filter-wrap {
+  padding: 12px 16px 0;
+}
+.date-filter-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+.date-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.date-btn {
+  padding: 8px 14px;
+  border-radius: 20px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.date-btn.active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+
+.calendar-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.calendar-field {
+  flex: 1;
+  min-width: 120px;
+}
+.calendar-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+.calendar-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #fff;
+}
+.calendar-input:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.15);
+}
+
+/* Status Filter Tabs */
+.filter-tabs {
+  display: flex;
+  padding: 16px;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #0d9488;
+  color: #fff;
+  border-color: #0d9488;
+  box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+}
+
 /* History Cards */
 .history-list {
-  padding: 16px;
+  padding: 0 16px 40px;
   display: flex;
   flex-direction: column;
   gap: 12px;
