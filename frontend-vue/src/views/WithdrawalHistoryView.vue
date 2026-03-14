@@ -27,8 +27,8 @@
               {{ opt.label }}
             </button>
           </div>
-          <!-- Calendar (From - To) when Calendar is selected -->
-          <div v-if="dateFilter === 'calendar'" class="calendar-row">
+          <!-- Custom date range (From - To) when Custom is selected -->
+          <div v-if="dateFilter === 'custom'" class="calendar-row">
             <div class="calendar-field">
               <label class="calendar-label">From</label>
               <input type="date" v-model="calendarFrom" class="calendar-input" />
@@ -134,7 +134,7 @@ const dateOptions = [
   { label: 'All', value: 'all' },
   { label: 'Today', value: 'today' },
   { label: 'Last 7 days', value: '7d' },
-  { label: 'Calendar', value: 'calendar' }
+  { label: 'Custom', value: 'custom' }
 ]
 
 const calendarFrom = ref('')
@@ -164,7 +164,7 @@ function isInDateRange(itemDate, range) {
     start.setHours(0, 0, 0, 0)
     return d.getTime() >= start.getTime()
   }
-  if (range === 'calendar') {
+  if (range === 'custom') {
     if (!calendarFrom.value && !calendarTo.value) return true
     const from = calendarFrom.value ? new Date(calendarFrom.value) : null
     const to = calendarTo.value ? new Date(calendarTo.value) : null
