@@ -427,6 +427,7 @@ onMounted(fetchData)
 /* History button */
 .history-btn-wrap {
   margin: 16px;
+  padding-bottom: 24px;
 }
 .history-btn {
   display: flex;
