@@ -3,7 +3,7 @@
     <!-- Phone-width container (same as Login) -->
     <div class="mobileContainer">
     <!-- Header -->
-    <header class="header">
+    <header class="header animate-slide-down">
       <router-link to="/" class="logoWrap">
         <img :src="siteLogoUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'" alt="Site Logo" class="headerLogo" />
       </router-link>
@@ -27,7 +27,7 @@
     </header>
 
     <!-- Logged in User Widget (Card Style like image) -->
-    <div v-if="auth.isLoggedIn" class="homeUserWidget">
+    <div v-if="auth.isLoggedIn" class="homeUserWidget animate-slide-up anim-delay-1">
       <div class="huTop">
         <div class="huLeft">
           <div class="huWalletLabel">
@@ -56,7 +56,7 @@
 
     <!-- Slider with overlay text (reference) - swipe to slide -->
     <section
-      class="sliderSection"
+      class="sliderSection animate-slide-up anim-delay-2"
       @touchstart="onSliderTouchStart"
       @touchend="onSliderTouchEnd"
     >
@@ -79,7 +79,7 @@
     </section>
 
     <!-- Announcement bar (reference: label + text) -->
-    <div class="announcement">
+    <div class="announcement animate-fade-in anim-delay-3">
       <span class="announceLabel">
         <span class="announceIcon">&#128226;</span>
         Announcement
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Game type tabs (reference structure) -->
-    <div class="game-type-wrapper">
+    <div class="game-type-wrapper animate-slide-up anim-delay-4">
       <div class="type-wrapper rightSideBlurMask">
         <div class="component-tab-scroll-root">
           <ul class="component-tab-scroll-list">
@@ -1399,6 +1399,11 @@ onMounted(async () => {
   position: relative;
   display: block;
   min-height: 100px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.game-item:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 .game-item.card-b {
   grid-column: span 2;
@@ -2013,7 +2018,11 @@ onMounted(async () => {
   text-decoration: none;
   box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
   z-index: 1000;
-  transition: transform 0.2s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.floatingDownloadBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
 }
 .floatingDownloadBtn:active {
   transform: scale(0.95);

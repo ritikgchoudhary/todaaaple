@@ -65,15 +65,23 @@ const route = useRoute()
   font-size: 0.7rem;
   font-weight: 500;
   border-radius: 8px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.navItem:active {
+  transform: scale(0.92);
 }
 .navItem.active {
   color: #2563eb;
   font-weight: 700;
 }
+.navItem.active .navIconImg {
+  transform: scale(1.08);
+}
 .navIconImg {
   width: 24px;
   height: 24px;
   object-fit: contain;
+  transition: transform 0.2s ease;
 }
 .navLabel {
   font-size: 0.7rem;

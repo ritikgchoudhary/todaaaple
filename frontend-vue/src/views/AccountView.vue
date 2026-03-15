@@ -2,7 +2,7 @@
   <div class="account-page">
     <div class="mobileContainer">
       <!-- Profile Header (Teal Style) -->
-      <header class="profileHeader">
+      <header class="profileHeader animate-slide-down">
         <div class="userMain">
           <div class="userLeft">
             <div class="avatarCircle">
@@ -27,7 +27,7 @@
       </header>
 
       <!-- Quick Actions -->
-      <div class="quickActions">
+      <div class="quickActions animate-slide-up anim-delay-1">
          <router-link to="/deposit" class="qaItem">
             <div class="qaIcon recharge">
               <img src="https://img.icons8.com/color/96/money-box.png" width="30" height="30" />
@@ -235,9 +235,10 @@ onMounted(fetchBalance)
   flex: 1; background: #fff; border-radius: 18px; padding: 16px;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-  text-decoration: none; color: #1e293b; transition: all 0.2s;
+  text-decoration: none; color: #1e293b;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.qaItem:active { transform: translateY(2px); box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
+.qaItem:active { transform: translateY(2px) scale(0.98); box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
 
 .qaIcon {
   width: 48px; height: 48px; border-radius: 14px;
