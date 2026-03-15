@@ -62,14 +62,6 @@
               <span class="summary-label">Total Win</span>
               <span class="summary-value">₹{{ formatAmount(totalWin) }}</span>
             </div>
-            <div class="summary-item total-loss">
-              <span class="summary-label">Total Loss</span>
-              <span class="summary-value">₹{{ formatAmount(totalLoss) }}</span>
-            </div>
-            <div class="summary-item net">
-              <span class="summary-label">Net</span>
-              <span class="summary-value" :class="netAmount >= 0 ? 'credit' : 'debit'">{{ netAmount >= 0 ? '' : '-' }}₹{{ formatAmount(Math.abs(netAmount)) }}</span>
-            </div>
           </div>
           <div v-if="filteredList.length === 0" class="empty-state small">
             <p>No entries match the selected filters.</p>
@@ -166,14 +158,6 @@ const totalWin = computed(() => {
     .filter((item) => !isLaunchEntry(item) && item.credit === true)
     .reduce((sum, item) => sum + (Number(item.amount) || 0), 0)
 })
-
-const totalLoss = computed(() => {
-  return filteredList.value
-    .filter((item) => !isLaunchEntry(item) && item.credit === false)
-    .reduce((sum, item) => sum + (Number(item.amount) || 0), 0)
-})
-
-const netAmount = computed(() => totalWin.value - totalLoss.value)
 
 function formatAmount(val) {
   const n = Number(val)
@@ -403,19 +387,14 @@ onMounted(() => {
 }
 
 .summary-bar {
-  display: flex;
-  gap: 12px;
   padding: 12px 0 16px;
-  flex-wrap: wrap;
 }
 
 .summary-item {
-  flex: 1;
-  min-width: 90px;
-  background: #f8fafc;
+  background: #f0fdf4;
   border-radius: 10px;
-  padding: 10px 12px;
-  border: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  border: 1px solid #bbf7d0;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -430,15 +409,10 @@ onMounted(() => {
 }
 
 .summary-value {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #059669;
 }
-
-.summary-item.total-win .summary-value { color: #059669; }
-.summary-item.total-loss .summary-value { color: #dc2626; }
-.summary-item.net .summary-value.credit { color: #059669; }
-.summary-item.net .summary-value.debit { color: #dc2626; }
 
 .scroll-sentinel {
   height: 1px;
