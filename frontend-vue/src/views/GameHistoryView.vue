@@ -127,36 +127,28 @@ async function fetchHistory() {
   loading.value = true
   try {
     let arr = []
+    // Prefer direct play-history API (returns array); fallback to getUserHome with include=playHistory
     try {
-      const res = await walletApi.getUserHomeWithPlayHistory(uid)
+      const res = await walletApi.getPlayHistory(uid)
       const data = res?.data
-      if (Array.isArray(data) && data.length > 0 && data[0].playHistory) {
-        arr = data[0].playHistory
-      } else if (Array.isArray(data)) {
-        arr = []
+      if (Array.isArray(data)) {
+        arr = data
       }
-      if (arr.length === 0 && data && typeof data === 'object' && !Array.isArray(data)) {
-        throw new Error('Invalid response shape')
-      }
-    } catch (primaryErr) {
-      const isHtml = typeof primaryErr?.response?.data === 'string' && primaryErr.response.data.includes('<!')
-      if (primaryErr.response?.status === 404 || isHtml || primaryErr.message === 'Invalid response shape') {
-        try {
-          const fallbackRes = await walletApi.getPlayHistory(uid)
-          const fallbackData = fallbackRes?.data
-          arr = Array.isArray(fallbackData) ? fallbackData : []
-        } catch (_) {
-          try {
-            const apiRes = await walletApi.getPlayHistoryApi(uid)
-            const apiData = apiRes?.data
-            arr = Array.isArray(apiData) ? apiData : []
-          } catch (__) {
-            throw primaryErr
-          }
+    } catch (_) {
+      try {
+        const apiRes = await walletApi.getPlayHistoryApi(uid)
+        const apiData = apiRes?.data
+        if (Array.isArray(apiData)) arr = apiData
+      } catch (__) {}
+    }
+    if (arr.length === 0) {
+      try {
+        const res = await walletApi.getUserHomeWithPlayHistory(uid)
+        const data = res?.data
+        if (Array.isArray(data) && data.length > 0 && data[0].playHistory) {
+          arr = data[0].playHistory
         }
-      } else {
-        throw primaryErr
-      }
+      } catch (_) {}
     }
     list.value = normalizeList(arr)
   } catch (err) {
