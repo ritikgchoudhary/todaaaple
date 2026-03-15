@@ -57,7 +57,7 @@
   background-color: #f8fafc;
   display: flex;
   justify-content: center;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-app);
 }
 .mobile-container { width: 100%; max-width: min(430px, 100vw); background: #fff; }
 .header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid #f1f5f9; }

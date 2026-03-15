@@ -70,7 +70,7 @@ onMounted(() => {
   background-color: #F1F5F9;
   display: flex;
   justify-content: center;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-app);
 }
 .mobileContainer { width: 100%; max-width: min(430px, 100vw); min-height: 100vh; background-color: #fff; position: relative; }
 

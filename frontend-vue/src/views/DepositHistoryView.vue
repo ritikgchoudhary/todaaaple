@@ -230,7 +230,7 @@ onMounted(() => {
   background-color: #f1f5f9;
   display: flex;
   justify-content: center;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: var(--font-app);
   color: #1e293b;
 }
 

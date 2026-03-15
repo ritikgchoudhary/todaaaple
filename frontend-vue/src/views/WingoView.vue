@@ -515,7 +515,7 @@ watch(() => route.params.id, () => { updateTimer(); fetchData() })
 </script>
 
 <style scoped>
-.wingo-page { background: #f5f5f5; min-height: 100vh; font-family: "Roboto", sans-serif; }
+.wingo-page { background: #f5f5f5; min-height: 100vh; font-family: var(--font-app); }
 .wingo-container { width: 100%; max-width: 480px; margin: 0 auto; background: #fff; min-height: 100vh; position: relative; padding-bottom: 80px; }
 
 .wingo-header { background-color: #0d9488; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; color: #fff; }

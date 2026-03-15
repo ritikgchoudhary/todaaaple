@@ -418,7 +418,7 @@ onMounted(() => {
   min-height: 100vh;
   background-color: #f5f5f5;
   color: #0f172a;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-app);
   overflow-x: hidden;
 }
 

@@ -410,7 +410,7 @@ onMounted(fetchData)
   background-color: #f1f5f9;
   display: flex;
   justify-content: center;
-  font-family: 'Outfit', 'Roboto', sans-serif;
+  font-family: var(--font-app);
   color: #0f172a;
   padding-top: env(safe-area-inset-top, 0);
 }
@@ -754,7 +754,7 @@ onMounted(fetchData)
   font-size: 1.6rem;
   font-weight: 900;
   padding: 12px 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-app);
 }
 .amount-input::placeholder { color: #cbd5e1; }
 .clear-btn {

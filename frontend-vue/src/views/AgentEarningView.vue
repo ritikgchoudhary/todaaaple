@@ -149,7 +149,7 @@ onMounted(async () => {
   background-color: #F8FAFC;
   display: flex;
   justify-content: center;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-app);
 }
 
 .mobileContainer {

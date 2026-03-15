@@ -86,7 +86,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.api-docs-page { min-height: 100vh; background-color: #F1F5F9; display: flex; justify-content: center; font-family: system-ui, -apple-system, sans-serif; }
+.api-docs-page { min-height: 100vh; background-color: #F1F5F9; display: flex; justify-content: center; font-family: var(--font-app); }
 .mobileContainer { width: 100%; max-width: 500px; min-height: 100vh; background-color: #fff; position: relative; }
 
 .header { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid #E5E7EB; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }

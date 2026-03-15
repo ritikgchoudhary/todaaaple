@@ -658,7 +658,7 @@ onMounted(fetchData)
   padding: 20px 15px 60px;
   max-width: 98%;
   margin: 0 auto;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-app);
   background: #f8fafc;
   min-height: 100vh;
   color: #1e293b;

@@ -38,7 +38,7 @@ const router = useRouter()
 </script>
 
 <style scoped>
-.about-page { min-height: 100vh; background-color: #F1F5F9; display: flex; justify-content: center; font-family: system-ui, -apple-system, sans-serif; }
+.about-page { min-height: 100vh; background-color: #F1F5F9; display: flex; justify-content: center; font-family: var(--font-app); }
 .mobileContainer { width: 100%; max-width: min(430px, 100vw); min-height: 100vh; background-color: #fff; position: relative; }
 
 .header { background-color: #05c0b8; padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }

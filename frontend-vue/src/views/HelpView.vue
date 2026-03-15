@@ -102,7 +102,7 @@ onMounted(async () => {
   font-weight: 600;
   margin-right: 20px;
   font-size: 16px;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-app);
 }
 
 .section {
@@ -133,7 +133,7 @@ onMounted(async () => {
 
 .textContainer {
   flex-grow: 1;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-app);
 }
 
 .title {
@@ -160,6 +160,6 @@ onMounted(async () => {
   min-width: auto;
   border: none;
   cursor: pointer;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-app);
 }
 </style>

@@ -227,7 +227,7 @@ const handleClaim = async (tier) => {
   background-color: #F1F5F9;
   display: flex;
   justify-content: center;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-app);
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
 }
 

@@ -100,7 +100,7 @@ onMounted(fetchData)
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: var(--font-app);
 }
 
 .mobile-container {

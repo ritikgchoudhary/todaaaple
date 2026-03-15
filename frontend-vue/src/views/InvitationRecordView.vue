@@ -105,7 +105,7 @@ onMounted(fetchRecords)
   background-color: #f8fafc;
   display: flex;
   justify-content: center;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-app);
 }
 
 .mobile-container {
