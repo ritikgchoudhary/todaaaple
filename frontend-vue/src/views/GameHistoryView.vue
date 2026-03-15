@@ -74,8 +74,7 @@
               </div>
             </div>
           </div>
-          <div ref="sentinel" class="scroll-sentinel"></div>
-          <div v-if="hasMore && !loadingMore" class="load-more-trigger" ref="loadMoreEl"></div>
+          <div ref="sentinel" class="scroll-sentinel" aria-hidden="true"></div>
           <div v-if="loadingMore" class="loader-container small">
             <div class="loader"></div>
             <p>Loading more...</p>
@@ -88,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import * as walletApi from '../api/wallet'
 
@@ -102,8 +101,6 @@ const filterGame = ref('')
 const filterType = ref('all')
 const visibleCount = ref(PAGE_SIZE)
 const loadingMore = ref(false)
-const contentEl = ref(null)
-const loadMoreEl = ref(null)
 const sentinel = ref(null)
 
 const userId = computed(() => {
@@ -262,19 +259,18 @@ onMounted(() => {
   const startObserving = () => {
     const target = sentinel.value
     if (target && fullList.value.length > 0) {
+      observer.disconnect()
       observer.observe(target)
-      return true
     }
-    return false
   }
   watch(
-    () => displayedList.value.length,
-    () => nextTick(() => startObserving()),
+    () => [displayedList.value.length, sentinel.value],
+    () => nextTick(startObserving),
     { flush: 'post' }
   )
   watch(sentinel, (el) => {
-    if (el && fullList.value.length > 0) observer.observe(el)
-  }, { flush: 'post' })
+    nextTick(() => { if (el && fullList.value.length > 0) { observer.disconnect(); observer.observe(el) } })
+  }, { flush: 'post', immediate: true })
 })
 </script>
 
@@ -336,6 +332,72 @@ onMounted(() => {
 }
 
 .header-placeholder { width: 40px; }
+
+.filter-bar {
+  position: sticky;
+  top: 56px;
+  z-index: 99;
+  background: #fff;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.filter-select {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.scroll-sentinel {
+  height: 1px;
+  width: 100%;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.load-more-trigger { height: 20px; }
+
+.end-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 16px 0 24px;
+}
+
+.empty-state.small {
+  padding: 24px 16px;
+}
+.empty-state.small p { font-size: 0.9rem; }
+
+.loader-container.small {
+  padding: 24px 16px;
+}
+.loader-container.small .loader { width: 28px; height: 28px; }
 
 .content {
   padding: 16px;
