@@ -11,7 +11,27 @@
         </div>
       </header>
 
-      <main class="content">
+      <!-- Filter bar (only when we have data) -->
+      <div v-if="userId && !loading && !errorMsg && fullList.length > 0" class="filter-bar">
+        <div class="filter-row">
+          <label class="filter-label">Game</label>
+          <select v-model="filterGame" class="filter-select">
+            <option value="">All Games</option>
+            <option v-for="g in gameOptions" :key="g" :value="g">{{ g }}</option>
+          </select>
+        </div>
+        <div class="filter-row">
+          <label class="filter-label">Type</label>
+          <select v-model="filterType" class="filter-select">
+            <option value="all">All</option>
+            <option value="win">Win</option>
+            <option value="loss">Loss</option>
+            <option value="launched">Launched</option>
+          </select>
+        </div>
+      </div>
+
+      <main class="content" ref="contentEl">
         <div v-if="loading" class="loader-container">
           <div class="loader"></div>
           <p>Loading...</p>
@@ -27,7 +47,7 @@
           <router-link to="/account" class="back-to-account">Back to Account</router-link>
         </div>
 
-        <div v-else-if="list.length === 0" class="empty-state">
+        <div v-else-if="fullList.length === 0" class="empty-state">
           <div class="empty-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           </div>
@@ -35,35 +55,56 @@
           <p class="empty-hint">Your played games will appear here</p>
         </div>
 
-        <div v-else class="history-list">
-          <div v-for="(item, idx) in list" :key="item.id || idx" class="history-card">
-            <div class="card-row main-row">
-              <span class="game-name">{{ item.game || 'Game' }}</span>
-              <span v-if="isLaunchEntry(item)" class="amount neutral">Opened</span>
-              <span v-else :class="['amount', item.credit ? 'credit' : 'debit']">
-                {{ item.credit ? '+' : '-' }}₹{{ formatAmount(item.amount) }}
-              </span>
-            </div>
-            <div class="card-row sub-row">
-              <span class="date">{{ formatDate(item.date) }}</span>
-              <span v-if="item.note" class="note">{{ formatNote(item.note) }}</span>
+        <template v-else>
+          <div v-if="filteredList.length === 0" class="empty-state small">
+            <p>No entries match the selected filters.</p>
+          </div>
+          <div v-else class="history-list">
+            <div v-for="(item, idx) in displayedList" :key="item.id || item.date + idx" class="history-card">
+              <div class="card-row main-row">
+                <span class="game-name">{{ item.game || 'Game' }}</span>
+                <span v-if="isLaunchEntry(item)" class="amount neutral">Opened</span>
+                <span v-else :class="['amount', item.credit ? 'credit' : 'debit']">
+                  {{ item.credit ? '+' : '-' }}₹{{ formatAmount(item.amount) }}
+                </span>
+              </div>
+              <div class="card-row sub-row">
+                <span class="date">{{ formatDate(item.date) }}</span>
+                <span v-if="item.note" class="note">{{ formatNote(item.note) }}</span>
+              </div>
             </div>
           </div>
-        </div>
+          <div ref="sentinel" class="scroll-sentinel"></div>
+          <div v-if="hasMore && !loadingMore" class="load-more-trigger" ref="loadMoreEl"></div>
+          <div v-if="loadingMore" class="loader-container small">
+            <div class="loader"></div>
+            <p>Loading more...</p>
+          </div>
+          <p v-if="!hasMore && displayedList.length > 0" class="end-hint">You've reached the end</p>
+        </template>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import * as walletApi from '../api/wallet'
 
+const PAGE_SIZE = 20
+
 const auth = useAuthStore()
 const loading = ref(true)
-const list = ref([])
+const fullList = ref([])
 const errorMsg = ref('')
+const filterGame = ref('')
+const filterType = ref('all')
+const visibleCount = ref(PAGE_SIZE)
+const loadingMore = ref(false)
+const contentEl = ref(null)
+const loadMoreEl = ref(null)
+const sentinel = ref(null)
 
 const userId = computed(() => {
   const id = auth.user?.id
@@ -77,6 +118,36 @@ const userId = computed(() => {
   } catch (_) {}
   return null
 })
+
+const gameOptions = computed(() => {
+  const games = new Set()
+  fullList.value.forEach((item) => {
+    const g = item.game || 'Game'
+    if (g) games.add(g)
+  })
+  return [...games].sort()
+})
+
+const filteredList = computed(() => {
+  let arr = fullList.value
+  if (filterGame.value) {
+    arr = arr.filter((item) => (item.game || 'Game') === filterGame.value)
+  }
+  if (filterType.value === 'win') {
+    arr = arr.filter((item) => item.credit === true && !isLaunchEntry(item))
+  } else if (filterType.value === 'loss') {
+    arr = arr.filter((item) => item.credit === false && !isLaunchEntry(item))
+  } else if (filterType.value === 'launched') {
+    arr = arr.filter((item) => isLaunchEntry(item))
+  }
+  return arr
+})
+
+const displayedList = computed(() => {
+  return filteredList.value.slice(0, visibleCount.value)
+})
+
+const hasMore = computed(() => displayedList.value.length < filteredList.value.length)
 
 function formatAmount(val) {
   const n = Number(val)
@@ -150,10 +221,11 @@ async function fetchHistory() {
         }
       } catch (_) {}
     }
-    list.value = normalizeList(arr)
+    fullList.value = normalizeList(arr)
+    visibleCount.value = PAGE_SIZE
   } catch (err) {
     console.error('Error fetching game history:', err)
-    list.value = []
+    fullList.value = []
     const status = err.response?.status
     const msg = err.response?.data?.message || err.response?.data?.msg
     if (status === 401) {
@@ -168,8 +240,41 @@ async function fetchHistory() {
   }
 }
 
+function loadMore() {
+  if (!hasMore.value || loadingMore.value) return
+  loadingMore.value = true
+  visibleCount.value = Math.min(visibleCount.value + PAGE_SIZE, filteredList.value.length)
+  loadingMore.value = false
+}
+
+watch([filterGame, filterType], () => {
+  visibleCount.value = PAGE_SIZE
+})
+
 onMounted(() => {
   fetchHistory()
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting) loadMore()
+    },
+    { root: null, rootMargin: '120px', threshold: 0 }
+  )
+  const startObserving = () => {
+    const target = sentinel.value
+    if (target && fullList.value.length > 0) {
+      observer.observe(target)
+      return true
+    }
+    return false
+  }
+  watch(
+    () => displayedList.value.length,
+    () => nextTick(() => startObserving()),
+    { flush: 'post' }
+  )
+  watch(sentinel, (el) => {
+    if (el && fullList.value.length > 0) observer.observe(el)
+  }, { flush: 'post' })
 })
 </script>
 
