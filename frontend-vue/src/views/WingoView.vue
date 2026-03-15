@@ -137,7 +137,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="row in records.slice(0, 5)" :key="row.id">
+              <tr v-for="row in records.slice(0, 10)" :key="row.id">
                 <td>{{ row.id }}</td>
                 <td>{{ row.price }}</td>
                 <td :class="row.number >= 5 ? 'text-green' : 'text-red'">
@@ -160,11 +160,11 @@
       <!-- Bid History Section -->
       <section class="records-container bid-history-container">
         <div class="section-header">
-          <span style="color: #333">{{ gameType }} Minutes Bid History</span>
+          <span style="color: #333">Last 5 {{ gameType }} Minutes Bid History</span>
         </div>
         <div class="bid-list">
           <div v-if="!myHistory || myHistory.length === 0" class="no-records">No Records</div>
-          <div v-for="(bid, idx) in myHistory.slice(0, 5)" :key="idx" class="bid-card">
+          <div v-for="(bid, idx) in last5BidHistory" :key="idx" class="bid-card">
             <div class="bid-card-top">
               <div>
                 <div class="bid-amt">₹{{ bid.amount }}</div>
@@ -183,7 +183,7 @@
               </div>
             </div>
           </div>
-          <div v-if="myHistory.length > 5" class="more-footer" @click="router.push('/wingo-history/' + gameId)">
+          <div v-if="myHistory && myHistory.length > 5" class="more-footer" @click="router.push('/wingo-history/' + gameId)">
             View More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
           </div>
         </div>
@@ -277,6 +277,7 @@ const timerSec = computed(() => Math.floor(timerTotal.value % 60))
 
 const records = ref([])
 const myHistory = ref([])
+const last5BidHistory = computed(() => (myHistory.value || []).slice(0, 5))
 const canOpen = ref(true)
 const isUpdating = ref(false)
 const isWaiting = ref(false)
