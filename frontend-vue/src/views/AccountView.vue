@@ -142,7 +142,7 @@ const icons = {
   bonus: 'https://img.icons8.com/fluency/48/gift.png',
   invite: 'https://img.icons8.com/fluency/48/add-user-group-man-man.png',
   history: 'https://img.icons8.com/fluency/48/time-machine.png',
-  game: 'https://img.icons8.com/fluency/48/game-controller.png',
+  game: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDU5NjY5IiBzdHJva2Utd2lkdGg9IjIuNSI+PHBhdGggZD0iTTE2IDI0YTIgMiAwIDEgMSA0IDAgMiAyIDAgMCAxLTQgMHptMTYgMGEyIDIgMCAxIDEgNCAwIDIgMiAwIDAgMS00IDB6bS04LTZhOCA4IDAgMSAwIDAgMTZoMjRhNCA0IDAgMCAwIDQtNHYtOGE0IDQgMCAwIDAtNC00SDMyYzAtNC40LTMuNi04LTgtOHoiLz48Y2lyY2xlIGN4PSIyNCIgY3k9IjMwIiByPSIyIi8+PC9zdmc+',
   envelope: 'https://img.icons8.com/color/96/filled-message.png',
   promotion: 'https://img.icons8.com/fluency/48/commercial.png',
   wallet: 'https://img.icons8.com/fluency/48/wallet.png',
