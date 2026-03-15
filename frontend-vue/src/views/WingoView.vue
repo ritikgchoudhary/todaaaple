@@ -418,7 +418,7 @@ async function fetchData() {
   try {
     const [recRes, myRes] = await Promise.all([
       wingoApi.getRecords(gameId.value),
-      auth.user?.id ? wingoApi.getMyHistory(gameId.value, auth.user.id) : { data: [] }
+      auth.user?.id ? wingoApi.getFullHistory(gameId.value, auth.user.id) : { data: [] }
     ])
     
     if (recRes.data && Array.isArray(recRes.data)) {
@@ -427,7 +427,7 @@ async function fetchData() {
       records.value = []
     }
     
-    if (myRes.data) {
+    if (myRes.data && myRes.data !== 'No Data') {
       const list = Array.isArray(myRes.data) ? myRes.data : []
       myHistory.value = list
       // Show win popup when latest bid has winning > 0 (and we haven't shown for this win yet)
@@ -445,6 +445,8 @@ async function fetchData() {
           }
         }
       }
+    } else {
+      myHistory.value = []
     }
   } catch (err) {
     console.error("Fetch data failed:", err)
