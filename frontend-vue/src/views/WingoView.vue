@@ -1,9 +1,10 @@
 <template>
   <div class="wingo-page">
     <div class="wingo-container">
-      <!-- Winning Dialog -->
+      <!-- Winning Dialog (once per win; cross = close and don't show again) -->
       <div v-if="winningDialog.show" class="modal-overlay">
         <div class="winning-card">
+          <button type="button" class="win-close-x" aria-label="Close" @click="closeWinAndNeverShowAgain">×</button>
           <img src="/images/winBadge.png" alt="Winner" class="badge-img" />
           <div class="winning-content">
             <div class="congrats-text">Congratulations</div>
@@ -11,7 +12,7 @@
             <div class="result-text">Result - {{ winningDialog.color }}</div>
             <div class="winning-amount">+{{ winningDialog.amount }}</div>
             <div class="total-winning-label">Total Winning</div>
-            <button @click="winningDialog.show = false" class="close-win-btn">Close</button>
+            <button @click="closeWinAndNeverShowAgain" class="close-win-btn">Close</button>
           </div>
         </div>
       </div>
@@ -284,6 +285,31 @@ const isWaiting = ref(false)
 
 const winningDialog = ref({ show: false, period: '', color: '', amount: '0.00' })
 const lastShownWinKey = ref(null)
+const currentWinKey = ref(null) // so we can save to localStorage when user closes
+
+const WINGO_WIN_SEEN_KEY = 'wingo_win_seen'
+
+function getSeenWinKeys() {
+  try {
+    const raw = localStorage.getItem(WINGO_WIN_SEEN_KEY)
+    if (!raw) return []
+    const arr = JSON.parse(raw)
+    return Array.isArray(arr) ? arr : []
+  } catch (_) { return [] }
+}
+
+function markWinAsSeen(key) {
+  const seen = getSeenWinKeys()
+  if (seen.includes(key)) return
+  seen.push(key)
+  if (seen.length > 100) seen.shift()
+  localStorage.setItem(WINGO_WIN_SEEN_KEY, JSON.stringify(seen))
+}
+
+function closeWinAndNeverShowAgain() {
+  if (currentWinKey.value) markWinAsSeen(currentWinKey.value)
+  winningDialog.value = { ...winningDialog.value, show: false }
+}
 const rulesDialog = ref({ show: false })
 const presaleDialog = ref({ show: false })
 const alertDialog = ref({ show: false, message: '' })
@@ -430,13 +456,15 @@ async function fetchData() {
     if (myRes.data && myRes.data !== 'No Data') {
       const list = Array.isArray(myRes.data) ? myRes.data : []
       myHistory.value = list
-      // Show win popup when latest bid has winning > 0 (and we haven't shown for this win yet)
+      // Show win popup once per win: only if this win key was never seen (localStorage) and not shown this session
       const latest = list[0]
       const winAmount = latest && (typeof latest.winning === 'number' ? latest.winning : parseFloat(latest.winning))
       if (latest && winAmount > 0) {
         const key = `${latest.period}-${latest.date}-${winAmount}`
-        if (lastShownWinKey.value !== key) {
+        const alreadySeen = getSeenWinKeys().includes(key)
+        if (!alreadySeen && lastShownWinKey.value !== key) {
           lastShownWinKey.value = key
+          currentWinKey.value = key
           winningDialog.value = {
             show: true,
             period: latest.period ?? '',
@@ -584,7 +612,13 @@ watch(() => route.params.id, () => { updateTimer(); fetchData() })
 .red { color: red; }
 
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-.winning-card { width: 300px; background: #fff; border-radius: 0; text-align: center; overflow: hidden; }
+.winning-card { position: relative; width: 300px; background: #fff; border-radius: 0; text-align: center; overflow: hidden; }
+.win-close-x {
+  position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border: none; background: rgba(0,0,0,0.08);
+  border-radius: 50%; font-size: 24px; line-height: 1; color: #333; cursor: pointer; z-index: 1; padding: 0; display: flex; align-items: center; justify-content: center;
+}
+.win-close-x:hover { background: rgba(0,0,0,0.12); }
+.win-close-x:active { opacity: 0.8; }
 .badge-img { height: 150px; margin-top: 10px; }
 .winning-content { padding: 0 20px 24px; }
 .congrats-text { font-size: 22px; font-weight: bold; margin-bottom: 12px; color: #000; }
