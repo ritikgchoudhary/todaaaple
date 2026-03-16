@@ -456,13 +456,18 @@ async function fetchData() {
     if (myRes.data && myRes.data !== 'No Data') {
       const list = Array.isArray(myRes.data) ? myRes.data : []
       myHistory.value = list
-      // Show win popup once per win: only if this win key was never seen (localStorage) and not shown this session
+      // Show win popup once per win: only if this win key was never seen (localStorage)
       const latest = list[0]
       const winAmount = latest && (typeof latest.winning === 'number' ? latest.winning : parseFloat(latest.winning))
       if (latest && winAmount > 0) {
-        const key = `${latest.period}-${latest.date}-${winAmount}`
+        const period = String(latest.period ?? '')
+        const dateMs = latest.date != null ? (typeof latest.date === 'number' ? latest.date : new Date(latest.date).getTime()) : 0
+        const dateSec = Math.floor(dateMs / 1000)
+        const amountNum = Number(winAmount)
+        const key = `w1-${period}-${dateSec}-${amountNum}`
         const alreadySeen = getSeenWinKeys().includes(key)
-        if (!alreadySeen && lastShownWinKey.value !== key) {
+        if (!alreadySeen) {
+          markWinAsSeen(key)
           lastShownWinKey.value = key
           currentWinKey.value = key
           winningDialog.value = {
