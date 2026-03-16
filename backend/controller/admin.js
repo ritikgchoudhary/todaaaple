@@ -4,6 +4,7 @@ import Transaction from "../model/transaction.js";
 import Daily from "../model/daily.js";
 import With from "../model/withdrawal.js";
 import promotion from "../model/promotion.js";
+import offerBonus from "../model/offerBonus.js";
 import { creditCommission } from "./commission.js";
 import ErrorResponse from "../utils/error.js";
 
