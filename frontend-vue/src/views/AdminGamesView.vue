@@ -1079,8 +1079,40 @@ onMounted(fetchData)
   border-radius: 12px;
 }
 
-/* Phone: compact container, chota layout */
+/* Configuration toggle: only on phone */
+.config-toggle {
+  display: none;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+}
+.config-toggle:active {
+  background: #f1f5f9;
+}
+
+/* Phone: compact container, config toggle, games 2 per row */
 @media (max-width: 767px) {
+  .config-toggle {
+    display: block;
+    order: -1;
+  }
+  .games-layout {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    gap: 8px;
+  }
+  .games-layout.config-closed .games-sidebar {
+    display: none !important;
+  }
   .admin-games-page {
     padding: 8px 8px 72px;
     max-width: 100%;
@@ -1093,11 +1125,6 @@ onMounted(fetchData)
   }
   .admin-games-page .header h1 { font-size: 0.95rem; }
   .admin-games-page .header .save-btn { padding: 8px 12px; font-size: 0.85rem; }
-  .games-layout {
-    flex-direction: column;
-    margin-top: 8px;
-    gap: 8px;
-  }
   .games-sidebar {
     width: 100%;
     position: sticky;
@@ -1132,6 +1159,7 @@ onMounted(fetchData)
   .search-box { width: 100%; max-width: 100%; }
   .search-box input { padding: 10px 12px 10px 36px; font-size: 0.9rem; }
   .add-master-btn { justify-content: center; padding: 10px 12px; min-height: 44px; font-size: 0.9rem; }
+  /* Phone: games 2 per row */
   .games-grid-premium {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -1165,10 +1193,12 @@ onMounted(fetchData)
 @media (max-width: 480px) {
   .admin-games-page { padding: 6px 6px 64px; }
   .admin-games-page .header h1 { font-size: 0.9rem; }
+  .config-toggle { padding: 10px 12px; font-size: 0.85rem; }
   .games-sidebar { padding: 6px 8px; gap: 4px; }
   .games-sidebar .sidebar-item { padding: 8px 10px; font-size: 0.75rem; }
   .title-wrap h2 { font-size: 0.95rem; }
-  .games-grid-premium { grid-template-columns: 1fr; gap: 6px; }
+  /* Keep 2 games per row on small phone too */
+  .games-grid-premium { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .game-card-premium .g-meta-inputs { flex-direction: column; }
   .provider-card-premium { padding: 8px; }
   .icon-preview { width: 48px; height: 48px; }
