@@ -18,6 +18,7 @@ export const getSiteSettings = async (req, res) => {
       usdtAddress: doc.usdtAddress || '',
       platformMessageUrl: doc.platformMessageUrl || '',
       platformMessageEnabled: doc.platformMessageEnabled || false,
+      withdrawalsEnabled: doc.withdrawalsEnabled !== false,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -36,6 +37,7 @@ export const getSiteSettingsAdmin = async (req, res) => {
       usdtAddress: doc.usdtAddress || '',
       platformMessageUrl: doc.platformMessageUrl || '',
       platformMessageEnabled: doc.platformMessageEnabled || false,
+      withdrawalsEnabled: doc.withdrawalsEnabled !== false,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });

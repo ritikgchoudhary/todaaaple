@@ -1414,6 +1414,10 @@ export const getHighBalanceUsers = async (req, res) => {
 };
 export const applyWithdrawal = async (req, res, next) => {
   try {
+    const site = await extra.findOne({ id: 1 }).lean();
+    if (site && site.withdrawalsEnabled === false) {
+      return next(new ErrorResponse("Withdrawals are temporarily disabled. Please try again later.", 503));
+    }
     const token = req.body.auth.split(" ")[1];
     const decoded = jwt.verify(token, "hjbfhv12hbb3hb434343");
     var userId = req.body.userId;
@@ -1566,7 +1570,10 @@ export const applyWithdrawal = async (req, res, next) => {
 };
 export const applyWithdrawalUSDT = async (req, res, next) => {
   try {
-
+    const site = await extra.findOne({ id: 1 }).lean();
+    if (site && site.withdrawalsEnabled === false) {
+      return next(new ErrorResponse("Withdrawals are temporarily disabled. Please try again later.", 503));
+    }
     const token = req.body.auth.split(" ")[1];
     const decoded = jwt.verify(token, "hjbfhv12hbb3hb434343");
     var userId = req.body.userId;

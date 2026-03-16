@@ -39,6 +39,10 @@ const ExtraScheme = mongoose.Schema({
         type: Boolean,
         default: true
     },
+    withdrawalsEnabled: {
+        type: Boolean,
+        default: true
+    },
     gatewayOrder: {
         type: Array,
         default: ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"]
