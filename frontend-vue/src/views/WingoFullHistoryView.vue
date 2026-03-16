@@ -10,7 +10,12 @@
       </header>
 
       <div class="content">
-        <div v-for="item in myHistory" :key="item.date" class="history-item">
+        <div v-if="loading" class="loading-state">
+          <div class="loader"></div>
+          <p>Loading history...</p>
+        </div>
+        <template v-else-if="fullList.length > 0">
+          <div v-for="item in displayedList" :key="(item.date || '') + (item.period || '')" class="history-item">
           <div class="history-top">
             <span class="period">Period: {{ item.period }}</span>
             <span :class="['status-badge', item.status?.toLowerCase()]">{{ item.status }}</span>
@@ -31,8 +36,8 @@
             </div>
             <div class="info-box">
               <div class="label">Profit</div>
-              <div :class="['value-profit', item.winning > 0 ? 'win' : 'lose']">
-                {{ item.winning > 0 ? '+' : '' }}₹{{ item.winning.toFixed(2) }}
+              <div :class="['value-profit', winAmount(item) > 0 ? 'win' : 'lose']">
+                {{ winAmount(item) > 0 ? '+' : '' }}₹{{ formatWin(item.winning) }}
               </div>
             </div>
           </div>
@@ -42,8 +47,11 @@
             <span>{{ formatDate(item.date) }}</span>
           </div>
         </div>
-        
-        <div v-if="myHistory.length === 0" class="empty-state">
+          <div ref="sentinel" class="scroll-sentinel"></div>
+          <div v-if="loadingMore" class="loading-more"><div class="loader small"></div> Loading more...</div>
+          <p v-else-if="!hasMore && displayedList.length > 0" class="end-hint">End of history</p>
+        </template>
+        <div v-else class="empty-state">
           <div class="empty-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
@@ -55,29 +63,81 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import * as wingoApi from '../api/wingo'
 
+const PAGE_SIZE = 20
+
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
-const myHistory = ref([])
+const fullList = ref([])
+const visibleCount = ref(PAGE_SIZE)
+const loading = ref(true)
+const loadingMore = ref(false)
+const sentinel = ref(null)
+
 const gameId = computed(() => route.params.id || '1')
 const gameMin = computed(() => gameId.value)
 
-const fetchData = async () => {
-  if (!auth.user?.id) return
+const userId = computed(() => {
+  const id = auth.user?.id
+  if (id != null) return id
   try {
-    const res = await wingoApi.getFullHistory(gameId.value, auth.user.id)
-    if (res.data) {
-      // Sort by date descending
-      myHistory.value = res.data.sort((a, b) => new Date(b.date) - new Date(a.date))
+    const raw = localStorage.getItem('user')
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      return parsed?.result?.id ?? parsed?.id ?? null
     }
-  } catch (err) {
-    console.error(err)
+  } catch (_) {}
+  return null
+})
+
+const displayedList = computed(() => fullList.value.slice(0, visibleCount.value))
+const hasMore = computed(() => displayedList.value.length < fullList.value.length)
+
+function winAmount(item) {
+  const w = item?.winning
+  return typeof w === 'number' ? w : parseFloat(w) || 0
+}
+
+function formatWin(val) {
+  const n = typeof val === 'number' ? val : parseFloat(val)
+  return isNaN(n) ? '0.00' : n.toFixed(2)
+}
+
+const fetchData = async () => {
+  const uid = userId.value
+  if (!uid) {
+    loading.value = false
+    return
   }
+  loading.value = true
+  fullList.value = []
+  visibleCount.value = PAGE_SIZE
+  try {
+    const res = await wingoApi.getFullHistory(gameId.value, uid)
+    let list = []
+    if (res.data && res.data !== 'No Data') {
+      list = Array.isArray(res.data) ? res.data : []
+      list.sort((a, b) => new Date(b.date) - new Date(a.date))
+    }
+    fullList.value = list
+  } catch (err) {
+    console.error('Wingo history fetch error:', err)
+    fullList.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+function loadMore() {
+  if (!hasMore.value || loadingMore.value) return
+  loadingMore.value = true
+  visibleCount.value = Math.min(visibleCount.value + PAGE_SIZE, fullList.value.length)
+  loadingMore.value = false
 }
 
 const formatDate = (ts) => {
@@ -91,7 +151,22 @@ const formatDate = (ts) => {
   })
 }
 
-onMounted(fetchData)
+onMounted(() => {
+  fetchData()
+  const observer = new IntersectionObserver(
+    (entries) => { if (entries[0]?.isIntersecting) loadMore() },
+    { root: null, rootMargin: '120px', threshold: 0 }
+  )
+  const observe = () => {
+    const el = sentinel.value
+    if (el && fullList.value.length > 0) {
+      observer.disconnect()
+      observer.observe(el)
+    }
+  }
+  watch(() => [displayedList.value.length, sentinel.value], () => nextTick(observe), { flush: 'post' })
+  watch(sentinel, (el) => { nextTick(() => { if (el && fullList.value.length > 0) { observer.disconnect(); observer.observe(el) } }) }, { flush: 'post', immediate: true })
+})
 </script>
 
 <style scoped>
@@ -148,6 +223,47 @@ onMounted(fetchData)
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px;
+  color: #64748b;
+}
+.loader {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #0d9488;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.loader.small { width: 24px; height: 24px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.scroll-sentinel {
+  height: 1px;
+  visibility: hidden;
+  pointer-events: none;
+}
+.loading-more {
+  text-align: center;
+  padding: 16px;
+  color: #64748b;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.end-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  padding: 16px;
+  margin: 0;
 }
 
 .history-item {
