@@ -88,6 +88,16 @@
             </div>
             <p class="field-hint" style="font-size: 12px; color: #888; margin-top: 5px;">Toggle on to show a popup notice on the home page with the generic image url provided.</p>
           </div>
+          <div class="form-group-modern" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+            <label style="display: flex; align-items: center; justify-content: space-between;">
+              Withdrawals open for all users
+              <label class="switch-small">
+                <input type="checkbox" v-model="siteSettings.withdrawalsEnabled">
+                <span class="slider round"></span>
+              </label>
+            </label>
+            <p class="field-hint" style="font-size: 12px; color: #888; margin-top: 5px;">Turn off to temporarily disable withdrawals (e.g. holiday). Users will see &quot;Withdrawals temporarily disabled&quot;.</p>
+          </div>
           <button @click="saveSiteSettings" class="update-settings-btn" :disabled="saving">
             {{ saving ? 'Saving Changes...' : 'Save Site Settings' }}
           </button>
@@ -146,7 +156,7 @@ import { ref, onMounted } from 'vue'
 import * as adminApi from '../api/admin'
 
 const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
-const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '', platformMessageUrl: '', platformMessageEnabled: false, apkDownloadUrl: '' })
+const siteSettings = ref({ siteLogoUrl: '', telegramLink: '', customerServiceLink: '', whatsappLink: '', usdtAddress: '', platformMessageUrl: '', platformMessageEnabled: false, apkDownloadUrl: '', withdrawalsEnabled: true })
 const carouselImages = ref([])
 const uploading = ref(false)
 const uploadingApk = ref(false)
@@ -227,7 +237,8 @@ const saveSiteSettings = async () => {
       usdtAddress: siteSettings.value.usdtAddress,
       platformMessageUrl: siteSettings.value.platformMessageUrl,
       platformMessageEnabled: siteSettings.value.platformMessageEnabled,
-      apkDownloadUrl: siteSettings.value.apkDownloadUrl
+      apkDownloadUrl: siteSettings.value.apkDownloadUrl,
+      withdrawalsEnabled: siteSettings.value.withdrawalsEnabled
     })
     showToast('Site settings updated')
   } catch (err) {

@@ -35,8 +35,17 @@
           </div>
         </div>
       </div>
+
+      <!-- Withdrawals temporarily disabled (e.g. holiday) -->
+      <div v-if="!withdrawalsEnabled" class="withdrawals-disabled-card">
+        <div class="wd-icon">⏸</div>
+        <h3>Withdrawals temporarily unavailable</h3>
+        <p>Withdrawals are currently disabled. Please try again later.</p>
+        <p class="wd-hint">You can still view your balance and withdrawal history.</p>
+      </div>
       
       <!-- Tab Switcher -->
+      <template v-else>
       <div class="tab-switcher-wrapper">
         <div class="tab-switcher">
           <button :class="['tab-btn', { active: activeTab === 'inr' }]" @click="activeTab = 'inr'">
