@@ -234,6 +234,8 @@ import {
   getAllWithdrawalsAdmin,
   updateWithdrawalAdmin,
   getAdminTransactions,
+  getUsdtDepositsPending,
+  approveUsdtDeposit,
 } from "../controller/admin.js";
 import {
   getCommissionConfigs,
@@ -727,6 +729,8 @@ router.post("/admin-api/updateUser/:api", updateUserAdmin);
 router.get("/admin-api/withdrawals/:api", getAllWithdrawalsAdmin);
 router.post("/admin-api/updateWithdrawal/:api", updateWithdrawalAdmin);
 router.get("/admin-api/transactions/:api", getAdminTransactions);
+router.get("/admin-api/usdt-deposits/:api", getUsdtDepositsPending);
+router.post("/admin-api/usdt-deposits/approve/:api", approveUsdtDeposit);
 
 // Commission Management
 router.get("/admin-api/commission/configs/:api", getCommissionConfigs);

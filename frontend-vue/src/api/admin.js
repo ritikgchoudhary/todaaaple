@@ -6,6 +6,8 @@ export const updateUser = (api, data) => API.post(`/admin-api/updateUser/${api}`
 export const getAllWithdrawals = (api) => API.get(`/admin-api/withdrawals/${api}`)
 export const updateWithdrawal = (api, data) => API.post(`/admin-api/updateWithdrawal/${api}`, data)
 export const getAdminTransactions = (api) => API.get(`/admin-api/transactions/${api}`)
+export const getUsdtDepositsPending = (api) => API.get(`/admin-api/usdt-deposits/${api}`)
+export const approveUsdtDeposit = (api, transactionId) => API.post(`/admin-api/usdt-deposits/approve/${api}`, { id: transactionId })
 
 // Site Settings
 export const getSiteSettings = (api) => API.get(`/admin/site-settings/${api}`)

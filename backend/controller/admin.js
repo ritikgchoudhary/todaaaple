@@ -268,3 +268,163 @@ export const getAdminTransactions = async (req, res, next) => {
         next(new ErrorResponse(error.message, 500));
     }
 };
+
+/** GET pending USDT (Upay) deposits – status created, for manual approve */
+export const getUsdtDepositsPending = async (req, res, next) => {
+    try {
+        const api = req.params.api;
+        if (api !== process.env.AdminAPI) {
+            return next(new ErrorResponse("Permission Denied", 401));
+        }
+        const list = await Transaction.find({ gateway: "Upay", status: "created" })
+            .sort({ date: -1 })
+            .limit(100)
+            .lean();
+        res.status(200).json({ success: true, data: list });
+    } catch (error) {
+        next(new ErrorResponse(error.message, 500));
+    }
+};
+
+/** POST manually approve a USDT deposit by transaction id */
+export const approveUsdtDeposit = async (req, res, next) => {
+    try {
+        const api = req.params.api;
+        if (api !== process.env.AdminAPI) {
+            return next(new ErrorResponse("Permission Denied", 401));
+        }
+        const { id: transactionId } = req.body;
+        if (!transactionId) {
+            return res.status(400).json({ success: false, message: "Transaction id required" });
+        }
+        const doc = await Transaction.findOne({ id: transactionId, gateway: "Upay", status: "created" });
+        if (!doc) {
+            return res.status(404).json({ success: false, message: "Pending USDT deposit not found" });
+        }
+        const amount = doc.amount;
+        const userId = doc.userId;
+        const number = doc.number;
+
+        await Transaction.updateOne(
+            { id: transactionId, status: "created" },
+            { status: "success", expired: true, $inc: { __v: 1 } }
+        );
+
+        const date = new Date();
+        const localDate = (date / 1000 + 19800) * 1000;
+        const now = new Date(localDate);
+        const day = now.getDate();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+        const daySorted = day < 10 ? `0${day}` : `${day}`;
+        const monthSorted = month < 10 ? `0${month}` : `${month}`;
+        const newDate = `${daySorted}-${monthSorted}-${year}`;
+        const todayProfit = `${day}/${month}/${year}`;
+        const dayMonth = todayProfit;
+
+        await Daily.updateOne(
+            { id: newDate },
+            { $inc: { count: +1, amount } },
+            { upsert: true }
+        );
+
+        const user = await User.findOne({ id: userId });
+        if (!user) {
+            return res.status(200).json({ success: true, message: "Transaction marked success; user not found" });
+        }
+
+        const usdtNote = "manual";
+
+        if (!user.firstRecharge) {
+            const bonusAmount = amount + (amount * 10) / 100;
+            if (user.upLine && user.upLine[0]) {
+                await User.updateOne(
+                    { id: user.upLine[0] },
+                    { $inc: { balance: +100 }, $push: { walletHistory: { amount: 100, date: Date.now(), credit: true, note: `Referal Reward User: ${user.id}` } }
+                );
+                await offerBonus.updateOne(
+                    { userId: user.upLine[0] },
+                    {
+                        userId: user.upLine[0],
+                        $inc: { amount: +100, [`todayProfit.${todayProfit}.referral`]: +100, totalReferral: +100 },
+                        $push: { history: { credit: "wallet", amount: 100, note: `Referal Reward User: ${user.id}`, date: Date.now() } },
+                    },
+                    { upsert: true }
+                );
+            }
+            await User.updateOne(
+                { id: user.id },
+                {
+                    firstRecharge: true,
+                    $inc: { balance: +bonusAmount },
+                    $push: {
+                        rechargeHistory: { amount: bonusAmount, date: Date.now(), status: "Success", usdt: usdtNote },
+                        walletHistory: { amount: bonusAmount, date: Date.now(), credit: true, note: `Add money ID: ${number} (manual)` },
+                    },
+                }
+            );
+        } else {
+            let bonusAmount = amount;
+            if (amount > 200) {
+                bonusAmount = amount + (amount * 3) / 100;
+            }
+            await User.updateOne(
+                { id: user.id },
+                {
+                    $inc: { balance: +bonusAmount },
+                    $push: {
+                        rechargeHistory: { amount: bonusAmount, date: Date.now(), status: "Success", usdt: usdtNote },
+                        walletHistory: { amount: bonusAmount, date: Date.now(), credit: true, note: `Add money ID: ${number} (manual)` },
+                    },
+                }
+            );
+            const level0profit = (amount * 3) / 100;
+            const level1profit = (amount * 0) / 100;
+            const level2profit = (amount * 0) / 100;
+            if (user.upLine && user.upLine[0]) {
+                await User.updateOne({ id: user.upLine[0] }, { $inc: { balance: level0profit } });
+                await offerBonus.updateOne(
+                    { userId: user.upLine[0] },
+                    {
+                        userId: user.upLine[0],
+                        $inc: { amount: level0profit, [`todayProfit.${todayProfit}.level0`]: level0profit, totalLevel0: level0profit },
+                        $push: { history: { credit: "wallet", amount: level0profit, note: `Recharge bonus: ${user.id}`, date: Date.now() } },
+                    },
+                    { upsert: true }
+                );
+            }
+            const userDate = new Date(user.date);
+            const userDateLocal = (userDate / 1000 + 19800) * 1000;
+            const newuserDate = new Date(userDateLocal);
+            const userday = newuserDate.getDate();
+            const usermonth = newuserDate.getMonth() + 1;
+            const userdayMonth = `${userday}/${usermonth}/${year}`;
+            if (dayMonth === userdayMonth && user.upLine) {
+                for (let i = 0; i < 3; i++) {
+                    if (user.upLine[i]) {
+                        const field = `newlevel${i}.${dayMonth}.${user.phone}.todayRecharge`;
+                        await promotion.updateOne({ userId: user.upLine[i] }, { $inc: { [field]: amount } }, { upsert: true });
+                    }
+                }
+                const updates = {};
+                for (let i = 0; i < 7; i++) {
+                    if (user.upLine[i]) {
+                        updates[`level${i}.${user.phone}.totalRecharge`] = amount;
+                        updates[`level${i}.${user.phone}.firstRecharge`] = 0;
+                    }
+                }
+                if (Object.keys(updates).length) {
+                    for (let i = 0; i < 7; i++) {
+                        if (user.upLine[i]) {
+                            await promotion.updateOne({ userId: user.upLine[i] }, { $inc: { [`level${i}.${user.phone}.totalRecharge`]: amount } }, { upsert: true });
+                        }
+                    }
+                }
+            }
+        }
+
+        res.status(200).json({ success: true, message: "USDT deposit approved and balance credited" });
+    } catch (error) {
+        next(new ErrorResponse(error.message, 500));
+    }
+};
