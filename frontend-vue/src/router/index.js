@@ -89,6 +89,7 @@ const routes = [
     children: [
       { path: '', redirect: { name: 'MasterAdminGames' } },
       { path: 'games', name: 'MasterAdminGames', component: AdminGamesTab, meta: { tab: 'games' } },
+      { path: 'usdt-deposits', name: 'MasterAdminUsdtDeposits', component: () => import('../views/AdminUsdtDepositsTab.vue'), meta: { tab: 'usdt' } },
       { path: 'settings', name: 'MasterAdminSettings', component: AdminSettingsTab, meta: { tab: 'settings' } }
     ]
   },
