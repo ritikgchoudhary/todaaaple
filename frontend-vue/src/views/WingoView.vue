@@ -161,7 +161,7 @@
       <!-- Bid History Section -->
       <section class="records-container bid-history-container">
         <div class="section-header">
-          <span style="color: #333">Last 5 {{ gameType }} Minutes Bid History</span>
+          <span style="color: #333">{{ gameType }} Minutes Bid History</span>
         </div>
         <div class="bid-list">
           <div v-if="!myHistory || myHistory.length === 0" class="no-records">No Records</div>
