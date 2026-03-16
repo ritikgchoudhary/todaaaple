@@ -326,12 +326,12 @@ const drawer = ref({
 })
 
 const numbers = [
-  { val: 0, color: 'linear-gradient(180deg, #f84350, #8c6ceb)' },
+  { val: 0, color: '#f84350' },
   { val: 1, color: '#28c04c' },
   { val: 2, color: '#f84350' },
   { val: 3, color: '#28c04c' },
   { val: 4, color: '#f84350' },
-  { val: 5, color: 'linear-gradient(180deg, #28c04c, #8c6ceb)' },
+  { val: 5, color: '#28c04c' },
   { val: 6, color: '#f84350' },
   { val: 7, color: '#28c04c' },
   { val: 8, color: '#f84350' },
@@ -499,10 +499,11 @@ function getResultColorLabel(select) {
   return s
 }
 
-// Same colors as game number grid: 0,5=violet; 1,3,7,9=green; 2,4,6,8=red
+// 0=red, 5=green; 1,3,7,9=green; 2,4,6,8=red
 function getNumberColor(num) {
   const n = Number(num)
-  if (n === 0 || n === 5) return '#8c6ceb'
+  if (n === 0) return '#f84350'
+  if (n === 5) return '#28c04c'
   if ([1, 3, 7, 9].includes(n)) return '#28c04c'
   if ([2, 4, 6, 8].includes(n)) return '#f84350'
   return '#64748b'
