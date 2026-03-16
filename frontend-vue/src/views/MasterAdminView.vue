@@ -26,14 +26,14 @@
 
     <!-- Admin Panel -->
     <div v-else class="admin-layout">
-      <!-- Sidebar -->
-      <aside v-if="!isMobile || showSidebar" class="sidebar">
+      <!-- Sidebar (closeable on desktop + phone) -->
+      <aside v-show="showSidebar" class="sidebar">
         <div class="sidebar-header">
           <div class="admin-brand">
             <span class="brand-brand">RUSH</span>
             <span class="brand-text">PAY ADMIN</span>
           </div>
-          <button v-if="isMobile" @click="showSidebar = false" class="close-sidebar">×</button>
+          <button @click="showSidebar = false" class="close-sidebar" title="Close sidebar">×</button>
         </div>
         
         <nav class="sidebar-nav">
@@ -61,7 +61,7 @@
       <main class="main-content">
         <header class="content-header">
           <div class="header-left">
-            <button v-if="isMobile" @click="showSidebar = true" class="menu-trigger">
+            <button v-if="!showSidebar" @click="showSidebar = true" class="menu-trigger" title="Open sidebar">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
             <h1>{{ activeTabLabel }}</h1>
@@ -199,7 +199,7 @@ const userSearch = ref('')
 const withdrawalFilter = ref('All')
 
 const isMobile = ref(false)
-const showSidebar = ref(false)
+const showSidebar = ref(true)
 const ADMIN_API_KEY = '0f58faf1-20ea-489b-ad86-948cbdc9b7a3'
 
 const editingUser = ref(null)
@@ -386,7 +386,10 @@ const formatStatVal = (val, key) => {
   return val.toLocaleString()
 }
 
-const checkRes = () => isMobile.value = window.innerWidth < 768
+const checkRes = () => {
+  isMobile.value = window.innerWidth < 768
+  if (isMobile.value) showSidebar.value = false
+}
 
 onMounted(() => {
   checkRes()
