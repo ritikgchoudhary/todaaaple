@@ -385,7 +385,7 @@ const formatStatVal = (val, key) => {
   return val.toLocaleString()
 }
 
-const checkRes = () => isMobile.value = window.innerWidth < 1024
+const checkRes = () => isMobile.value = window.innerWidth < 768
 
 onMounted(() => {
   checkRes()
@@ -605,8 +605,44 @@ watch(activeTab, (newTab) => {
 
 .shadow-premium { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08); }
 
+.menu-trigger {
+  width: 44px; height: 44px; border-radius: 12px; border: 1px solid #e2e8f0;
+  background: #fff; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.menu-trigger:active { background: #f1f5f9; }
+.close-sidebar {
+  position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; line-height: 1;
+}
+.close-sidebar:active { background: rgba(255,255,255,0.2); }
+
+@media (max-width: 767px) {
+  .admin-layout { height: 100vh; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000;
+    width: min(320px, 85vw); max-width: 100%;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+  }
+  .sidebar-header { padding: 20px 20px 16px; }
+  .content-header {
+    padding: 0 16px; height: 56px;
+  }
+  .content-header h1 { font-size: 1.1rem; }
+  .tab-view { padding: 16px; }
+  .login-card { padding: 28px 20px; max-width: 100%; }
+  .login-card h2 { font-size: 1.35rem; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .settings-grid { grid-template-columns: 1fr; }
+  .config-card { padding: 20px; }
+  .modal-card { padding: 24px; margin: 16px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
+  .modal-body.scrollable { max-height: 50vh; }
+  .user-details-grid { grid-template-columns: 1fr; }
+  .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .admin-table th, .admin-table td { padding: 12px 14px; font-size: 0.85rem; }
+}
 @media (max-width: 1024px) {
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; width: 100%; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; width: min(320px, 85vw); }
   .settings-grid { grid-template-columns: 1fr; }
 }
 .mini-info {

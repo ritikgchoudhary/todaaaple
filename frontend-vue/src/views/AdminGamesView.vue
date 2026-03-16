@@ -1072,4 +1072,79 @@ onMounted(fetchData)
   background: #e0f2fe !important;
   border-radius: 12px;
 }
+
+/* Phone-first: master admin games panel */
+@media (max-width: 767px) {
+  .admin-games-page {
+    padding: 12px 12px 80px;
+    max-width: 100%;
+  }
+  .admin-games-page .header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .admin-games-page .header h1 { font-size: 1.1rem; }
+  .admin-games-page .header .save-btn { padding: 10px 16px; font-size: 0.9rem; }
+  .games-layout {
+    flex-direction: column;
+    margin-top: 12px;
+    gap: 12px;
+  }
+  .games-sidebar {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+  .games-sidebar .sidebar-label { width: 100%; margin-bottom: 8px; }
+  .games-sidebar .sidebar-item {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+  .sidebar-footer-actions { width: 100%; margin-top: 8px; }
+  .sidebar-footer-actions .update-all-btn { width: 100%; padding: 14px; }
+  .content-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .title-wrap h2 { font-size: 1.25rem; }
+  .title-wrap p { font-size: 0.85rem; }
+  .search-and-add {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .search-box { width: 100%; max-width: 100%; }
+  .add-master-btn { justify-content: center; padding: 14px; min-height: 48px; }
+  .games-grid-premium {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .game-card-premium .g-info { padding: 6px; }
+  .game-card-premium .g-name-input { font-size: 0.75rem; }
+  .game-card-premium .mini-f-group input,
+  .game-card-premium .mini-f-group select { padding: 8px; font-size: 0.8rem; }
+  .providers-grid {
+    grid-template-columns: 1fr;
+  }
+  .provider-card-premium { padding: 12px; }
+  .p-icons { flex-wrap: wrap; }
+  .icon-input-wrap { min-width: 0; }
+  .icon-preview { width: 64px; height: 64px; }
+  .scroll-area { min-width: 0; }
+  .loader { padding: 48px 16px; }
+}
+
+@media (max-width: 480px) {
+  .games-grid-premium { grid-template-columns: 1fr; }
+  .game-card-premium .g-meta-inputs { flex-direction: column; }
+}
 </style>
