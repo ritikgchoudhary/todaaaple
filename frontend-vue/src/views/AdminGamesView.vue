@@ -1073,23 +1073,24 @@ onMounted(fetchData)
   border-radius: 12px;
 }
 
-/* Phone-first: master admin games panel */
+/* Phone: compact container, chota layout */
 @media (max-width: 767px) {
   .admin-games-page {
-    padding: 12px 12px 80px;
+    padding: 8px 8px 72px;
     max-width: 100%;
+    min-height: 100%;
   }
   .admin-games-page .header {
     flex-wrap: wrap;
-    gap: 12px;
-    padding: 12px 0;
+    gap: 8px;
+    padding: 8px 0;
   }
-  .admin-games-page .header h1 { font-size: 1.1rem; }
-  .admin-games-page .header .save-btn { padding: 10px 16px; font-size: 0.9rem; }
+  .admin-games-page .header h1 { font-size: 0.95rem; }
+  .admin-games-page .header .save-btn { padding: 8px 12px; font-size: 0.85rem; }
   .games-layout {
     flex-direction: column;
-    margin-top: 12px;
-    gap: 12px;
+    margin-top: 8px;
+    gap: 8px;
   }
   .games-sidebar {
     width: 100%;
@@ -1098,53 +1099,72 @@ onMounted(fetchData)
     z-index: 10;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 10px;
   }
-  .games-sidebar .sidebar-label { width: 100%; margin-bottom: 8px; }
+  .games-sidebar .sidebar-label { width: 100%; margin-bottom: 6px; font-size: 0.7rem; }
   .games-sidebar .sidebar-item {
     flex: 1 1 auto;
     min-width: 0;
-    padding: 12px 14px;
-    font-size: 0.85rem;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    border-radius: 10px;
   }
-  .sidebar-footer-actions { width: 100%; margin-top: 8px; }
-  .sidebar-footer-actions .update-all-btn { width: 100%; padding: 14px; }
+  .count-badge { font-size: 0.65rem; padding: 2px 6px; }
+  .sidebar-footer-actions { width: 100%; margin-top: 6px; }
+  .sidebar-footer-actions .update-all-btn { width: 100%; padding: 10px 12px; font-size: 0.85rem; }
   .content-top-bar {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 8px;
+    margin-bottom: 10px;
   }
-  .title-wrap h2 { font-size: 1.25rem; }
-  .title-wrap p { font-size: 0.85rem; }
-  .search-and-add {
-    flex-direction: column;
-    gap: 10px;
-  }
+  .title-wrap h2 { font-size: 1.05rem; }
+  .title-wrap p { font-size: 0.8rem; }
+  .search-and-add { flex-direction: column; gap: 8px; }
   .search-box { width: 100%; max-width: 100%; }
-  .add-master-btn { justify-content: center; padding: 14px; min-height: 48px; }
+  .search-box input { padding: 10px 12px 10px 36px; font-size: 0.9rem; }
+  .add-master-btn { justify-content: center; padding: 10px 12px; min-height: 44px; font-size: 0.9rem; }
   .games-grid-premium {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
+  .game-card-premium { border-radius: 10px; }
   .game-card-premium .g-info { padding: 6px; }
-  .game-card-premium .g-name-input { font-size: 0.75rem; }
+  .game-card-premium .g-name-input { font-size: 0.7rem; }
+  .game-card-premium .mini-f-group label { font-size: 0.65rem; }
   .game-card-premium .mini-f-group input,
-  .game-card-premium .mini-f-group select { padding: 8px; font-size: 0.8rem; }
-  .providers-grid {
-    grid-template-columns: 1fr;
-  }
-  .provider-card-premium { padding: 12px; }
-  .p-icons { flex-wrap: wrap; }
+  .game-card-premium .mini-f-group select { padding: 6px 8px; font-size: 0.75rem; }
+  .g-image-preview { aspect-ratio: 16/10; }
+  .g-delete-btn { width: 28px; height: 28px; font-size: 0.9rem; }
+  .providers-grid { grid-template-columns: 1fr; gap: 10px; }
+  .provider-card-premium { padding: 10px; border-radius: 10px; }
+  .p-card-header { margin-bottom: 8px; }
+  .p-body { gap: 8px; }
+  .p-inputs { gap: 10px; }
+  .f-group label { font-size: 0.7rem; }
+  .f-group input { padding: 8px 10px; font-size: 0.85rem; }
+  .p-icons { gap: 12px; flex-wrap: wrap; }
   .icon-input-wrap { min-width: 0; }
-  .icon-preview { width: 64px; height: 64px; }
+  .icon-preview { width: 56px; height: 56px; }
+  .icon-preview img { width: 28px; height: 28px; }
+  .icon-preview input { font-size: 0.55rem; }
   .scroll-area { min-width: 0; }
-  .loader { padding: 48px 16px; }
+  .loader { padding: 32px 12px; }
+  .loader p { font-size: 0.9rem; }
+  .spinner { width: 32px; height: 32px; }
 }
 
 @media (max-width: 480px) {
-  .games-grid-premium { grid-template-columns: 1fr; }
+  .admin-games-page { padding: 6px 6px 64px; }
+  .admin-games-page .header h1 { font-size: 0.9rem; }
+  .games-sidebar { padding: 6px 8px; gap: 4px; }
+  .games-sidebar .sidebar-item { padding: 8px 10px; font-size: 0.75rem; }
+  .title-wrap h2 { font-size: 0.95rem; }
+  .games-grid-premium { grid-template-columns: 1fr; gap: 6px; }
   .game-card-premium .g-meta-inputs { flex-direction: column; }
+  .provider-card-premium { padding: 8px; }
+  .icon-preview { width: 48px; height: 48px; }
 }
 </style>
