@@ -18,7 +18,12 @@
       <p>Synchronizing Game Database...</p>
     </div>
     
-    <div v-else class="games-layout">
+    <div v-else class="games-layout" :class="{ 'config-closed': !configOpen }">
+      <!-- Phone: toggle to show/hide configuration -->
+      <button type="button" class="config-toggle" @click="configOpen = !configOpen" aria-label="Toggle configuration">
+        <span v-if="configOpen">▲ Close configuration</span>
+        <span v-else>▼ Configuration</span>
+      </button>
       <!-- Sidebar Categories -->
       <aside class="games-sidebar shadow-premium">
         <div class="sidebar-label">CONFIGURATION</div>
@@ -259,6 +264,7 @@ const messageType = ref('success')
 
 const activeCategory = ref('slot')
 const gameSearch = ref('')
+const configOpen = ref(true)
 
 const navCategories = [
   { id: 'slot', label: 'Slots', icon: '🎰' },
