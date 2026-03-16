@@ -230,6 +230,7 @@
           History
         </router-link>
       </div>
+      </template>
     </div>
 
     <!-- TRC Dialog -->
@@ -294,6 +295,7 @@ const withdrawalLimits = reactive({ recharge: 0, bid: 0 })
 const dialog = reactive({ open: false, body: '' })
 const showTrcDialog = ref(false)
 const historySection = ref(null)
+const withdrawalsEnabled = ref(true)
 
 const calculateInrFee = () => {
     if (!amount.value) return 0
@@ -310,8 +312,15 @@ async function fetchData() {
     if (!auth.user?.id) return
     fetching.value = true
     try {
-        const res = await walletApi.getUserWithdrawal(auth.user.id)
-        if (res.data) {
+        const [withdrawRes, settingsRes] = await Promise.all([
+            walletApi.getUserWithdrawal(auth.user.id),
+            walletApi.getSiteSettings().catch(() => ({}))
+        ])
+        if (settingsRes?.data && typeof settingsRes.data.withdrawalsEnabled === 'boolean') {
+            withdrawalsEnabled.value = settingsRes.data.withdrawalsEnabled
+        }
+        const res = withdrawRes
+        if (res?.data) {
             const userData = res.data.user?.[0] || {}
             userBalance.value = userData.balance || 0
             bankInfo.value = userData.bank?.[0] || null
@@ -369,7 +378,9 @@ async function handleWithdrawal() {
         await walletApi.applyWithdrawal({ amount: amount.value, userId: auth.user.id })
         router.push("/wallet")
     } catch (err) {
-        dialog.body = err.response?.data?.error || "Transaction could not be initiated."
+        const msg = err.response?.data?.error || err.response?.data?.message
+        dialog.body = msg || "Transaction could not be initiated."
+        if (err.response?.status === 503) dialog.body = "Withdrawals are temporarily disabled. Please try again later."
         dialog.open = true
     } finally {
         loading.value = false
@@ -402,7 +413,8 @@ async function handleUsdtWithdrawal() {
         trcAddress.value = ''
         fetchData()
     } catch (err) {
-        dialog.body = err.response?.data?.error || "USDT processing error."
+        dialog.body = err.response?.data?.error || err.response?.data?.message || "USDT processing error."
+        if (err.response?.status === 503) dialog.body = "Withdrawals are temporarily disabled. Please try again later."
         dialog.open = true
     } finally {
         loading.value = false
@@ -434,6 +446,35 @@ onMounted(fetchData)
   position: relative;
   box-shadow: 0 0 30px rgba(15, 23, 42, 0.1);
   overflow-x: hidden;
+}
+
+.withdrawals-disabled-card {
+  margin: 16px 20px;
+  padding: 24px 20px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 16px;
+  text-align: center;
+}
+.withdrawals-disabled-card .wd-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+.withdrawals-disabled-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #92400e;
+}
+.withdrawals-disabled-card p {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  color: #78350f;
+}
+.withdrawals-disabled-card .wd-hint {
+  font-size: 0.85rem;
+  color: #a16207;
+  margin-top: 10px;
 }
 
 /* History button */
