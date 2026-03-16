@@ -141,8 +141,9 @@
               <tr v-for="row in records.slice(0, 10)" :key="row.id">
                 <td>{{ row.id }}</td>
                 <td>{{ row.price }}</td>
-                <td :class="row.number >= 5 ? 'text-green' : 'text-red'">
-                  {{ row.number }} {{ row.number >= 5 ? 'Big' : 'Small' }}
+                <td>
+                  <span class="record-number" :style="{ color: getNumberColor(row.number) }">{{ row.number }}</span>
+                  <span class="record-size">{{ row.number >= 5 ? 'Big' : 'Small' }}</span>
                 </td>
                 <td>
                   <div class="color-dots">
@@ -498,6 +499,15 @@ function getResultColorLabel(select) {
   return s
 }
 
+// Same colors as game number grid: 0,5=violet; 1,3,7,9=green; 2,4,6,8=red
+function getNumberColor(num) {
+  const n = Number(num)
+  if (n === 0 || n === 5) return '#8c6ceb'
+  if ([1, 3, 7, 9].includes(n)) return '#28c04c'
+  if ([2, 4, 6, 8].includes(n)) return '#f84350'
+  return '#64748b'
+}
+
 const parseColors = (c) => c ? c.split(' ') : []
 const getDotColor = (name) => {
   const n = name.toLowerCase()
@@ -599,6 +609,8 @@ watch(() => route.params.id, () => { updateTimer(); fetchData() })
 .record-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; }
 .record-table th { color: #64748B; padding-bottom: 12px; border-bottom: 2px solid #E2E8F0; font-weight: 600; font-size: 12px; }
 .record-table td { padding: 10px 0; border-bottom: 1px solid #F1F5F9; font-size: 13px; }
+.record-number { font-weight: 800; font-size: 1.1em; }
+.record-size { margin-left: 4px; color: #64748b; font-weight: 600; font-size: 0.95em; }
 .text-green { color: #16A34A; font-weight: bold; }
 .text-red { color: #DC2626; font-weight: bold; }
 .color-dots { display: flex; justify-content: center; gap: 6px; }
