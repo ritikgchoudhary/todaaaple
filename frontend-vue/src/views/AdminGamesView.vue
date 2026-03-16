@@ -672,8 +672,13 @@ onMounted(fetchData)
 
 .games-layout {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 16px;
+}
+
+.games-layout.config-closed .games-sidebar {
+  display: none !important;
 }
 
 .games-sidebar {
@@ -1079,11 +1084,12 @@ onMounted(fetchData)
   border-radius: 12px;
 }
 
-/* Configuration toggle: only on phone */
+/* Configuration toggle: desktop + phone */
 .config-toggle {
-  display: none;
+  flex: 0 0 100%;
   width: 100%;
-  padding: 12px 14px;
+  order: -1;
+  padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid #e2e8f0;
   background: #fff;
@@ -1092,26 +1098,21 @@ onMounted(fetchData)
   font-size: 0.9rem;
   cursor: pointer;
   text-align: center;
-  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.config-toggle:hover {
+  background: #f8fafc;
 }
 .config-toggle:active {
   background: #f1f5f9;
 }
 
-/* Phone: compact container, config toggle, games 2 per row */
+/* Phone: compact container, games 2 per row */
 @media (max-width: 767px) {
-  .config-toggle {
-    display: block;
-    order: -1;
-  }
   .games-layout {
-    display: flex;
     flex-direction: column;
     margin-top: 8px;
     gap: 8px;
-  }
-  .games-layout.config-closed .games-sidebar {
-    display: none !important;
   }
   .admin-games-page {
     padding: 8px 8px 72px;
