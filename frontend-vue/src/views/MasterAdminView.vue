@@ -645,9 +645,11 @@ watch(activeTab, (newTab) => {
     padding-bottom: env(safe-area-inset-bottom);
   }
   .admin-login-overlay {
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
+    padding: 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
     align-items: center;
     justify-content: center;
   }
@@ -658,40 +660,98 @@ watch(activeTab, (newTab) => {
   }
   .sidebar {
     position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000;
-    width: min(320px, calc(100vw - 24px)); max-width: 100%;
+    width: min(280px, calc(100vw - 16px));
     box-shadow: 4px 0 20px rgba(0,0,0,0.15);
     padding-left: env(safe-area-inset-left);
   }
-  .sidebar-header { padding: 20px 20px 16px; }
-  .main-content {
-    padding-right: env(safe-area-inset-right);
-  }
+  .sidebar-header { padding: 12px 14px 10px; }
+  .brand-brand { font-size: 1.2rem; }
+  .brand-text { font-size: 0.8rem; }
+  .sidebar-nav { padding: 0 10px; gap: 4px; }
+  .nav-item { padding: 12px 14px; border-radius: 12px; gap: 10px; font-size: 0.9rem; }
+  .sidebar-footer { padding: 14px 10px; }
+  .logout-btn { padding: 12px; font-size: 0.9rem; }
+  .close-sidebar { top: 10px; right: 10px; width: 36px; height: 36px; font-size: 1.35rem; }
+  .main-content { padding-right: env(safe-area-inset-right); }
   .content-header {
-    padding: 0 16px; height: 56px;
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
+    padding: 0 10px; height: 48px;
+    padding-left: max(10px, env(safe-area-inset-left));
+    padding-right: max(10px, env(safe-area-inset-right));
   }
-  .content-header h1 { font-size: 1.1rem; }
+  .content-header h1 { font-size: 0.95rem; }
+  .status-indicator { font-size: 0.7rem; }
+  .menu-trigger { width: 40px; height: 40px; }
   .tab-view {
-    padding: 16px;
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding: 10px 12px 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
-  .login-card { padding: 28px 20px; max-width: 100%; box-sizing: border-box; }
-  .login-card h2 { font-size: 1.35rem; }
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .comparison-grid { grid-template-columns: 1fr; }
-  .settings-grid { grid-template-columns: 1fr; }
-  .config-card { padding: 20px; }
-  .modal-overlay { padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
-  .modal-card { padding: 24px; margin: 0; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-sizing: border-box; }
-  .modal-body.scrollable { max-height: 50vh; }
+  .login-card {
+    padding: 20px 16px;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+  }
+  .login-card h2 { font-size: 1.2rem; margin-bottom: 8px; }
+  .login-card p { font-size: 0.85rem; margin-bottom: 20px; }
+  .input-group input { padding: 14px 16px; font-size: 1rem; margin-bottom: 14px; border-radius: 12px; }
+  .input-group button { padding: 14px; font-size: 1rem; border-radius: 12px; }
+  .dashboard-wrapper { gap: 20px; }
+  .stats-section-title { font-size: 0.95rem; margin-bottom: -6px; }
+  .dashboard-grid { grid-template-columns: 1fr; gap: 12px; }
+  .comparison-grid { grid-template-columns: 1fr; gap: 12px; }
+  .comparison-card { border-radius: 16px; }
+  .comp-header { padding: 10px 14px; font-size: 0.7rem; }
+  .comp-body { padding: 14px; }
+  .comp-item { margin-bottom: 12px; }
+  .comp-label { font-size: 0.8rem; }
+  .comp-val { font-size: 1.15rem; }
+  .settings-grid { grid-template-columns: 1fr; gap: 16px; }
+  .config-card { padding: 16px; border-radius: 20px; }
+  .config-card h3 { font-size: 1.1rem; margin-bottom: 16px; }
+  .logo-preview-box { height: 120px; border-radius: 12px; margin-bottom: 16px; }
+  .carousel-list { gap: 12px; }
+  .carousel-item-admin { width: 160px; height: 80px; border-radius: 12px; }
+  .carousel-uploader { width: 160px; height: 80px; border-radius: 12px; font-size: 0.85rem; }
+  .modal-overlay { padding: 10px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); padding-top: max(10px, env(safe-area-inset-top)); padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  .modal-card { padding: 16px; margin: 0; max-height: 88vh; border-radius: 20px; }
+  .modal-card h3 { font-size: 1.15rem; }
+  .modal-hint { font-size: 0.8rem; margin-bottom: 16px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { font-size: 0.8rem; margin-bottom: 6px; }
+  .form-group input, .form-group select { padding: 12px; font-size: 1rem; border-radius: 12px; }
+  .modal-actions { margin-top: 20px; gap: 10px; }
+  .cancel-btn, .save-btn { padding: 12px; border-radius: 12px; font-size: 0.9rem; }
+  .modal-body.scrollable { max-height: 45vh; }
+  .user-details-grid { gap: 12px; margin-top: 16px; padding-top: 16px; }
+  .detail-box { padding: 10px; font-size: 0.85rem; }
+  .welcome-card { padding: 24px 16px; }
+  .welcome-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .table-container { border-radius: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .admin-table th, .admin-table td { padding: 10px 12px; font-size: 0.8rem; }
+  .action-bar { flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .search-wrap input { padding: 12px 16px; font-size: 0.95rem; border-radius: 12px; }
+  .refresh-btn { padding: 10px 16px; font-size: 0.85rem; border-radius: 12px; }
+  .filter-group { flex-wrap: wrap; padding: 4px; border-radius: 12px; }
+  .filter-btn { padding: 6px 14px; font-size: 0.85rem; }
+  .action-btn { padding: 6px 12px; font-size: 0.85rem; }
+  .status-badge { padding: 4px 10px; font-size: 0.65rem; }
   .user-details-grid { grid-template-columns: 1fr; }
-  .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .admin-table th, .admin-table td { padding: 12px 14px; font-size: 0.85rem; }
-  .action-bar { flex-wrap: wrap; gap: 12px; }
-  .filter-group { flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+  .sidebar-header { padding: 10px 12px 8px; }
+  .nav-item { padding: 10px 12px; font-size: 0.85rem; }
+  .content-header { height: 44px; }
+  .content-header h1 { font-size: 0.9rem; }
+  .tab-view { padding: 8px 10px 10px; padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+  .login-card { padding: 16px 12px; }
+  .login-card h2 { font-size: 1.1rem; }
+  .dashboard-grid { gap: 10px; }
+  .comparison-card .comp-body { padding: 12px; }
+  .config-card { padding: 12px; }
+  .modal-card { padding: 14px; }
+  .admin-table th, .admin-table td { padding: 8px 10px; font-size: 0.75rem; }
 }
 @media (max-width: 1024px) {
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 1000; width: min(320px, 85vw); }
