@@ -340,7 +340,17 @@ export const approveUsdtDeposit = async (req, res, next) => {
             if (user.upLine && user.upLine[0]) {
                 await User.updateOne(
                     { id: user.upLine[0] },
-                    { $inc: { balance: +100 }, $push: { walletHistory: { amount: 100, date: Date.now(), credit: true, note: `Referal Reward User: ${user.id}` } }
+                    {
+                        $inc: { balance: +100 },
+                        $push: {
+                            walletHistory: {
+                                amount: 100,
+                                date: Date.now(),
+                                credit: true,
+                                note: `Referal Reward User: ${user.id}`,
+                            },
+                        },
+                    }
                 );
                 await offerBonus.updateOne(
                     { userId: user.upLine[0] },
