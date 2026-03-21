@@ -242,58 +242,119 @@ export const uzPayCreateOrder = async (req, res) => {
   }
 };
 
+/** Amount string for UzPay MD5 (must match two-decimal rule). */
+function uzPayAmountTwoDecimals(v) {
+  const n = parseFloat(String(v ?? ""));
+  if (!Number.isFinite(n)) return null;
+  return n.toFixed(2);
+}
+
+/**
+ * Verify notify sign: UzPay may use same rule as pay-in md5(merchant_id + amount + key),
+ * or legacy md5(order_id + amount + key). Accept if either matches (amount normalized to xx.xx).
+ */
+function uzPayCallbackSignOk(body, order_id, amountRaw, signReceived, payinKey) {
+  const amountStr = uzPayAmountTwoDecimals(amountRaw);
+  if (!amountStr || !payinKey) return false;
+  const sig = String(signReceived ?? "").trim().toLowerCase();
+  if (!sig) return false;
+
+  const hashes = new Set();
+  const mid =
+    body.merchant_id != null && String(body.merchant_id).trim() !== ""
+      ? String(body.merchant_id).trim()
+      : body.merchantId != null && String(body.merchantId).trim() !== ""
+        ? String(body.merchantId).trim()
+        : "";
+  if (mid) {
+    hashes.add(
+      crypto.createHash("md5").update(mid + amountStr + payinKey, "utf8").digest("hex").toLowerCase()
+    );
+  }
+  hashes.add(
+    crypto
+      .createHash("md5")
+      .update(String(order_id) + amountStr + payinKey, "utf8")
+      .digest("hex")
+      .toLowerCase()
+  );
+
+  for (const h of hashes) {
+    if (h === sig) return true;
+  }
+  return false;
+}
+
 export const uzPayCallback = async (req, res) => {
+  const okText = process.env.UZPAY_CALLBACK_OK_TEXT || "success";
+  const failText = process.env.UZPAY_CALLBACK_FAIL_TEXT || "fail";
+
   try {
     const body = req.body || {};
-    const order_id = body.order_id;
-    const amount = body.amount;
-    const status = body.status;
-    const sign = body.sign;
+    const order_id =
+      body.order_id ?? body.orderId ?? body.out_trade_no ?? body.outTradeNo;
+    const amount = body.amount ?? body.money ?? body.total_amount ?? body.totalAmount;
+    const status = body.status ?? body.trade_status ?? body.tradeStatus;
+    const sign = body.sign ?? body.Sign;
 
     console.log("UzPay Callback received:", body);
 
-    if (!order_id || amount === undefined || amount === null || !status) {
+    if (
+      order_id === undefined ||
+      order_id === null ||
+      String(order_id).trim() === "" ||
+      amount === undefined ||
+      amount === null ||
+      status === undefined ||
+      status === null ||
+      String(status).trim() === ""
+    ) {
       console.error("UzPay callback missing fields");
-      return res.status(400).send("fail");
+      return res.status(400).send(failText);
     }
 
     const PAYIN_KEY = loadUzPayPayinKey();
-    const expectedSign = crypto
-      .createHash("md5")
-      .update(String(order_id) + String(amount) + PAYIN_KEY, "utf8")
-      .digest("hex")
-      .toLowerCase();
-
-    if (String(sign).toLowerCase() !== expectedSign) {
-      console.error("UzPay callback signature mismatch");
-      return res.status(400).send("fail");
+    if (!uzPayCallbackSignOk(body, String(order_id).trim(), amount, sign, PAYIN_KEY)) {
+      console.error("UzPay callback signature mismatch", {
+        order_id,
+        amount,
+        triedAmount2: uzPayAmountTwoDecimals(amount),
+      });
+      return res.status(400).send(failText);
     }
 
-    if (status !== "success") {
-      return res.status(200).send("success");
+    const statusStr = String(status).toLowerCase();
+    const paid =
+      statusStr === "success" ||
+      statusStr === "paid" ||
+      statusStr === "1" ||
+      status === 1;
+
+    if (!paid) {
+      return res.status(200).send(okText);
     }
 
     const transaction = await Trans.findOne({ id: order_id });
     if (!transaction) {
       console.error("UzPay transaction not found:", order_id);
-      return res.status(200).send("success");
+      return res.status(200).send(okText);
     }
 
     if (transaction.status === "success") {
-      return res.status(200).send("success");
+      return res.status(200).send(okText);
     }
 
-    const paid = parseFloat(amount);
+    const paidAmt = parseFloat(String(amount));
     const expected = parseFloat(transaction.amount);
-    if (Number.isFinite(paid) && Number.isFinite(expected) && Math.abs(paid - expected) > 0.02) {
-      console.error("UzPay amount mismatch", paid, expected);
-      return res.status(400).send("fail");
+    if (Number.isFinite(paidAmt) && Number.isFinite(expected) && Math.abs(paidAmt - expected) > 0.02) {
+      console.error("UzPay amount mismatch", paidAmt, expected);
+      return res.status(400).send(failText);
     }
 
     const user = await User.findOne({ id: transaction.userId });
     if (!user) {
       console.error("UzPay user not found for transaction:", order_id);
-      return res.status(200).send("success");
+      return res.status(200).send(okText);
     }
 
     const paymentAmount = parseFloat(transaction.amount);
@@ -516,10 +577,10 @@ export const uzPayCallback = async (req, res) => {
     }
 
     console.log("UzPay payment processed successfully:", order_id);
-    return res.status(200).send("success");
+    return res.status(200).send(okText);
   } catch (error) {
     console.error("UzPay Callback Error:", error);
-    return res.status(500).send("fail");
+    return res.status(500).send(failText);
   }
 };
 
