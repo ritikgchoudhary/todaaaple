@@ -7692,10 +7692,21 @@ export const KSLpayouttodd = async (req, res) => {
   }
 };
 
+const DEFAULT_GATEWAY_ORDER = ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush", "uzpay"];
+
+function mergeGatewayOrder(stored) {
+  const order =
+    Array.isArray(stored) && stored.length ? [...stored] : [...DEFAULT_GATEWAY_ORDER];
+  for (const id of DEFAULT_GATEWAY_ORDER) {
+    if (!order.includes(id)) order.push(id);
+  }
+  return order;
+}
+
 export const getGateway = async (req, res) => {
   const doc = await extra.findOne({}, { gateway: 1, upi: 1, rechargeEnabled: 1, gatewayOrder: 1, gatewayEnabled: 1 });
   const rechargeEnabled = doc.rechargeEnabled !== false;
-  const order = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length ? doc.gatewayOrder : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush", "uzpay"];
+  const order = mergeGatewayOrder(doc.gatewayOrder);
   const enabled = doc.gatewayEnabled && typeof doc.gatewayEnabled === "object" ? doc.gatewayEnabled : {};
   const gatewayList = order.filter((id) => enabled[id] !== false);
   res.status(200).send({
@@ -7851,9 +7862,7 @@ export const getRechargeSettings = async (req, res) => {
   }
   const doc = await extra.findOne({ id: 1 }, { rechargeEnabled: 1, gatewayOrder: 1, gatewayEnabled: 1, gateway: 1, upi: 1 });
   const rechargeEnabled = doc.rechargeEnabled !== false;
-  const gatewayOrder = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length
-    ? doc.gatewayOrder
-    : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush", "uzpay"];
+  const gatewayOrder = mergeGatewayOrder(doc.gatewayOrder);
   const gatewayEnabled = doc.gatewayEnabled && typeof doc.gatewayEnabled === "object"
     ? doc.gatewayEnabled
     : { auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true, uzpay: true };

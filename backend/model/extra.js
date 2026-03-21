@@ -45,11 +45,11 @@ const ExtraScheme = mongoose.Schema({
     },
     gatewayOrder: {
         type: Array,
-        default: ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"]
+        default: ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush", "uzpay"]
     },
     gatewayEnabled: {
         type: Object,
-        default: () => ({ auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true })
+        default: () => ({ auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true, uzpay: true })
     },
     carouselImages: {
         type: [String],
