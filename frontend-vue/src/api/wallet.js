@@ -20,6 +20,7 @@ export const getRecentRecharges = (userId) => API.get(`/getRecentRecharges/${use
 export const watchPayCreateOrder = (userId, data) => API.post(`/watchPayCreateOrder/${userId}`, data)
 export const lgPayCreateOrder = (userId, data) => API.post(`/lgPayCreateOrder/${userId}`, data)
 export const rupeeRushCreateOrder = (userId, data) => API.post(`/rupeeRushCreateOrder/${userId}`, data)
+export const uzPayCreateOrder = (userId, data) => API.post(`/uzPayCreateOrder/${userId}`, data)
 export const createCryptoUpayOrder = (userId, data) => API.post(`/createCryptoUpayOrder/${userId}`, data)
 
 // Site Settings

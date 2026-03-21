@@ -223,7 +223,7 @@ const rechargeHistory = ref([])
 const focused = ref(false)
 const historySection = ref(null)
 const selectedGateway = ref('watchpay')
-const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'auto', 'manual'])
+const gatewayList = ref(['watchpay', 'lgpay', 'rupeerush', 'uzpay', 'auto', 'manual'])
 const dialog = reactive({ open: false, body: '' })
 const txid = ref('')
 const cryptoMode = ref('upay')
@@ -237,6 +237,7 @@ const GATEWAY_LABELS = {
   lgpay: "LG Pay",
   watchpay: "Watch Pay",
   rupeerush: "Rupee Rush",
+  uzpay: "UzPay",
 }
 
 function getLimits(gateway) {
@@ -244,6 +245,7 @@ function getLimits(gateway) {
     if (g === 'lgpay') return '100 - 100K'
     if (g === 'watchpay') return '100 - 100K'
     if (g === 'rupeerush') return '200 - 100K'
+    if (g === 'uzpay') return '100 - 100K'
     return '100 - 10K'
 }
 
@@ -332,6 +334,7 @@ async function handleRecharge() {
         if (selectedGateway.value === 'watchpay') res = await walletApi.watchPayCreateOrder(auth.user.id, payload)
         else if (selectedGateway.value === 'lgpay') res = await walletApi.lgPayCreateOrder(auth.user.id, payload)
         else if (selectedGateway.value === 'rupeerush') res = await walletApi.rupeeRushCreateOrder(auth.user.id, payload)
+        else if (selectedGateway.value === 'uzpay') res = await walletApi.uzPayCreateOrder(auth.user.id, payload)
         else {
             showToast(`${GATEWAY_LABELS[selectedGateway.value] || selectedGateway.value} gateway is unavailable. Try another method.`)
             loading.value = false
@@ -397,7 +400,7 @@ onMounted(() => {
     walletApi.getCurrentGateway().then(res => {
         if (res.data?.gateway) selectedGateway.value = res.data.gateway.toLowerCase()
         if (res.data?.gatewayList && Array.isArray(res.data.gatewayList)) {
-            const working = ['watchpay', 'lgpay', 'rupeerush']
+            const working = ['watchpay', 'lgpay', 'rupeerush', 'uzpay']
             const filtered = res.data.gatewayList
                 .filter(g => working.includes(g.toLowerCase()))
                 .sort((a, b) => working.indexOf(a.toLowerCase()) - working.indexOf(b.toLowerCase()))

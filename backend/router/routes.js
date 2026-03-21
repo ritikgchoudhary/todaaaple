@@ -144,6 +144,11 @@ import {
   lgPayBalanceFetch,
 } from "../controller/gateways.js";
 import {
+  uzPayCreateOrder,
+  uzPayCallback,
+  uzPayBalanceFetch,
+} from "../controller/uzpay.js";
+import {
   launchGame,
   gameCallback
 } from "../controller/game.js";
@@ -1175,6 +1180,11 @@ router.get("/watchPayBalance/:api", watchPayBalanceFetch);
 router.post("/lgPayCreateOrder/:id", checkAuth, lgPayCreateOrder);
 router.post("/lgPayCallback", lgPayCallback);
 router.get("/lgPayBalance/:api", lgPayBalanceFetch);
+
+// UzPay Gateway
+router.post("/uzPayCreateOrder/:id", checkAuth, uzPayCreateOrder);
+router.post("/uzPayCallback", uzPayCallback);
+router.post("/uzPayBalance/:api", uzPayBalanceFetch);
 
 // Test endpoint for lgPay
 router.get("/testLgPay", async (req, res) => {
