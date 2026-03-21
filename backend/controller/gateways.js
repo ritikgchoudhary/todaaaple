@@ -40,6 +40,39 @@ function createRupeeRushHttpsAgent() {
     },
   });
 }
+
+/** Payer / client IP for Rupee Rush payin (API rejects missing IP with "Invalid IP address: undefined"). */
+function getRupeeRushClientIp(req) {
+  const xff = req.headers["x-forwarded-for"];
+  const fromXff =
+    typeof xff === "string" && xff.trim()
+      ? xff.split(",")[0].trim()
+      : "";
+  const fromHeader =
+    fromXff ||
+    (typeof req.headers["x-real-ip"] === "string" ? req.headers["x-real-ip"].trim() : "") ||
+    (typeof req.headers["cf-connecting-ip"] === "string"
+      ? req.headers["cf-connecting-ip"].trim()
+      : "");
+  const fromSocket =
+    req.socket?.remoteAddress || req.connection?.remoteAddress || "";
+  let ip = String(fromHeader || fromSocket || "").trim();
+  if (ip.startsWith("::ffff:")) ip = ip.slice(7);
+  if (ip === "::1") ip = "127.0.0.1";
+  if (ip) return ip;
+
+  const bodyIp = req.body?.client_ip ?? req.body?.clientIp;
+  if (bodyIp != null && String(bodyIp).trim() !== "") {
+    let b = String(bodyIp).trim();
+    if (b.startsWith("::ffff:")) b = b.slice(7);
+    return b;
+  }
+
+  const envIp = process.env.RUPEERUSH_DEFAULT_CLIENT_IP;
+  if (envIp != null && String(envIp).trim() !== "") return String(envIp).trim();
+
+  return "";
+}
 var seospay = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOGQwNzcyMWIwZTE5NjQ5MTJlNmQzNjBjZmM3MzhkYmU3MTgzMTEyZTA0Y2UzMzgzODFkYWRjMjQwMmRmMWRhODg5ZTc0YWFhNjAwZWUxMmIiLCJpYXQiOjE3MTU2ODEzNTkuMjY0Njg4MDE0OTg0MTMwODU5Mzc1LCJuYmYiOjE3MTU2ODEzNTkuMjY0NjkyMDY4MDk5OTc1NTg1OTM3NSwiZXhwIjoxNzE2Mjg2MTU5LjI2MjM4MTA3NjgxMjc0NDE0MDYyNSwic3ViIjoiMzciLCJzY29wZXMiOltdfQ.AUkEk-FdzkDDxLyAjnvsRWxVoZ3DrjKAcLwfW4VbhO7LgZ20uZ7vf8pQ3QNXHYUuMM_SEYfwCsda_Jl6koKRSnqMNSImQQufankHrr5qLEGlaIk4PLoMQj4dSrI5IjbLuVrudQc4loTWNeEcN3jxdapa7svx9uD9YZg6BcF2OHZ4z8thFSaUvkXfganbpKplNPEhTvPCm1MS6H1gaJjep5vdC6QOvk2U6yLJpdKnmrQ3Nc4IlsIAIrDJtfx4X3a1xEMIEjoxl0jkVOox5Id2n8V9_sRo7LHjQLQ9OcW5qJHXYBNysKByqQBA7fuil-tr8dDfIZVzSQ54QPCRMBDd0b7j6TpViwQxnR1ksgOGBR9G9KNUGBWWyCWujilG8jNZ_sJPCDsL0VdWCxhHUbtvo3E4HCWsIHOAhiGeR_yaFNSsVaDC4mELgdDKrLOUR7Pc2mzYxgpt-eFvoAjFboPNpzIsiZ7nQFAAlCMNdX7-i2fFABl9Fh2e2IGPn9psAXD3xBY3XwGX9rcICUuka8pE0gSkbhQQEvFORiLGu216ahgw5wXl-DEvqswdqWfFkUGvxrEZjqgHOvZaIJP5Xlz5nUs0UwOvdPM45KE_PvMajR-Ddc_G5y-EaM4WQ4TRaHIon3wbuemKYXsQ6SFllm3V-u31akW8yMHC1AHU23Ah5hw"
 var token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbElkIjoiZ3M3NDM0MEBnbWFpbC5jb20iLCJwYXNzd29yZCI6Im16aTl6cjY3aWJ5ZHA1azN0Y2t6IiwiaWF0IjoxNjk2NTA0NDk3LCJleHAiOjE2OTY2NzcyOTd9.U3iNorsmGO26VMeX-yFQ0FHCjVbGIWGrV3nzcD7HqrE";
@@ -8072,6 +8105,17 @@ export const rupeeRushCreateOrder = async (req, res) => {
 
     console.log('Available payment types:', paymentTypes);
 
+    const clientIp = getRupeeRushClientIp(req);
+    if (!clientIp) {
+      return res.status(400).json({
+        code: 400,
+        message:
+          "Could not determine payer IP. Configure nginx/apache to pass X-Forwarded-For (or set RUPEERUSH_DEFAULT_CLIENT_IP in config.env).",
+      });
+    }
+
+    const ipJsonKey = process.env.RUPEERUSH_IP_JSON_KEY || "clientIp";
+
     const params = {
       merNo: MER_NO,
       currencyCode: "INR",
@@ -8084,7 +8128,8 @@ export const rupeeRushCreateOrder = async (req, res) => {
       payBankCode: "PAY", // Fixed value as per documentation
       payName: customer_name || randomName,
       payEmail: customer_email || `${randomName}${Math.floor(Math.random() * 9000 + 1000)}@email.com`,
-      payPhone: formattedPhone
+      payPhone: formattedPhone,
+      [ipJsonKey]: clientIp,
     };
 
     // Generate signature according to documentation
