@@ -43,6 +43,11 @@ function createRupeeRushHttpsAgent() {
 
 /** Payer / client IP for Rupee Rush payin (API rejects missing IP with "Invalid IP address: undefined"). */
 function getRupeeRushClientIp(req) {
+  const fixed = process.env.RUPEERUSH_FIXED_CLIENT_IP;
+  if (fixed != null && String(fixed).trim() !== "") {
+    return String(fixed).trim();
+  }
+
   const normalizeIp = (s) => {
     let v = String(s || "").trim();
     if (!v) return "";
