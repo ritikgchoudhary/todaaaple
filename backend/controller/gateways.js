@@ -78,7 +78,7 @@ function getRupeeRushClientIp(req) {
   else ip = normalizeIp(fromHeader || fromExpressIp || fromSocket);
   if (ip) return ip;
 
-  const bodyIp = req.body?.client_ip ?? req.body?.clientIp;
+  const bodyIp = req.body?.client_ip ?? req.body?.clientIp ?? req.body?.ip;
   if (bodyIp != null && String(bodyIp).trim() !== "") {
     let b = String(bodyIp).trim();
     if (b.startsWith("::ffff:")) b = b.slice(7);
