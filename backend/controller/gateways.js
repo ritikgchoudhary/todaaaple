@@ -8024,10 +8024,13 @@ export const rupeeRushCreateOrder = async (req, res) => {
     const randomBank = banks[Math.floor(Math.random() * banks.length)];
 
     // Format phone number according to spec: +91XXXXXXXXXX (12 digits total)
-    let formattedPhone = customer_mobile;
-    if (customer_mobile && !customer_mobile.startsWith('+91')) {
-      // Remove any existing country code and format properly
-      const cleanPhone = customer_mobile.replace(/^\+?91?/, '');
+    const mobileStr =
+      typeof customer_mobile === 'string'
+        ? customer_mobile.trim()
+        : String(customer_mobile ?? '').trim();
+    let formattedPhone = mobileStr;
+    if (mobileStr && !mobileStr.startsWith('+91')) {
+      const cleanPhone = mobileStr.replace(/^\+?91?/, '');
       if (cleanPhone.length === 10) {
         formattedPhone = `+91${cleanPhone}`;
       } else {
