@@ -7695,7 +7695,7 @@ export const KSLpayouttodd = async (req, res) => {
 export const getGateway = async (req, res) => {
   const doc = await extra.findOne({}, { gateway: 1, upi: 1, rechargeEnabled: 1, gatewayOrder: 1, gatewayEnabled: 1 });
   const rechargeEnabled = doc.rechargeEnabled !== false;
-  const order = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length ? doc.gatewayOrder : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"];
+  const order = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length ? doc.gatewayOrder : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush", "uzpay"];
   const enabled = doc.gatewayEnabled && typeof doc.gatewayEnabled === "object" ? doc.gatewayEnabled : {};
   const gatewayList = order.filter((id) => enabled[id] !== false);
   res.status(200).send({
@@ -7853,10 +7853,10 @@ export const getRechargeSettings = async (req, res) => {
   const rechargeEnabled = doc.rechargeEnabled !== false;
   const gatewayOrder = Array.isArray(doc.gatewayOrder) && doc.gatewayOrder.length
     ? doc.gatewayOrder
-    : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush"];
+    : ["auto", "manual", "card", "lgpay", "watchpay", "rupeerush", "uzpay"];
   const gatewayEnabled = doc.gatewayEnabled && typeof doc.gatewayEnabled === "object"
     ? doc.gatewayEnabled
-    : { auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true };
+    : { auto: true, manual: true, card: true, lgpay: true, watchpay: true, rupeerush: true, uzpay: true };
   res.status(200).json({
     rechargeEnabled,
     gatewayOrder,
@@ -8896,7 +8896,7 @@ export const watchPayCallback = async (req, res) => {
     const rechargeCount = await Trans.countDocuments({
       userId: transaction.userId,
       status: 'success',
-      gateway: { $in: ['WatchPay', 'RupeeRush', 'Cashfree', 'PhonePe', 'Razorpay'] }
+      gateway: { $in: ['lgPay', 'WatchPay', 'RupeeRush', 'UzPay', 'Cashfree', 'PhonePe', 'Razorpay'] }
     });
 
     // First recharge bonus logic
@@ -9452,7 +9452,7 @@ export const lgPayCallback = async (req, res) => {
     const rechargeCount = await Trans.countDocuments({
       userId: transaction.userId,
       status: 'success',
-      gateway: { $in: ['lgPay', 'WatchPay', 'RupeeRush', 'Cashfree', 'PhonePe', 'Razorpay'] }
+      gateway: { $in: ['lgPay', 'WatchPay', 'RupeeRush', 'UzPay', 'Cashfree', 'PhonePe', 'Razorpay'] }
     });
 
     // First recharge bonus logic
