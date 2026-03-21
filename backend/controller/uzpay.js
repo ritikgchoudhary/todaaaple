@@ -8,6 +8,37 @@ import offerBonus from "../model/offerBonus.js";
 import promotion from "../model/promotion.js";
 import { creditCommission } from "./commission.js";
 
+/** Strip whitespace / quotes / BOM from .env values (common cause of invalid MD5). */
+function cleanSecret(val) {
+  if (val == null) return "";
+  let s = String(val).replace(/^\uFEFF/, "").trim();
+  if (
+    (s.startsWith('"') && s.endsWith('"')) ||
+    (s.startsWith("'") && s.endsWith("'"))
+  ) {
+    s = s.slice(1, -1).trim();
+  }
+  return s;
+}
+
+/**
+ * UzPay payin sign (PHP): ksort params, skip empty strings, append &key=PAYIN_KEY, MD5 lowercase.
+ * Excludes sign and sign_type from the string (per docs).
+ */
+function uzPayPayinMd5(payload, payinKeyRaw) {
+  const payinKey = cleanSecret(payinKeyRaw);
+  const keys = Object.keys(payload)
+    .filter((k) => k !== "sign" && k !== "sign_type")
+    .filter((k) => payload[k] !== "" && payload[k] != null && payload[k] !== undefined)
+    .sort();
+  let str = "";
+  for (const k of keys) {
+    str += `${k}=${String(payload[k])}&`;
+  }
+  const signInput = str + "key=" + payinKey;
+  return crypto.createHash("md5").update(signInput, "utf8").digest("hex").toLowerCase();
+}
+
 export const uzPayCreateOrder = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -61,10 +92,10 @@ export const uzPayCreateOrder = async (req, res) => {
       });
     }
 
-    const MERCHANT_ID = process.env.UZPAY_MERCHANT_ID;
-    const PAYIN_KEY = process.env.UZPAY_PAYIN_KEY;
+    const MERCHANT_ID = cleanSecret(process.env.UZPAY_MERCHANT_ID);
+    const PAYIN_KEY = cleanSecret(process.env.UZPAY_PAYIN_KEY);
     const API_URL = process.env.UZPAY_API_URL || "https://pay.uzpay.xyz/pay/web";
-    const payType = String(process.env.UZPAY_PAY_TYPE || "104");
+    const payType = String(process.env.UZPAY_PAY_TYPE || "104").trim();
 
     if (!MERCHANT_ID || !PAYIN_KEY) {
       return res.status(500).json({
@@ -76,29 +107,32 @@ export const uzPayCreateOrder = async (req, res) => {
 
     const amountStr = parseFloat(amount).toFixed(2);
     const order_id = `UZ${Date.now()}${Math.floor(Math.random() * 900000 + 100000)}`.slice(0, 64);
-    const notify_url = `${process.env.SERVER_URL}/uzPayCallback`;
+    const serverBase = cleanSecret(process.env.SERVER_URL).replace(/\/+$/, "");
+    if (!serverBase) {
+      return res.status(500).json({
+        code: 500,
+        message: "SERVER_URL is missing in config; UzPay notify_url cannot be built",
+      });
+    }
+    const notify_url = `${serverBase}/uzPayCallback`;
 
-    const params = {
-      merchant_id: String(MERCHANT_ID),
+    const paramsForSign = {
+      merchant_id: MERCHANT_ID,
       amount: amountStr,
       order_id,
       pay_type: payType,
       notify_url,
     };
 
-    const sortedKeys = Object.keys(params)
-      .filter((k) => params[k] !== "" && params[k] != null && k !== "sign")
-      .sort();
-    let str = "";
-    sortedKeys.forEach((k) => {
-      str += `${k}=${params[k]}&`;
-    });
-    const sign = crypto
-      .createHash("md5")
-      .update(str + "key=" + PAYIN_KEY)
-      .digest("hex")
-      .toLowerCase();
-    params.sign = sign;
+    const sign = uzPayPayinMd5(paramsForSign, PAYIN_KEY);
+    const params = { ...paramsForSign, sign };
+
+    if (process.env.UZPAY_DEBUG_SIGN === "1") {
+      const keys = Object.keys(paramsForSign).sort();
+      let dbg = "";
+      for (const k of keys) dbg += `${k}=${paramsForSign[k]}&`;
+      console.log("UzPay sign dbg (no secret):", dbg + "key=(UZPAY_PAYIN_KEY)");
+    }
 
     const uzPayAxios = axios.create({
       httpsAgent: new https.Agent({ rejectUnauthorized: false, keepAlive: true }),
@@ -173,10 +207,10 @@ export const uzPayCallback = async (req, res) => {
       return res.status(400).send("fail");
     }
 
-    const PAYIN_KEY = process.env.UZPAY_PAYIN_KEY || "";
+    const PAYIN_KEY = cleanSecret(process.env.UZPAY_PAYIN_KEY);
     const expectedSign = crypto
       .createHash("md5")
-      .update(String(order_id) + String(amount) + PAYIN_KEY)
+      .update(String(order_id) + String(amount) + PAYIN_KEY, "utf8")
       .digest("hex")
       .toLowerCase();
 
@@ -446,8 +480,8 @@ export const uzPayBalanceFetch = async (req, res) => {
       return res.status(403).json({ status: "error", message: "Unauthorized access" });
     }
 
-    const MERCHANT_ID = process.env.UZPAY_MERCHANT_ID;
-    const PAYOUT_KEY = process.env.UZPAY_PAYOUT_KEY;
+    const MERCHANT_ID = cleanSecret(process.env.UZPAY_MERCHANT_ID);
+    const PAYOUT_KEY = cleanSecret(process.env.UZPAY_PAYOUT_KEY);
     const BALANCE_URL =
       process.env.UZPAY_BALANCE_URL || "https://pay.uzpay.xyz/pay/balance";
 
