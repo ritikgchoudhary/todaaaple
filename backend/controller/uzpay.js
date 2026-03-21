@@ -1,6 +1,8 @@
 import axios from "axios";
 import crypto from "crypto";
+import fs from "fs";
 import https from "https";
+import path from "path";
 import Trans from "../model/transaction.js";
 import User from "../model/userSchema.js";
 import daily from "../model/daily.js";
@@ -8,10 +10,14 @@ import offerBonus from "../model/offerBonus.js";
 import promotion from "../model/promotion.js";
 import { creditCommission } from "./commission.js";
 
-/** Strip whitespace / quotes / BOM from .env values (common cause of invalid MD5). */
+/** Strip whitespace / quotes / BOM / invisible chars from .env (common cause of invalid MD5). */
 function cleanSecret(val) {
   if (val == null) return "";
-  let s = String(val).replace(/^\uFEFF/, "").trim();
+  let s = String(val)
+    .replace(/^\uFEFF/, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\r/g, "")
+    .trim();
   if (
     (s.startsWith('"') && s.endsWith('"')) ||
     (s.startsWith("'") && s.endsWith("'"))
@@ -19,6 +25,25 @@ function cleanSecret(val) {
     s = s.slice(1, -1).trim();
   }
   return s;
+}
+
+/** Payin key from UZPAY_PAYIN_KEY, or one-line file UZPAY_PAYIN_KEY_FILE (avoids hidden .env chars). */
+function loadUzPayPayinKey() {
+  const filePathRaw = cleanSecret(process.env.UZPAY_PAYIN_KEY_FILE);
+  if (filePathRaw) {
+    try {
+      const abs = path.isAbsolute(filePathRaw)
+        ? filePathRaw
+        : path.join(process.cwd(), filePathRaw);
+      if (fs.existsSync(abs)) {
+        return cleanSecret(fs.readFileSync(abs, "utf8"));
+      }
+      console.error("UzPay: UZPAY_PAYIN_KEY_FILE not found:", abs);
+    } catch (e) {
+      console.error("UzPay: UZPAY_PAYIN_KEY_FILE read error:", e.message);
+    }
+  }
+  return cleanSecret(process.env.UZPAY_PAYIN_KEY);
 }
 
 /**
@@ -97,7 +122,7 @@ export const uzPayCreateOrder = async (req, res) => {
     }
 
     const MERCHANT_ID = cleanSecret(process.env.UZPAY_MERCHANT_ID);
-    const PAYIN_KEY = cleanSecret(process.env.UZPAY_PAYIN_KEY);
+    const PAYIN_KEY = loadUzPayPayinKey();
     const API_URL = process.env.UZPAY_API_URL || "https://pay.uzpay.xyz/pay/web";
     const payType = String(process.env.UZPAY_PAY_TYPE || "104").trim();
 
@@ -153,7 +178,14 @@ export const uzPayCreateOrder = async (req, res) => {
 
     const formData = new URLSearchParams(params).toString();
     const response = await uzPayAxios.post(API_URL, formData);
-    const result = response.data;
+    let result = response.data;
+    if (typeof result === "string") {
+      try {
+        result = JSON.parse(result);
+      } catch {
+        result = { status: "error", message: result.slice(0, 300) };
+      }
+    }
 
     console.log("UzPay Response:", result);
 
