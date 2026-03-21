@@ -41,59 +41,15 @@ function createRupeeRushHttpsAgent() {
   });
 }
 
-/** Payer / client IP for Rupee Rush payin (API rejects missing IP with "Invalid IP address: undefined"). */
-function getRupeeRushClientIp(req) {
-  const fixed = process.env.RUPEERUSH_FIXED_CLIENT_IP;
-  if (fixed != null && String(fixed).trim() !== "") {
-    return String(fixed).trim();
-  }
+/** Rupee Rush payin: always send this host's public IP (whitelist), not the end-user IP. Override with RUPEERUSH_FIXED_CLIENT_IP or RUPEERUSH_SERVER_IP. */
+const RUPEERUSH_DEFAULT_SERVER_IP = "72.60.96.75";
 
-  const normalizeIp = (s) => {
-    let v = String(s || "").trim();
-    if (!v) return "";
-    if (v.startsWith("::ffff:")) v = v.slice(7);
-    if (v === "::1") v = "127.0.0.1";
-    return v;
-  };
-  const isUsable = (s) => {
-    const v = normalizeIp(s);
-    return v && v !== "127.0.0.1" && v !== "localhost";
-  };
-
-  const xff = req.headers["x-forwarded-for"];
-  const fromXff =
-    typeof xff === "string" && xff.trim()
-      ? xff.split(",")[0].trim()
-      : "";
-  const fromHeader =
-    fromXff ||
-    (typeof req.headers["x-real-ip"] === "string" ? req.headers["x-real-ip"].trim() : "") ||
-    (typeof req.headers["cf-connecting-ip"] === "string"
-      ? req.headers["cf-connecting-ip"].trim()
-      : "");
-  const fromExpressIp =
-    typeof req.ip === "string" && req.ip.trim() ? req.ip.trim() : "";
-  const fromSocket =
-    req.socket?.remoteAddress || req.connection?.remoteAddress || "";
-
-  let ip = "";
-  if (isUsable(fromHeader)) ip = normalizeIp(fromHeader);
-  else if (isUsable(fromExpressIp)) ip = normalizeIp(fromExpressIp);
-  else if (isUsable(fromSocket)) ip = normalizeIp(fromSocket);
-  else ip = normalizeIp(fromHeader || fromExpressIp || fromSocket);
-  if (ip) return ip;
-
-  const bodyIp = req.body?.client_ip ?? req.body?.clientIp ?? req.body?.ip;
-  if (bodyIp != null && String(bodyIp).trim() !== "") {
-    let b = String(bodyIp).trim();
-    if (b.startsWith("::ffff:")) b = b.slice(7);
-    return b;
-  }
-
-  const envIp = process.env.RUPEERUSH_DEFAULT_CLIENT_IP;
-  if (envIp != null && String(envIp).trim() !== "") return String(envIp).trim();
-
-  return "";
+function getRupeeRushClientIp(_req) {
+  const fixed = process.env.RUPEERUSH_FIXED_CLIENT_IP?.trim();
+  if (fixed) return fixed;
+  const server = process.env.RUPEERUSH_SERVER_IP?.trim();
+  if (server) return server;
+  return RUPEERUSH_DEFAULT_SERVER_IP;
 }
 
 /** Rupee Rush may bind payer IP from JSON key (ip vs clientIp) or from request headers on the server→gateway hop. */
@@ -8142,13 +8098,6 @@ export const rupeeRushCreateOrder = async (req, res) => {
     console.log('Available payment types:', paymentTypes);
 
     const clientIp = getRupeeRushClientIp(req);
-    if (!clientIp) {
-      return res.status(400).json({
-        code: 400,
-        message:
-          "Could not determine payer IP. Set RUPEERUSH_FIXED_CLIENT_IP or RUPEERUSH_DEFAULT_CLIENT_IP in config.env, or pass X-Forwarded-For from the proxy.",
-      });
-    }
 
     const params = {
       merNo: MER_NO,
