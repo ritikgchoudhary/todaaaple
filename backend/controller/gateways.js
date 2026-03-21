@@ -8132,7 +8132,7 @@ export const rupeeRushCreateOrder = async (req, res) => {
       return res.status(400).json({
         code: 400,
         message:
-          "Could not determine payer IP. Configure nginx/apache to pass X-Forwarded-For (or set RUPEERUSH_DEFAULT_CLIENT_IP in config.env).",
+          "Could not determine payer IP. Set RUPEERUSH_FIXED_CLIENT_IP or RUPEERUSH_DEFAULT_CLIENT_IP in config.env, or pass X-Forwarded-For from the proxy.",
       });
     }
 
