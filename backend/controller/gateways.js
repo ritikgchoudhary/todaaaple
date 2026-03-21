@@ -8850,12 +8850,6 @@ export const watchPayCallback = async (req, res) => {
     const mchOrderNo = body.mchOrderNo ?? body.mch_order_no;
     const orderNo = body.orderNo ?? body.order_no;
     const sign = body.sign ?? body.SIGN;
-    const oriAmount = body.oriAmount ?? body.ori_amount;
-    const originalAmount = body.originalAmount ?? body.original_amount;
-
-    // Use oriAmount or originalAmount (PHP uses both)
-    const finalOriAmount = oriAmount || originalAmount;
-
     // Validate required callback parameters
     if (!mchOrderNo || !orderNo || tradeResult === undefined || tradeResult === null || tradeResult === "") {
       console.error('Missing required callback parameters');
