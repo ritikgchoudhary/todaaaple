@@ -217,13 +217,20 @@ export const uzPayCreateOrder = async (req, res) => {
     }
 
     const rawMsg = result?.message || result?.msg || "UzPay order creation failed";
-    const sigHint =
-      typeof rawMsg === "string" && rawMsg.toLowerCase().includes("signature")
-        ? " Your merchant_id is accepted by UzPay, but UZPAY_PAYIN_KEY does not match their Payin/Collection secret. In the UzPay merchant dashboard copy the Payin key (not Payout), paste into config.env with no spaces or quotes, run: pm2 restart rushpay --update-env. If it still fails, ask UzPay for the PHP sign example for /pay/web."
-        : "";
+    const isSig =
+      typeof rawMsg === "string" && rawMsg.toLowerCase().includes("signature");
+    const hint = isSig
+      ? "UzPay Payin secret mismatch: update UZPAY_PAYIN_KEY (Collection key, not Payout) in config.env or use UZPAY_PAYIN_KEY_FILE, then pm2 restart rushpay --update-env. Contact UzPay for /pay/web sign docs if needed."
+      : undefined;
+    if (isSig) {
+      console.error(
+        "UzPay Invalid signature — merchant_id OK; verify Payin key. UZPAY_DEBUG_SIGN=1 logs sign base (no secret)."
+      );
+    }
     return res.status(400).json({
       code: 400,
-      message: rawMsg + sigHint,
+      message: rawMsg,
+      ...(hint ? { hint } : {}),
       data: result,
     });
   } catch (error) {
@@ -255,7 +262,7 @@ export const uzPayCallback = async (req, res) => {
       return res.status(400).send("fail");
     }
 
-    const PAYIN_KEY = cleanSecret(process.env.UZPAY_PAYIN_KEY);
+    const PAYIN_KEY = loadUzPayPayinKey();
     const expectedSign = crypto
       .createHash("md5")
       .update(String(order_id) + String(amount) + PAYIN_KEY, "utf8")
