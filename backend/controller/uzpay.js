@@ -47,25 +47,21 @@ function loadUzPayPayinKey() {
 }
 
 /**
- * UzPay payin (/pay/web) — typical PHP-style sign:
- *   ksort(params), skip empty, join k=v&, append &key=PAYIN_KEY, MD5 hex lowercase.
- * Only these fields are sent by default: merchant_id, amount, order_id, pay_type, notify_url
- * (+ optional return_url if UZPAY_RETURN_URL is set).
- * Live check: wrong merchant_id → "Invalid merchant"; wrong key with right merchant → "Invalid signature".
+ * UzPay payin (/pay/web) — official sign (per UzPay support):
+ *   md5(merchant_id + amount + payin_key)
+ * Amount must be two decimals (e.g. 500.00). No spaces. Order: merchant_id, then amount, then key.
+ * POST still includes order_id, pay_type, notify_url, etc.; they are not part of this sign string.
+ * Optional: UZPAY_PAYIN_SIGN_UPPERCASE=1 for uppercase hex.
  */
-function uzPayPayinMd5(payload, payinKeyRaw) {
+function uzPayPayinMd5(paramsForSign, payinKeyRaw) {
   const payinKey = cleanSecret(payinKeyRaw);
-  const suffix = process.env.UZPAY_SIGN_KEY_SUFFIX || "key=";
-  const keys = Object.keys(payload)
-    .filter((k) => k !== "sign" && k !== "sign_type")
-    .filter((k) => payload[k] !== "" && payload[k] != null && payload[k] !== undefined)
-    .sort();
-  let str = "";
-  for (const k of keys) {
-    str += `${k}=${String(payload[k])}&`;
-  }
-  const signInput = str + suffix + payinKey;
-  return crypto.createHash("md5").update(signInput, "utf8").digest("hex").toLowerCase();
+  const merchant_id = String(paramsForSign.merchant_id ?? "");
+  const amount = String(paramsForSign.amount ?? "");
+  const signInput = merchant_id + amount + payinKey;
+  const hex = crypto.createHash("md5").update(signInput, "utf8").digest("hex");
+  return process.env.UZPAY_PAYIN_SIGN_UPPERCASE === "1"
+    ? hex.toUpperCase()
+    : hex.toLowerCase();
 }
 
 export const uzPayCreateOrder = async (req, res) => {
@@ -162,11 +158,10 @@ export const uzPayCreateOrder = async (req, res) => {
     const params = { ...paramsForSign, sign };
 
     if (process.env.UZPAY_DEBUG_SIGN === "1") {
-      const keys = Object.keys(paramsForSign).sort();
-      let dbg = "";
-      for (const k of keys) dbg += `${k}=${paramsForSign[k]}&`;
-      const suf = process.env.UZPAY_SIGN_KEY_SUFFIX || "key=";
-      console.log("UzPay sign string (secret hidden):", dbg + suf + "(UZPAY_PAYIN_KEY)");
+      console.log(
+        "UzPay payin sign input (no secret): md5( merchant_id + amount + payin_key ) = md5(",
+        JSON.stringify(MERCHANT_ID) + " + " + JSON.stringify(amountStr) + " + <UZPAY_PAYIN_KEY> )"
+      );
       console.log("UzPay PAYIN_KEY length:", PAYIN_KEY.length, "chars");
     }
 
