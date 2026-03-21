@@ -25,6 +25,23 @@ import Joi from "joi";
 import { creditCommission } from "./commission.js";
 
 /** Rupee Rush IP whitelist is often IPv4-only; server may egress via IPv6 first. Force A-record / IPv4 for their API. Set RUPEERUSH_FORCE_IPV4=0 to use default DNS order. */
+function rupeeRushIpv4Lookup(hostname, options, callback) {
+  if (typeof options === "function") {
+    callback = options;
+    options = {};
+  }
+  // Node 20+ TLS calls lookup with { all: true }; must use matching dns.lookup + callback shape or Node throws ERR_INVALID_IP_ADDRESS.
+  if (options.all) {
+    dns.lookup(hostname, { family: 4, all: true }, (err, addresses) => {
+      if (err) return callback(err);
+      const v4 = (addresses || []).filter((a) => a && a.family === 4);
+      callback(null, v4.length ? v4 : addresses);
+    });
+  } else {
+    dns.lookup(hostname, { family: 4, all: false }, callback);
+  }
+}
+
 function createRupeeRushHttpsAgent() {
   if (process.env.RUPEERUSH_FORCE_IPV4 === "0") {
     return new https.Agent({
@@ -35,9 +52,7 @@ function createRupeeRushHttpsAgent() {
   return new https.Agent({
     rejectUnauthorized: false,
     keepAlive: true,
-    lookup(hostname, _options, callback) {
-      dns.lookup(hostname, { family: 4, all: false }, callback);
-    },
+    lookup: rupeeRushIpv4Lookup,
   });
 }
 
@@ -8115,11 +8130,21 @@ export const rupeeRushCreateOrder = async (req, res) => {
     };
     attachRupeeRushClientIpToParams(params, clientIp);
 
+    // Rupee Rush: payer IP must be in JSON body but is NOT part of the MD5 sign string (including ip breaks verification).
+    const payinSignSkipKeys = new Set(
+      (process.env.RUPEERUSH_PAYIN_SIGN_SKIP_KEYS ||
+        "ip,clientIp,client_ip,userIp,payerIp,payIp,clientIP")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    );
+
     // Generate signature according to documentation
     const generateSign = (params, merchantKey) => {
       // Filter out empty values and sign field
       const filteredParams = {};
       Object.keys(params).forEach(key => {
+        if (payinSignSkipKeys.has(key)) return;
         const value = params[key];
         if (key !== 'sign' && value !== null && value !== '' && value !== undefined && value !== false) {
           filteredParams[key] = value;
