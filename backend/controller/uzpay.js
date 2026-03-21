@@ -22,11 +22,15 @@ function cleanSecret(val) {
 }
 
 /**
- * UzPay payin sign (PHP): ksort params, skip empty strings, append &key=PAYIN_KEY, MD5 lowercase.
- * Excludes sign and sign_type from the string (per docs).
+ * UzPay payin (/pay/web) — typical PHP-style sign:
+ *   ksort(params), skip empty, join k=v&, append &key=PAYIN_KEY, MD5 hex lowercase.
+ * Only these fields are sent by default: merchant_id, amount, order_id, pay_type, notify_url
+ * (+ optional return_url if UZPAY_RETURN_URL is set).
+ * Live check: wrong merchant_id → "Invalid merchant"; wrong key with right merchant → "Invalid signature".
  */
 function uzPayPayinMd5(payload, payinKeyRaw) {
   const payinKey = cleanSecret(payinKeyRaw);
+  const suffix = process.env.UZPAY_SIGN_KEY_SUFFIX || "key=";
   const keys = Object.keys(payload)
     .filter((k) => k !== "sign" && k !== "sign_type")
     .filter((k) => payload[k] !== "" && payload[k] != null && payload[k] !== undefined)
@@ -35,7 +39,7 @@ function uzPayPayinMd5(payload, payinKeyRaw) {
   for (const k of keys) {
     str += `${k}=${String(payload[k])}&`;
   }
-  const signInput = str + "key=" + payinKey;
+  const signInput = str + suffix + payinKey;
   return crypto.createHash("md5").update(signInput, "utf8").digest("hex").toLowerCase();
 }
 
@@ -124,6 +128,11 @@ export const uzPayCreateOrder = async (req, res) => {
       notify_url,
     };
 
+    const returnUrlRaw = cleanSecret(process.env.UZPAY_RETURN_URL);
+    if (returnUrlRaw) {
+      paramsForSign.return_url = returnUrlRaw;
+    }
+
     const sign = uzPayPayinMd5(paramsForSign, PAYIN_KEY);
     const params = { ...paramsForSign, sign };
 
@@ -131,7 +140,9 @@ export const uzPayCreateOrder = async (req, res) => {
       const keys = Object.keys(paramsForSign).sort();
       let dbg = "";
       for (const k of keys) dbg += `${k}=${paramsForSign[k]}&`;
-      console.log("UzPay sign dbg (no secret):", dbg + "key=(UZPAY_PAYIN_KEY)");
+      const suf = process.env.UZPAY_SIGN_KEY_SUFFIX || "key=";
+      console.log("UzPay sign string (secret hidden):", dbg + suf + "(UZPAY_PAYIN_KEY)");
+      console.log("UzPay PAYIN_KEY length:", PAYIN_KEY.length, "chars");
     }
 
     const uzPayAxios = axios.create({
@@ -176,7 +187,7 @@ export const uzPayCreateOrder = async (req, res) => {
     const rawMsg = result?.message || result?.msg || "UzPay order creation failed";
     const sigHint =
       typeof rawMsg === "string" && rawMsg.toLowerCase().includes("signature")
-        ? " Merchant ID is valid on UzPay, but the Payin key does not match their server. In dashboard open Payin/Collection key (not Payout), copy again with no spaces, save config.env, restart PM2. If it still fails, ask UzPay support: official PHP sign sample returns Invalid signature for this merchant."
+        ? " Your merchant_id is accepted by UzPay, but UZPAY_PAYIN_KEY does not match their Payin/Collection secret. In the UzPay merchant dashboard copy the Payin key (not Payout), paste into config.env with no spaces or quotes, run: pm2 restart rushpay --update-env. If it still fails, ask UzPay for the PHP sign example for /pay/web."
         : "";
     return res.status(400).json({
       code: 400,
