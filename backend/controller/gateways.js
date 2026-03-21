@@ -7942,8 +7942,13 @@ export const chineaseRushPay = async (req, res) => { }
 export const rupeeRushCreateOrder = async (req, res) => {
   try {
     const userId = req.params.id;
-    const customer_mobile = req.body.customer_mobile || req.user?.phone;
+    const rawMobile = req.body.customer_mobile ?? req.user?.phone;
+    const customer_mobile =
+      rawMobile != null && String(rawMobile).trim() !== ''
+        ? String(rawMobile).trim()
+        : null;
     const customer_name = req.body.customer_name || req.user?.username || 'User';
+    const customer_email = req.body.customer_email || req.user?.email || '';
     const amount = req.body.amount;
 
     // Validate required fields
