@@ -173,9 +173,14 @@ export const uzPayCreateOrder = async (req, res) => {
       });
     }
 
+    const rawMsg = result?.message || result?.msg || "UzPay order creation failed";
+    const sigHint =
+      typeof rawMsg === "string" && rawMsg.toLowerCase().includes("signature")
+        ? " Merchant ID is valid on UzPay, but the Payin key does not match their server. In dashboard open Payin/Collection key (not Payout), copy again with no spaces, save config.env, restart PM2. If it still fails, ask UzPay support: official PHP sign sample returns Invalid signature for this merchant."
+        : "";
     return res.status(400).json({
       code: 400,
-      message: result?.message || result?.msg || "UzPay order creation failed",
+      message: rawMsg + sigHint,
       data: result,
     });
   } catch (error) {
