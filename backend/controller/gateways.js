@@ -11,6 +11,7 @@ import daily from "../model/daily.js";
 import extra from "../model/extra.js";
 import crypto from "crypto";
 import https from "https";
+import dns from "dns";
 import qs from "qs";
 import offerBonus from "../model/offerBonus.js";
 import querystring from "querystring";
@@ -22,6 +23,23 @@ import dateFormat from "dateformat";
 import md5 from "md5";
 import Joi from "joi";
 import { creditCommission } from "./commission.js";
+
+/** Rupee Rush IP whitelist is often IPv4-only; server may egress via IPv6 first. Force A-record / IPv4 for their API. Set RUPEERUSH_FORCE_IPV4=0 to use default DNS order. */
+function createRupeeRushHttpsAgent() {
+  if (process.env.RUPEERUSH_FORCE_IPV4 === "0") {
+    return new https.Agent({
+      rejectUnauthorized: false,
+      keepAlive: true,
+    });
+  }
+  return new https.Agent({
+    rejectUnauthorized: false,
+    keepAlive: true,
+    lookup(hostname, _options, callback) {
+      dns.lookup(hostname, { family: 4, all: false }, callback);
+    },
+  });
+}
 var seospay = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiOGQwNzcyMWIwZTE5NjQ5MTJlNmQzNjBjZmM3MzhkYmU3MTgzMTEyZTA0Y2UzMzgzODFkYWRjMjQwMmRmMWRhODg5ZTc0YWFhNjAwZWUxMmIiLCJpYXQiOjE3MTU2ODEzNTkuMjY0Njg4MDE0OTg0MTMwODU5Mzc1LCJuYmYiOjE3MTU2ODEzNTkuMjY0NjkyMDY4MDk5OTc1NTg1OTM3NSwiZXhwIjoxNzE2Mjg2MTU5LjI2MjM4MTA3NjgxMjc0NDE0MDYyNSwic3ViIjoiMzciLCJzY29wZXMiOltdfQ.AUkEk-FdzkDDxLyAjnvsRWxVoZ3DrjKAcLwfW4VbhO7LgZ20uZ7vf8pQ3QNXHYUuMM_SEYfwCsda_Jl6koKRSnqMNSImQQufankHrr5qLEGlaIk4PLoMQj4dSrI5IjbLuVrudQc4loTWNeEcN3jxdapa7svx9uD9YZg6BcF2OHZ4z8thFSaUvkXfganbpKplNPEhTvPCm1MS6H1gaJjep5vdC6QOvk2U6yLJpdKnmrQ3Nc4IlsIAIrDJtfx4X3a1xEMIEjoxl0jkVOox5Id2n8V9_sRo7LHjQLQ9OcW5qJHXYBNysKByqQBA7fuil-tr8dDfIZVzSQ54QPCRMBDd0b7j6TpViwQxnR1ksgOGBR9G9KNUGBWWyCWujilG8jNZ_sJPCDsL0VdWCxhHUbtvo3E4HCWsIHOAhiGeR_yaFNSsVaDC4mELgdDKrLOUR7Pc2mzYxgpt-eFvoAjFboPNpzIsiZ7nQFAAlCMNdX7-i2fFABl9Fh2e2IGPn9psAXD3xBY3XwGX9rcICUuka8pE0gSkbhQQEvFORiLGu216ahgw5wXl-DEvqswdqWfFkUGvxrEZjqgHOvZaIJP5Xlz5nUs0UwOvdPM45KE_PvMajR-Ddc_G5y-EaM4WQ4TRaHIon3wbuemKYXsQ6SFllm3V-u31akW8yMHC1AHU23Ah5hw"
 var token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbElkIjoiZ3M3NDM0MEBnbWFpbC5jb20iLCJwYXNzd29yZCI6Im16aTl6cjY3aWJ5ZHA1azN0Y2t6IiwiaWF0IjoxNjk2NTA0NDk3LCJleHAiOjE2OTY2NzcyOTd9.U3iNorsmGO26VMeX-yFQ0FHCjVbGIWGrV3nzcD7HqrE";
@@ -8101,12 +8119,9 @@ export const rupeeRushCreateOrder = async (req, res) => {
 
     console.log('Rupee Rush Request Params:', JSON.stringify(params, null, 2));
 
-    // Create axios instance with SSL bypass for Rupee Rush API
+    // Create axios instance with SSL bypass for Rupee Rush API (IPv4 egress for whitelist)
     const rupeeRushAxios = axios.create({
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false, // Bypass SSL certificate verification
-        keepAlive: true
-      }),
+      httpsAgent: createRupeeRushHttpsAgent(),
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -11798,12 +11813,9 @@ export const rupeeRushPayout = async (req, res) => {
 
       console.log('RupeeRush Payout Request Params:', JSON.stringify(params, null, 2));
 
-      // Create axios instance
+      // Create axios instance (IPv4 egress for Rupee Rush whitelist)
       const rupeeRushAxios = axios.create({
-        httpsAgent: new https.Agent({
-          rejectUnauthorized: false,
-          keepAlive: true
-        }),
+        httpsAgent: createRupeeRushHttpsAgent(),
         timeout: 60000,
         headers: {
           'Content-Type': 'application/json'
@@ -12002,12 +12014,9 @@ export const rupeeRushBalanceFetch = async (req, res) => {
 
     console.log('RupeeRush Balance Request Data:', JSON.stringify(requestData, null, 2));
 
-    // Create axios instance
+    // Create axios instance (IPv4 egress for Rupee Rush whitelist)
     const rupeeRushAxios = axios.create({
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false,
-        keepAlive: true
-      }),
+      httpsAgent: createRupeeRushHttpsAgent(),
       headers: {
         'Content-Type': 'application/json'
       }
