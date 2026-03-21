@@ -7949,6 +7949,39 @@ export const updateRechargeSettings = async (req, res) => {
   res.status(200).json({ success: true });
 };
 
+/** POST /admin/gateway-settings/:api — AdminAPI only; updates extra id:1 gatewayOrder / gatewayEnabled */
+export const updateGatewaySettings = async (req, res) => {
+  const api = req.params.api;
+  if (api !== process.env.AdminAPI) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+  const { gatewayOrder, gatewayEnabled } = req.body;
+  const update = {};
+  if (gatewayOrder !== undefined) {
+    if (!Array.isArray(gatewayOrder)) {
+      return res.status(400).json({ error: "gatewayOrder must be an array" });
+    }
+    update.gatewayOrder = gatewayOrder;
+  }
+  if (gatewayEnabled !== undefined) {
+    if (
+      gatewayEnabled === null ||
+      typeof gatewayEnabled !== "object" ||
+      Array.isArray(gatewayEnabled)
+    ) {
+      return res.status(400).json({ error: "gatewayEnabled must be a non-null object" });
+    }
+    update.gatewayEnabled = gatewayEnabled;
+  }
+  if (Object.keys(update).length === 0) {
+    return res.status(400).json({
+      error: "Provide gatewayOrder (array) and/or gatewayEnabled (object)",
+    });
+  }
+  await extra.updateOne({ id: 1 }, { $set: update });
+  return res.status(200).json({ success: true });
+};
+
 export const chineasePay = async (req, res) => {
   const order = Date.now();
   //   if($bank_code != ""){

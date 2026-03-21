@@ -107,6 +107,7 @@ import {
   getGatewayOut,
   getRechargeSettings,
   updateRechargeSettings,
+  updateGatewaySettings,
   getPayouts,
   getRecentRecharge,
   getShuffleUPI,
@@ -1394,6 +1395,7 @@ router.post("/setCurrentGatewayOut/:api/:gateway", setGatewayOut);
 
 router.get("/admin/recharge-settings/:api", getRechargeSettings);
 router.post("/admin/recharge-settings/:api", updateRechargeSettings);
+router.post("/admin/gateway-settings/:api", updateGatewaySettings);
 
 router.get("/carousel", getCarousel);
 router.get("/admin/carousel/:api", getCarouselAdmin);
