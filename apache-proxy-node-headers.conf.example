@@ -1,0 +1,9 @@
+# aaPanel: paste into Website → rushpay.online → Apache include, or merge into
+# /www/server/panel/vhost/apache/extension/<site>/proxy_node.conf
+# Enables payment gateways (e.g. Rupee Rush) to read the real client IP.
+
+<IfModule mod_headers.c>
+    RequestHeader set X-Real-IP "%{REMOTE_ADDR}e"
+    RequestHeader set X-Forwarded-For "%{REMOTE_ADDR}e"
+    RequestHeader set X-Forwarded-Proto "https"
+</IfModule>
