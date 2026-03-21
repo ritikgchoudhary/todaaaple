@@ -8713,6 +8713,7 @@ export const watchPayCreateOrder = async (req, res) => {
     const API_URL = process.env.WATCHPAY_API_URL || "https://api.watchglb.com/pay/web";
     const MCH_ID = process.env.WATCHPAY_MCH_ID || "100225573";
     const MERCHANT_KEY = process.env.WATCHPAY_MERCHANT_KEY || "4444ddddd68344ab8207a6f40a076bc7";
+    const payTypeWatch = String(process.env.WATCHPAY_PAY_TYPE || "101").trim();
 
     // Generate unique order number
     const mchOrderNo = Date.now().toString() + Math.floor(Math.random() * 1000);
@@ -8725,7 +8726,7 @@ export const watchPayCreateOrder = async (req, res) => {
       notify_url: `${process.env.SERVER_URL}/watchPayCallback`,
       page_url: `${process.env.CLIENT_URL}/#/wallet/RechargeHistory`,
       mch_order_no: mchOrderNo,
-      pay_type: "101",
+      pay_type: payTypeWatch,
       trade_amount: parseFloat(amount).toString(),
       order_date: orderDate,
       goods_name: "Recharge",
@@ -8841,32 +8842,27 @@ export const watchPayCreateOrder = async (req, res) => {
 // WatchPay Payment Callback Handler
 export const watchPayCallback = async (req, res) => {
   try {
-    console.log('WatchPay Callback received:', req.body);
+    const body = req.body || {};
+    console.log('WatchPay Callback received:', body);
 
-    const {
-      tradeResult,
-      mchId,
-      mchOrderNo,
-      oriAmount,
-      originalAmount,
-      amount,
-      orderDate,
-      orderNo,
-      merRetMsg,
-      signType,
-      sign
-    } = req.body;
+    // Support camelCase (typical JSON) and snake_case (some notify payloads)
+    const tradeResult = body.tradeResult ?? body.trade_result;
+    const mchOrderNo = body.mchOrderNo ?? body.mch_order_no;
+    const orderNo = body.orderNo ?? body.order_no;
+    const sign = body.sign ?? body.SIGN;
+    const oriAmount = body.oriAmount ?? body.ori_amount;
+    const originalAmount = body.originalAmount ?? body.original_amount;
 
     // Use oriAmount or originalAmount (PHP uses both)
     const finalOriAmount = oriAmount || originalAmount;
 
     // Validate required callback parameters
-    if (!mchOrderNo || !orderNo || !tradeResult) {
+    if (!mchOrderNo || !orderNo || tradeResult === undefined || tradeResult === null || tradeResult === "") {
       console.error('Missing required callback parameters');
       return res.status(400).send('sign error');
     }
 
-    // Verify signature
+    // Verify signature (must use exact keys WatchPay sent — do not rename before signing)
     const MERCHANT_KEY = process.env.WATCHPAY_MERCHANT_KEY || "4444ddddd68344ab8207a6f40a076bc7";
 
     const generateCallbackSign = (params, merchantKey) => {
@@ -8874,7 +8870,14 @@ export const watchPayCallback = async (req, res) => {
       const filteredParams = {};
       Object.keys(params).forEach(key => {
         const value = params[key];
-        if (value !== "" && value !== null && value !== undefined && key !== "sign" && key !== "signType") {
+        if (
+          value !== "" &&
+          value !== null &&
+          value !== undefined &&
+          key !== "sign" &&
+          key !== "signType" &&
+          key !== "sign_type"
+        ) {
           filteredParams[key] = value;
         }
       });
@@ -8895,13 +8898,13 @@ export const watchPayCallback = async (req, res) => {
       return crypto.createHash('md5').update(queryString).digest('hex').toLowerCase();
     };
 
-    const expectedSign = generateCallbackSign(req.body, MERCHANT_KEY);
+    const expectedSign = generateCallbackSign(body, MERCHANT_KEY);
 
     console.log('WatchPay Signature verification:');
     console.log('Received sign:', sign);
     console.log('Expected sign:', expectedSign);
 
-    if (sign !== expectedSign) {
+    if (String(sign || "").toLowerCase() !== String(expectedSign || "").toLowerCase()) {
       console.error('Invalid signature in callback');
       console.error('Signature mismatch - callback rejected');
       return res.status(400).send('sign error');
