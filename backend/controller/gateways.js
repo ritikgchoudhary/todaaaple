@@ -43,6 +43,18 @@ function createRupeeRushHttpsAgent() {
 
 /** Payer / client IP for Rupee Rush payin (API rejects missing IP with "Invalid IP address: undefined"). */
 function getRupeeRushClientIp(req) {
+  const normalizeIp = (s) => {
+    let v = String(s || "").trim();
+    if (!v) return "";
+    if (v.startsWith("::ffff:")) v = v.slice(7);
+    if (v === "::1") v = "127.0.0.1";
+    return v;
+  };
+  const isUsable = (s) => {
+    const v = normalizeIp(s);
+    return v && v !== "127.0.0.1" && v !== "localhost";
+  };
+
   const xff = req.headers["x-forwarded-for"];
   const fromXff =
     typeof xff === "string" && xff.trim()
@@ -54,11 +66,16 @@ function getRupeeRushClientIp(req) {
     (typeof req.headers["cf-connecting-ip"] === "string"
       ? req.headers["cf-connecting-ip"].trim()
       : "");
+  const fromExpressIp =
+    typeof req.ip === "string" && req.ip.trim() ? req.ip.trim() : "";
   const fromSocket =
     req.socket?.remoteAddress || req.connection?.remoteAddress || "";
-  let ip = String(fromHeader || fromSocket || "").trim();
-  if (ip.startsWith("::ffff:")) ip = ip.slice(7);
-  if (ip === "::1") ip = "127.0.0.1";
+
+  let ip = "";
+  if (isUsable(fromHeader)) ip = normalizeIp(fromHeader);
+  else if (isUsable(fromExpressIp)) ip = normalizeIp(fromExpressIp);
+  else if (isUsable(fromSocket)) ip = normalizeIp(fromSocket);
+  else ip = normalizeIp(fromHeader || fromExpressIp || fromSocket);
   if (ip) return ip;
 
   const bodyIp = req.body?.client_ip ?? req.body?.clientIp;
@@ -8114,7 +8131,8 @@ export const rupeeRushCreateOrder = async (req, res) => {
       });
     }
 
-    const ipJsonKey = process.env.RUPEERUSH_IP_JSON_KEY || "clientIp";
+    // Rupee Rush docs/samples often use "ip" (not "clientIp"); wrong key → upstream "Invalid IP address: undefined"
+    const ipJsonKey = process.env.RUPEERUSH_IP_JSON_KEY || "ip";
 
     const params = {
       merNo: MER_NO,

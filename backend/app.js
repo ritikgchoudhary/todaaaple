@@ -29,6 +29,9 @@ const app = express();
 const PORT = process.env.PORT || 4001;
 const useViteDev = process.env.USE_VITE_DEV === '1'; // Bina build: USE_VITE_DEV=1 npm run dev
 
+// Behind Apache/nginx reverse proxy: use X-Forwarded-For for req.ip (payment gateways need real client IP)
+app.set('trust proxy', true);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
